@@ -18,3 +18,7 @@ This a monorepo powered by **Nx**.
 It is built using **Nestjs**, **Angular 18**, **Docker**, **tRPC**, **PostgresSQL**, and **Prisma**.
 
 This software is built with **Robustness**, **System High-Availability** and **Reliability** in mind.
+
+## How to Run and Use this project
+
+Full Documentation is available in this [readme file](./test/README.md).

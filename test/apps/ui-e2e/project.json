@@ -1,0 +1,26 @@
+{
+    "name": "ui-e2e",
+    "$schema": "../../node_modules/nx/schemas/project-schema.json",
+    "projectType": "application",
+    "sourceRoot": "apps/ui-e2e/src",
+    "tags": [],
+    "implicitDependencies": ["ui"],
+    "targets": {
+        "e2e": {
+            "executor": "@nx/cypress:cypress",
+            "options": {
+                "cypressConfig": "apps/ui-e2e/cypress.config.ts",
+                "testingType": "e2e",
+                "devServerTarget": "ui:serve"
+            },
+            "configurations": {
+                "production": {
+                    "devServerTarget": "ui:serve:production"
+                }
+            }
+        },
+        "lint": {
+            "executor": "@nx/eslint:lint"
+        }
+    }
+}
