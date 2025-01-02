@@ -1,13 +1,21 @@
 {
   "extends": "../tsconfig.json",
-  "files": [],
-  "include": [],
+  "compilerOptions": {
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "target": "ES2022",
+    "types": ["node", "jest"],
+    "allowJs": true,
+    "outDir": "../dist/out-tsc",
+    "esModuleInterop": true,
+    "paths": {
+      "@/*": ["../src/*"]
+    }
+  },
+  "include": ["src/**/*.ts", "jest.config.ts"],
   "references": [
     {
       "path": "./tsconfig.spec.json"
     }
-  ],
-  "compilerOptions": {
-    "esModuleInterop": true
-  }
+  ]
 }

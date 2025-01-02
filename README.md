@@ -7,18 +7,18 @@ El-Marchi includes:
 - an E-commerce Platform equivalent to an online Bazzar. ( yess bargain is possible )
 - a map showcasing your local markets, malls and Bazzars, each with its own speciality.
 - an event management platform dedicated to manage events such as _sale seasons_, _exhibitions_, _fairs_, _auctions_, and other trade related big events.
-- online auction system handling
+- online auction system.
 
 Of course for now this is only a projection on what we imagine this platform to be.
 
 ## Project Strucutre
 
-This a monorepo powered by **Nx**.
+This a monorepo consisting of two parts: the _UI_ and the _API_ both powered by **Nx**.
 
-It is built using **Nestjs**, **Angular 18**, **Docker**, **tRPC**, **PostgresSQL**, and **Prisma**.
+It is built using **Nestjs**, **Angular 19**, **Docker**, **tRPC**, **PostgresSQL**, and **Prisma**.
 
 This software is built with **Robustness**, **System High-Availability** and **Reliability** in mind.
 
 ## How to Run and Use this project
 
-Full Documentation is available in this [readme file](./test/README.md).
+Full Documentation is available in this [readme file](./GUIDE.md).

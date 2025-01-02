@@ -2,12 +2,12 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "outDir": "./dist/out-tsc",
-    "module": "commonjs",
-    "types": [
-      "node"
-    ],
-    "emitDecoratorMetadata": true,
-    "target": "es2021"
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "types": ["node"],
+    "target": "ES2022",
+    "sourceMap": true,
+    "composite": true
   },
   "include": [
     "src/**/*.ts"

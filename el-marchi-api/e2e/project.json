@@ -2,22 +2,34 @@
   "name": "e2e",
   "$schema": "../node_modules/nx/schemas/project-schema.json",
   "projectType": "application",
-  "implicitDependencies": [
-    "el-marchi-api"
-  ],
+  "implicitDependencies": ["el-marchi-api"],
   "targets": {
     "e2e": {
       "executor": "@nx/jest:jest",
-      "outputs": [
-        "{workspaceRoot}/coverage/{e2eProjectRoot}"
-      ],
+      "outputs": ["{workspaceRoot}/coverage/{e2eProjectRoot}"],
       "options": {
         "jestConfig": "e2e/jest.config.ts",
-        "passWithNoTests": true
+        "passWithNoTests": true,
+        "runInBand": true,
+        "detectOpenHandles": true
       },
-      "dependsOn": [
-        "el-marchi-api:build"
-      ]
+      "configurations": {
+        "watch": {
+          "watch": true
+        },
+        "ci": {
+          "ci": true,
+          "codeCoverage": true
+        }
+      },
+      "dependsOn": ["el-marchi-api:build"]
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["e2e/**/*.ts"]
+      }
     }
   }
 }
