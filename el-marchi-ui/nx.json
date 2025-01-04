@@ -17,7 +17,7 @@
     ],
     "sharedGlobals": ["{workspaceRoot}/.github/workflows/ci.yml"]
   },
-  "nxCloudId": "67747cacda7e354331ca199e",
+  "nxCloudId": "677942771e2201088cc38f6a",
   "targetDefaults": {
     "@angular-devkit/build-angular:application": {
       "cache": true,
@@ -74,6 +74,5 @@
       "style": "css",
       "unitTestRunner": "jest"
     }
-  },
-  "defaultProject": "El-Marchi-UI"
+  }
 }

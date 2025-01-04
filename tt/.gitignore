@@ -41,6 +41,8 @@ Thumbs.db
 .nx/cache
 .nx/workspace-data
 
+.angular
+
 
 # Environment Variables
 .env

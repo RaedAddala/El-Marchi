@@ -3,38 +3,39 @@
     "rootDir": ".",
     "baseUrl": ".",
     "paths": {},
-    "target": "ES2022",
-    "module": "NodeNext",
-    "moduleResolution": "NodeNext",
-    "lib": ["ES2023"],
+
+
+    "target": "es2022",
+    "module": "esnext",
+    "lib": ["es2020", "dom"],
+    "moduleResolution": "node",
+
+    "sourceMap": true,
+    "declaration": false,
+    "esModuleInterop": true,
+    "emitDecoratorMetadata": true,
+
+    "skipLibCheck": true,
+    "skipDefaultLibCheck": true,
+
+    "importHelpers": true,
+    "experimentalDecorators": true,
+
+
     "strict": true,
-    "noImplicitThis": true,
-    "noUnusedLocals": true,
     "noImplicitReturns": true,
     "noImplicitOverride": true,
-    "noUnusedParameters": true,
-    "allowUnusedLabels": false,
-    "allowUnreachableCode": false,
-    "noUncheckedIndexedAccess": true,
     "noFallthroughCasesInSwitch": true,
-    "exactOptionalPropertyTypes": true,
-    "useUnknownInCatchVariables": true,
-    "sourceMap": true,
-    "declaration": true,
-    "declarationMap": true,
-    "incremental": true,
-    "composite": true,
-    "tsBuildInfoFile": "./dist/.tsbuildinfo",
-    "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
-    "experimentalDecorators": true,
-    "emitDecoratorMetadata": true,
-    "skipLibCheck": true,
-    "importHelpers": true
+    "noPropertyAccessFromIndexSignature": true,
+
   },
   "files": [],
   "include": [],
   "references": [
+    {
+      "path": "./tsconfig.editor.json"
+    },
     {
       "path": "./tsconfig.app.json"
     },
@@ -42,5 +43,12 @@
       "path": "./tsconfig.spec.json"
     }
   ],
-  "exclude": ["node_modules", "tmp", "dist"]
+  "compileOnSave": false,
+  "exclude": ["node_modules", "tmp"],
+  "angularCompilerOptions": {
+    "enableI18nLegacyMessageIdFormat": false,
+    "strictInjectionParameters": true,
+    "strictInputAccessModifiers": true,
+    "strictTemplates": true
+  }
 }

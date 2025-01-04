@@ -1,33 +1,33 @@
-# ElMarchiUI
+# ElMarchiUi
 
 ![Nx logo](https://raw.githubusercontent.com/nrwl/nx/master/images/nx-logo.png)
 
 ✨ Your new, shiny [Nx workspace](https://nx.dev) is almost ready ✨.
 
-[Learn more about this workspace setup and its capabilities](https://nx.dev/getting-started/tutorials/angular-standalone-tutorial?utm_source=nx_project&amp;utm_medium=readme&amp;utm_campaign=nx_projects) or run `pnpx nx graph` to visually explore what was created. Now, let's get you up to speed!
+[Learn more about this workspace setup and its capabilities](https://nx.dev/getting-started/tutorials/angular-monorepo-tutorial?utm_source=nx_project&amp;utm_medium=readme&amp;utm_campaign=nx_projects) or run `pnpx nx graph` to visually explore what was created. Now, let's get you up to speed!
 
 ## Finish your CI setup
 
-[Click here to finish setting up your workspace!](https://cloud.nx.app/connect/w5LfzHYMOW)
+[Click here to finish setting up your workspace!](https://cloud.nx.app/connect/sq0V3akiqF)
 
 ## Run tasks
 
 To run the dev server for your app, use:
 
 ```sh
-pnpx nx serve El-Marchi-UI
+pnpx nx serve el-marchi-ui
 ```
 
 To create a production bundle:
 
 ```sh
-pnpx nx build El-Marchi-UI
+pnpx nx build el-marchi-ui
 ```
 
 To see all available targets to run for a project, run:
 
 ```sh
-pnpx nx show project El-Marchi-UI
+pnpx nx show project el-marchi-ui
 ```
 
 These targets are either [inferred automatically](https://nx.dev/concepts/inferred-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) or defined in the `project.json` or `package.json` files.
@@ -68,7 +68,7 @@ Nx Console is an editor extension that enriches your developer experience. It le
 
 Learn more:
 
-- [Learn more about this workspace setup](https://nx.dev/getting-started/tutorials/angular-standalone-tutorial?utm_source=nx_project&amp;utm_medium=readme&amp;utm_campaign=nx_projects)
+- [Learn more about this workspace setup](https://nx.dev/getting-started/tutorials/angular-monorepo-tutorial?utm_source=nx_project&amp;utm_medium=readme&amp;utm_campaign=nx_projects)
 - [Learn about Nx on CI](https://nx.dev/ci/intro/ci-with-nx?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
 - [Releasing Packages with Nx release](https://nx.dev/features/manage-releases?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
 - [What are Nx plugins?](https://nx.dev/concepts/nx-plugins?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)

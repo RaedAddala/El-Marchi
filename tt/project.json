@@ -1,108 +1,98 @@
 {
-  "name": "el-marchi-api",
-  "$schema": "node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "src",
+  "name": "El-Marchi-UI",
+  "$schema": "./node_modules/nx/schemas/project-schema.json",
+  "includedScripts": [],
   "projectType": "application",
+  "prefix": "app",
+  "sourceRoot": "./src",
+  "tags": [],
   "targets": {
     "build": {
-      "executor": "@nx/webpack:webpack",
-      "outputs": [
-        "{options.outputPath}"
-      ],
-      "defaultConfiguration": "development",
+      "executor": "@angular-devkit/build-angular:application",
+      "outputs": ["{options.outputPath}"],
       "options": {
-        "target": "node",
-        "outputPath": "dist/el-marchi-api",
-        "main": "src/main.ts",
+        "outputPath": "dist/El-Marchi-UI",
+        "index": "./src/index.html",
+        "browser": "./src/main.ts",
+        "polyfills": [],
         "tsConfig": "tsconfig.app.json",
         "assets": [
-          "src/assets"
+          {
+            "glob": "**/*",
+            "input": "public"
+          }
         ],
-        "generatePackageJson": true,
-        "webpackConfig": "./webpack.config.js"
+        "styles": ["./src/styles.css"],
+        "scripts": [],
+        "server": "src/main.server.ts",
+        "ssr": {
+          "entry": "src/server.ts"
+        },
+        "outputMode": "server"
       },
       "configurations": {
-        "development": {
-          "extractLicenses": false,
-          "inspection": true,
-          "env": {
-            "NODE_ENV": "development"
-          }
-        },
         "production": {
-          "extractLicenses": true,
-          "inspection": false,
-          "env": {
-            "NODE_ENV": "production"
-          },
-          "fileReplacements": [
+          "budgets": [
             {
-              "replace": "src/environments/environment.ts",
-              "with": "src/environments/environment.prod.ts"
+              "type": "initial",
+              "maximumWarning": "500kb",
+              "maximumError": "1mb"
+            },
+            {
+              "type": "anyComponentStyle",
+              "maximumWarning": "4kb",
+              "maximumError": "8kb"
             }
-          ]
+          ],
+          "outputHashing": "all"
+        },
+        "development": {
+          "optimization": false,
+          "extractLicenses": false,
+          "sourceMap": true
         }
-      }
+      },
+      "defaultConfiguration": "production"
     },
     "serve": {
-      "executor": "@nx/js:node",
-      "defaultConfiguration": "development",
-      "options": {
-        "buildTarget": "el-marchi-api:build",
-        "inspect": true
-      },
+      "executor": "@angular-devkit/build-angular:dev-server",
       "configurations": {
-        "development": {
-          "buildTarget": "el-marchi-api:build:development"
-        },
         "production": {
-          "buildTarget": "el-marchi-api:build:production"
+          "buildTarget": "El-Marchi-UI:build:production"
+        },
+        "development": {
+          "buildTarget": "El-Marchi-UI:build:development"
         }
+      },
+      "defaultConfiguration": "development"
+    },
+    "extract-i18n": {
+      "executor": "@angular-devkit/build-angular:extract-i18n",
+      "options": {
+        "buildTarget": "El-Marchi-UI:build"
       }
     },
     "lint": {
       "executor": "@nx/eslint:lint",
-      "outputs": [
-        "{options.outputFile}"
-      ],
       "options": {
-        "lintFilePatterns": [
-          "src/**/*.ts"
-        ],
-        "fix": true
+        "lintFilePatterns": ["./src"]
       }
     },
     "test": {
       "executor": "@nx/jest:jest",
-      "outputs": [
-        "{workspaceRoot}/coverage/el-marchi-api"
-      ],
+      "outputs": ["{workspaceRoot}/coverage/{projectName}"],
       "options": {
-        "jestConfig": "jest.config.ts",
-        "passWithNoTests": true
-      },
-      "configurations": {
-        "ci": {
-          "ci": true,
-          "codeCoverage": true
-        }
+        "jestConfig": "jest.config.ts"
       }
     },
-    "compodoc": {
-      "executor": "nx:run-commands",
+    "serve-static": {
+      "executor": "@nx/web:file-server",
       "options": {
-        "command": "pnpx @compodoc/compodoc -p tsconfig.app.json -s",
-        "cwd": "."
-      },
-      "configurations": {
-        "dev": {
-          "command": "pnpx @compodoc/compodoc -p tsconfig.app.json -d coverage/documentation"
-        },
-        "production": {
-          "command": "pnpx @compodoc/compodoc -p tsconfig.app.json -d dist/documentation"
-        }
+        "buildTarget": "El-Marchi-UI:build",
+        "port": 4200,
+        "staticFilePath": "dist/El-Marchi-UI/browser",
+        "spa": true
       }
     }
-  },
-  "tags": []
+  }
 }

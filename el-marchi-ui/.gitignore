@@ -42,7 +42,3 @@ Thumbs.db
 .nx/workspace-data
 
 .angular
-
-
-# Environment Variables
-.env
