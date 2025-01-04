@@ -10,15 +10,15 @@ export default {
       '@swc/jest',
       {
         jsc: {
-          target: 'es2022',
           parser: {
             syntax: 'typescript',
             decorators: true,
-            dynamicImport: true,
+            tsx: false,
           },
+          target: 'es2021',
           transform: {
-            decoratorMetadata: true,
             legacyDecorator: true,
+            decoratorMetadata: true,
           },
         },
       },
@@ -26,7 +26,4 @@ export default {
   },
   moduleFileExtensions: ['ts', 'js', 'html'],
   coverageDirectory: '../coverage/e2e',
-  testTimeout: 30000,
-  maxWorkers: 1,
-  verbose: true,
 };

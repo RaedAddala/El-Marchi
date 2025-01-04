@@ -3,12 +3,10 @@
     "rootDir": ".",
     "baseUrl": ".",
     "paths": {},
-
     "target": "ES2022",
     "module": "NodeNext",
     "moduleResolution": "NodeNext",
     "lib": ["ES2023"],
-
     "strict": true,
     "noImplicitThis": true,
     "noUnusedLocals": true,
@@ -21,21 +19,16 @@
     "noFallthroughCasesInSwitch": true,
     "exactOptionalPropertyTypes": true,
     "useUnknownInCatchVariables": true,
-
-
     "sourceMap": true,
     "declaration": true,
     "declarationMap": true,
     "incremental": true,
     "composite": true,
     "tsBuildInfoFile": "./dist/.tsbuildinfo",
-
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
-
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
-
     "skipLibCheck": true,
     "importHelpers": true
   },
@@ -49,9 +42,5 @@
       "path": "./tsconfig.spec.json"
     }
   ],
-  "exclude": [
-    "node_modules",
-    "tmp",
-    "dist"
-  ]
+  "exclude": ["node_modules", "tmp", "dist"]
 }

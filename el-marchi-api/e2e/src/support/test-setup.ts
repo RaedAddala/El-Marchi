@@ -1,9 +1,24 @@
-/* eslint-disable */
 import axios from 'axios';
 
-module.exports = async function() {
-  // Configure axios for tests to use.
-  const host = process.env.HOST ?? 'localhost';
-  const port = process.env.PORT ?? '3000';
-  axios.defaults.baseURL = `http://${host}:${port}`;
-};
+const API_URL = process.env.API_URL || 'http://localhost:3000';
+
+// Configure axios for tests
+axios.defaults.baseURL = API_URL;
+axios.defaults.validateStatus = () => true;
+
+export async function waitForServer(timeout = 30000): Promise<void> {
+  const startTime = Date.now();
+
+  while (Date.now() - startTime < timeout) {
+    try {
+      const response = await axios.get('/api');
+      if (response.status === 200) {
+        return;
+      }
+    } catch (error) {
+      await new Promise(resolve => setTimeout(resolve, 1000));
+    }
+  }
+
+  throw new Error(`Server failed to start within ${timeout}ms`);
+}

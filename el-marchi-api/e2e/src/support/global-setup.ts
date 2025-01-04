@@ -1,11 +1,39 @@
-/* eslint-disable */
-var __TEARDOWN_MESSAGE__: string;
+import { spawn, ChildProcess } from 'child_process';
+import path from 'path';
+import { waitForServer } from './test-setup';
 
-module.exports = async function() {
-  // Start services that that the app needs to run (e.g. database, docker-compose, etc.).
-  console.log('\nSetting up...\n');
+let server: ChildProcess;
 
-  // Hint: Use `globalThis` to pass variables to global teardown.
-  globalThis.__TEARDOWN_MESSAGE__ = '\nTearing down...\n';
-};
+export default async function globalSetup() {
+  console.log('Starting server...');
 
+  const serverPath = path.join(process.cwd(), 'dist', 'el-marchi-api', 'main.js');
+
+  console.log('Server path:', serverPath);
+
+  server = spawn('node', [serverPath], {
+    stdio: 'inherit',
+    env: {
+      ...process.env,
+      NODE_ENV: 'test',
+      PORT: '3000'
+    },
+    cwd: path.join(process.cwd())
+  });
+
+  server.on('error', (err) => {
+    console.error('Server failed to start:', err);
+    process.exit(1);
+  });
+
+  (global as any).__SERVER__ = server;
+
+  try {
+    await waitForServer();
+    console.log('Server is ready');
+  } catch (error) {
+    console.error('Server failed to become ready:', error);
+    server.kill('SIGTERM');
+    process.exit(1);
+  }
+}

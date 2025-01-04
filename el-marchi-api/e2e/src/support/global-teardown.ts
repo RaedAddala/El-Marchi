@@ -1,7 +1,17 @@
-/* eslint-disable */
+import { ChildProcess } from 'child_process';
 
-module.exports = async function() {
-  // Put clean up logic here (e.g. stopping services, docker-compose, etc.).
-  // Hint: `globalThis` is shared between setup and teardown.
-  console.log(globalThis.__TEARDOWN_MESSAGE__);
-};
+export default async function globalTeardown() {
+  const server = (global as any).__SERVER__ as ChildProcess;
+
+  if (server) {
+    console.log('Shutting down server...');
+    server.kill('SIGTERM');
+
+    await new Promise<void>((resolve) => {
+      server.on('exit', () => {
+        console.log('Server shutdown complete');
+        resolve();
+      });
+    });
+  }
+}
