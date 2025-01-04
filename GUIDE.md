@@ -62,31 +62,31 @@ This project is a **Pnpm Workspace** powered by **Nx**. The Workspace consists o
         - **Dev Mode:**  
 
           ```sh
-          pnpm nx serve api
+          pnpm start
           ```
 
         - **Prod Mode:**  
 
           ```sh
-          pnpm nx build api && pnpm nx start api
+          pnpm build:production && pnpm start:production
           ```
 
 2. **To Run the API Tests:**  
 
     ```sh
-    pnpm nx e2e api-e2e
+    pnpm e2e
     ```
 
 3. **To Lint the API:**  
 
     ```sh
-    pnpm nx lint api
+    pnpm lint
     ```
 
 4. **To Format the API:**  
 
     ```sh
-    pnpm nx format api
+    pnpm format
     ```
 
 ## Docker Structure

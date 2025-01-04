@@ -1,0 +1,21 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "baseUrl": "./",
+    "outDir": "../../dist/out-tsc",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "types": ["jest", "node"],
+    "paths": {
+      "@el-marchi-api/*": ["../../apps/el-marchi-api/*"]
+    }
+  },
+  "include": [
+    "jest.config.ts",
+    "**/*.spec.ts",
+    "**/*.test.ts",
+    "**/*.e2e-spec.ts",
+    "../../apps/el-marchi-api/src/**/*.ts"
+  ],
+  "exclude": ["**/*.js", "node_modules", "dist", "tmp"]
+}
