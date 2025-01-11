@@ -60,6 +60,8 @@ pnpm run e2e
 pnpm run e2e:ci
 ```
 
+***NOTE:*** for E2E testing screenshots showing the problems will be found in `dist/cypress/apps/el-marchi-ui-e2e/screenshots`.
+
 ### Code Quality
 
 ```bash
