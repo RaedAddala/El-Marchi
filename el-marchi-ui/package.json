@@ -2,7 +2,30 @@
   "name": "@el-marchi-ui/source",
   "version": "0.0.0",
   "license": "MIT",
-  "scripts": {},
+  "scripts": {
+    "start": "nx serve el-marchi-ui --configuration=development",
+    "start:prod": "nx serve el-marchi-ui --configuration=production",
+    "build": "nx build el-marchi-ui --configuration=development",
+    "build:prod": "nx build el-marchi-ui --configuration=production",
+    "test": "nx test el-marchi-ui",
+    "test:watch": "nx test el-marchi-ui --watch",
+    "test:ci": "nx test el-marchi-ui --configuration=ci",
+    "lint": "nx lint el-marchi-ui",
+    "e2e": "nx e2e el-marchi-ui-e2e",
+    "e2e:ci": "nx e2e-ci el-marchi-ui-e2e",
+    "serve:static": "nx run el-marchi-ui:serve-static",
+    "extract-i18n": "nx run el-marchi-ui:extract-i18n",
+    "docs:generate": "compodoc -p apps/el-marchi-ui/tsconfig.app.json",
+    "docs:serve": "compodoc -p apps/el-marchi-ui/tsconfig.app.json -s",
+    "format:check": "prettier --check \"**/*.{js,ts,html,css}\"",
+    "format": "prettier --write \"**/*.{js,ts,html,css}\"",
+    "affected:test": "nx affected --target=test",
+    "affected:lint": "nx affected --target=lint",
+    "affected:build": "nx affected --target=build",
+    "affected:e2e": "nx affected --target=e2e",
+    "graph": "nx graph",
+    "clean": "rimraf dist && nx reset"
+  },
   "private": true,
   "dependencies": {
     "@angular/animations": "~19.0.5",
@@ -13,8 +36,7 @@
     "@angular/platform-browser": "~19.0.5",
     "@angular/platform-browser-dynamic": "~19.0.5",
     "@angular/router": "~19.0.5",
-    "rxjs": "~7.8.1",
-    "zone.js": "~0.15.0"
+    "rxjs": "~7.8.1"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "~19.0.6",
@@ -23,6 +45,7 @@
     "@angular/cli": "~19.0.6",
     "@angular/compiler-cli": "~19.0.5",
     "@angular/language-service": "~19.0.5",
+    "@compodoc/compodoc": "^1.1.26",
     "@eslint/js": "^9.17.0",
     "@nx/angular": "20.3.0",
     "@nx/cypress": "20.3.0",
@@ -49,10 +72,16 @@
     "jest-preset-angular": "~14.4.2",
     "nx": "20.3.0",
     "prettier": "^2.8.8",
+    "rimraf": "^6.0.1",
     "ts-jest": "^29.2.5",
     "ts-node": "10.9.1",
     "tslib": "^2.8.1",
     "typescript": "~5.6.3",
     "typescript-eslint": "^8.19.0"
+  },
+  "pnpm": {
+    "overrides": {
+      "webpack@>=5.0.0-alpha.0 <5.94.0": ">=5.94.0"
+    }
   }
 }

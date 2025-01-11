@@ -3,7 +3,9 @@
   "compilerOptions": {
     "allowJs": true,
     "outDir": "../../dist/out-tsc",
-    "module": "commonjs",
+    "module": "esnext",
+    "moduleResolution": "node",
+    "target": "es2022",
     "types": ["cypress", "node"],
     "sourceMap": false,
     "forceConsistentCasingInFileNames": true,

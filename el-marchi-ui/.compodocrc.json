@@ -1,0 +1,10 @@
+{
+  "name": "El Marchi UI Documentation",
+  "output": "documentation/el-marchi-ui",
+  "theme": "material",
+  "port": 8080,
+  "serve": true,
+  "watch": true,
+  "language": "en-US",
+  "hideGenerator": true
+}

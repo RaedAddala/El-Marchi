@@ -1,13 +1,9 @@
 {
   "compilerOptions": {
     "target": "es2022",
+    "useDefineForClassFields": false,
     "esModuleInterop": true,
-    "forceConsistentCasingInFileNames": true,
-    "strict": true,
-    "noImplicitOverride": true,
-    "noPropertyAccessFromIndexSignature": true,
-    "noImplicitReturns": true,
-    "noFallthroughCasesInSwitch": true
+    "strict": true
   },
   "files": [],
   "include": [],
@@ -27,6 +23,10 @@
     "enableI18nLegacyMessageIdFormat": false,
     "strictInjectionParameters": true,
     "strictInputAccessModifiers": true,
-    "strictTemplates": true
+    "strictTemplates": true,
+    "strictPropertyInitialization": true,
+    "strictNullChecks": true,
+    "extendedDiagnostics": true,
+    "fullTemplateTypeCheck": true
   }
 }
