@@ -8,7 +8,6 @@ import {
 import {
   faYoutube,
   faTwitter,
-  faXTwitter,
   faFacebook,
   faLinkedin,
   faInstagram,
@@ -21,7 +20,6 @@ export const fontAwesomeIcons: IconDefinition[] = [
   faTruckFast,
   faYoutube,
   faTwitter,
-  faXTwitter,
   faFacebook,
   faLinkedin,
   faInstagram,
