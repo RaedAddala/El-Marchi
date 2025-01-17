@@ -5,7 +5,7 @@ import { CommonModule } from '@angular/common';
   selector: 'app-orders',
   imports: [CommonModule],
   templateUrl: './orders.component.html',
-  styleUrl: './orders.component.css',  standalone:true,
-
+  styleUrl: './orders.component.css',
+  standalone: true,
 })
 export class OrdersComponent {}

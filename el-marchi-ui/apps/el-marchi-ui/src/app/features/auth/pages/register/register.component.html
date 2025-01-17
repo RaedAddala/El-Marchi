@@ -1,7 +1,11 @@
 <div class="min-h-[70vh] flex items-center justify-center">
   <div class="max-w-md w-full space-y-8 p-6 bg-white rounded-lg shadow-md">
     <h2 class="text-3xl font-bold text-center">Create a new account</h2>
-    <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" data-cy="register-form">
+    <form
+      [formGroup]="registerForm"
+      (ngSubmit)="onSubmit()"
+      data-cy="register-form"
+    >
       <!-- Form content -->
     </form>
   </div>
