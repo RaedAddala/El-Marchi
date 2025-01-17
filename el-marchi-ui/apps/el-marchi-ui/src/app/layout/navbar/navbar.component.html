@@ -1,0 +1,179 @@
+<div class="sticky top-0 z-50">
+  <div class="navbar bg-white shadow-elevated px-4 h-18">
+    <!-- Logo Section -->
+    <div class="navbar-start">
+      <a
+        routerLink="/"
+        class="flex items-center space-x-2 hover:opacity-90 transition-all duration-200"
+      >
+        <div
+          class="px-4 py-2 bg-gradient-to-r from-primary-600 to-primary-500 text-white font-bold rounded-lg shadow-sm hover:shadow-md transition-all duration-200"
+        >
+          El-Marchi
+        </div>
+      </a>
+    </div>
+
+    <!-- Navigation Links -->
+    <div class="navbar-center">
+      <ul class="menu menu-horizontal gap-2">
+        <li>
+          <a
+            routerLink="/"
+            routerLinkActive="bg-primary-50 text-primary-700"
+            [routerLinkActiveOptions]="{ exact: true }"
+            class="rounded-lg px-4 py-2 font-medium hover:bg-primary-50 transition-all duration-200"
+          >
+            Home
+          </a>
+        </li>
+
+        <!-- Products Dropdown -->
+        <li class="dropdown dropdown-hover">
+          <button
+            type="button"
+            class="rounded-lg px-4 py-2 flex items-center space-x-1 cursor-pointer font-medium hover:bg-primary-50 transition-all duration-200"
+          >
+            <span>Products</span>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-4 w-4 ml-1 transition-transform duration-200"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                clip-rule="evenodd"
+              />
+            </svg>
+          </button>
+          <ul
+            class="dropdown-content menu shadow-elevated bg-white rounded-lg w-56 p-2 mt-2"
+          >
+            <li>
+              <a
+                routerLink="/products"
+                routerLinkActive="bg-primary-50 text-primary-700"
+                class="rounded-lg px-4 py-2 hover:bg-primary-50 transition-all duration-200"
+              >
+                All Products
+              </a>
+            </li>
+            <li>
+              <a
+                routerLink="/products/new"
+                class="rounded-lg px-4 py-2 hover:bg-primary-50 transition-all duration-200"
+              >
+                New Arrivals
+              </a>
+            </li>
+            <li>
+              <a
+                routerLink="/products/sale"
+                class="rounded-lg px-4 py-2 hover:bg-primary-50 transition-all duration-200"
+              >
+                Sale Items
+              </a>
+            </li>
+          </ul>
+        </li>
+
+        <!-- Admin Dropdown -->
+        <li class="dropdown dropdown-hover">
+          <button
+            type="button"
+            class="rounded-lg px-4 py-2 flex items-center space-x-1 cursor-pointer font-medium hover:bg-primary-50 transition-all duration-200"
+          >
+            <span>Admin</span>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-4 w-4 ml-1 transition-transform duration-200"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                clip-rule="evenodd"
+              />
+            </svg>
+          </button>
+          <ul
+            class="dropdown-content menu shadow-elevated bg-white rounded-lg w-56 p-2 mt-2"
+          >
+            <li>
+              <a
+                routerLink="/admin/products"
+                routerLinkActive="bg-primary-50 text-primary-700"
+                class="rounded-lg px-4 py-2 hover:bg-primary-50 transition-all duration-200"
+              >
+                Manage Products
+              </a>
+            </li>
+            <li>
+              <a
+                routerLink="/admin/orders"
+                class="rounded-lg px-4 py-2 hover:bg-primary-50 transition-all duration-200"
+              >
+                Orders
+              </a>
+            </li>
+            <li>
+              <a
+                routerLink="/admin/customers"
+                class="rounded-lg px-4 py-2 hover:bg-primary-50 transition-all duration-200"
+              >
+                Customers
+              </a>
+            </li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+
+    <!-- User and Cart Section -->
+    <div class="navbar-end gap-4">
+      <div class="dropdown dropdown-end">
+        <button
+          class="btn btn-ghost btn-circle hover:bg-primary-50 transition-all duration-200"
+          aria-label="User menu"
+        >
+          <fa-icon
+            [icon]="['fas', 'user']"
+            class="text-lg text-secondary-600 hover:text-primary-600 transition-colors duration-200"
+          ></fa-icon>
+        </button>
+        <ul
+          class="dropdown-content menu shadow-elevated bg-white rounded-lg w-52 p-2 mt-2"
+        >
+          <li>
+            <a
+              routerLink="/auth/login"
+              class="rounded-lg px-4 py-2 hover:bg-primary-50 transition-all duration-200"
+            >
+              Login
+            </a>
+          </li>
+          <li>
+            <a
+              routerLink="/auth/register"
+              class="rounded-lg px-4 py-2 hover:bg-primary-50 transition-all duration-200"
+            >
+              Register
+            </a>
+          </li>
+        </ul>
+      </div>
+      <button
+        class="btn btn-ghost btn-circle hover:bg-primary-50 transition-all duration-200"
+        aria-label="Shopping cart"
+      >
+        <fa-icon
+          [icon]="['fas', 'cart-shopping']"
+          class="text-lg text-secondary-600 hover:text-primary-600 transition-colors duration-200"
+        ></fa-icon>
+      </button>
+    </div>
+  </div>
+</div>

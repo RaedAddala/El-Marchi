@@ -7,19 +7,14 @@
     "module": "esnext",
     "moduleResolution": "bundler",
     "lib": ["es2020", "dom", "dom.iterable"],
-
     "paths": {},
-
-
     "sourceMap": true,
     "declaration": false,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "skipDefaultLibCheck": true,
     "skipLibCheck": true,
-
     "importHelpers": true,
-
     "strict": true,
     "noImplicitOverride": true,
     "noPropertyAccessFromIndexSignature": true,
