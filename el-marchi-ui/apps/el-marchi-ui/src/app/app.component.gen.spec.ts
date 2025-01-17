@@ -1,5 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
+import { of } from 'rxjs';
 import { AppComponent } from './app.component';
 
 describe('AppComponent', () => {
@@ -8,9 +9,18 @@ describe('AppComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      schemas: [NO_ERRORS_SCHEMA],
-      declarations: [AppComponent]
-    });
+      imports: [AppComponent],
+      providers: [
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            snapshot: { params: {}, queryParams: {} },
+            paramMap: of({ get: () => null }),
+          },
+        },
+      ],
+    }).compileComponents();
+
     fixture = TestBed.createComponent(AppComponent);
     component = fixture.componentInstance;
   });
@@ -19,15 +29,15 @@ describe('AppComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it(`title has default value`, () => {
-    expect(component.title).toEqual(`el-marchi-ui`);
+  it('title has default value', () => {
+    expect(component.title).toEqual('el-marchi-ui');
   });
 
   describe('ngOnInit', () => {
     it('makes expected calls', () => {
-      spyOn(component, 'initFontAwesome').and.callThrough();
+      const initFontAwesomeSpy = jest.spyOn(component, 'initFontAwesome');
       component.ngOnInit();
-      expect(component.initFontAwesome).toHaveBeenCalled();
+      expect(initFontAwesomeSpy).toHaveBeenCalled();
     });
   });
 });
