@@ -5,7 +5,7 @@
   "scripts": {
     "start": "nx serve el-marchi-ui --configuration=development",
     "start:prod": "nx serve el-marchi-ui --configuration=production",
-    "clean:imports":"nx g @angular/core:cleanup-unused-imports",
+    "clean:imports": "nx g @angular/core:cleanup-unused-imports",
     "build": "nx build el-marchi-ui --configuration=development",
     "build:prod": "nx build el-marchi-ui --configuration=production",
     "test": "nx test el-marchi-ui",
@@ -38,6 +38,7 @@
     "@angular/platform-browser-dynamic": "^19.1.1",
     "@angular/router": "^19.1.1",
     "@fortawesome/angular-fontawesome": "^1.0.0",
+    "@fortawesome/free-brands-svg-icons": "^6.7.2",
     "@fortawesome/free-regular-svg-icons": "^6.7.2",
     "@fortawesome/free-solid-svg-icons": "^6.7.2",
     "rxjs": "^7.8.1"
