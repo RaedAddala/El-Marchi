@@ -1,6 +1,10 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FooterComponent } from './footer.component';
-import { FaIconLibrary, FaConfig, FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import {
+  FaIconLibrary,
+  FaConfig,
+  FontAwesomeModule,
+} from '@fortawesome/angular-fontawesome';
 import { fontAwesomeIcons } from '../../../shared/font-awesome-icons';
 
 describe('FooterComponent', () => {
@@ -11,10 +15,7 @@ describe('FooterComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [
-        FooterComponent,
-        FontAwesomeModule
-      ],
+      imports: [FooterComponent, FontAwesomeModule],
       providers: [FaIconLibrary, FaConfig],
     }).compileComponents();
 

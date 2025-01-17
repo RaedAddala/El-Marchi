@@ -4,7 +4,7 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
 @Component({
   selector: 'app-footer',
-  imports: [CommonModule,FontAwesomeModule],
+  imports: [CommonModule, FontAwesomeModule],
   templateUrl: './footer.component.html',
   styleUrl: './footer.component.css',
   standalone: true,
