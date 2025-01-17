@@ -1,54 +1,57 @@
-<div class="navbar bg-base-100">
+<div class="navbar bg-base-100 shadow-sm px-4">
+  <!-- Logo Section -->
   <div class="navbar-start">
-    <div class="dropdown">
-      <a class="btn btn-ghost text-xl">
-        <div
-          class="border-1 bg-secondary logo p-2 rounded-xl"
-          routerLink="/"
-          routerLinkActive="router-link-active"
-        >
-          El-Marchi
-        </div>
-      </a>
-    </div>
+    <a class="btn btn-ghost p-2 hover:bg-transparent" routerLink="/">
+      <div class="text-xl font-semibold bg-secondary px-4 py-2 rounded-lg">
+        El-Marchi
+      </div>
+    </a>
   </div>
-  <div class="navbar-center flex">
-    <div class="menu menu-sm sm:menu-lg menu-horizontal px-1">
-      <li><a href="/">Home</a></li>
+
+  <!-- Navigation Links -->
+  <div class="navbar-center">
+    <ul class="menu menu-horizontal gap-2">
+      <li><a class="rounded-lg" routerLink="/">Home</a></li>
+
+      <!-- Products Dropdown -->
       <li>
-        <details #productMenu>
-          <summary>Products</summary>
-          <ul class="z-30">
-            <li><a href="/products">All</a></li>
+        <details class="dropdown">
+          <summary class="rounded-lg">Products</summary>
+          <ul class="dropdown-content menu shadow-lg bg-base-100 rounded-lg w-52 p-2 z-30">
+            <li><a routerLink="/products">All Products</a></li>
           </ul>
         </details>
       </li>
+
+      <!-- Admin Dropdown -->
       <li>
-        <details #adminMenu>
-          <summary>Admin</summary>
-          <ul class="z-30">
-            <li><a href="/products">All</a></li>
+        <details class="dropdown">
+          <summary class="rounded-lg">Admin</summary>
+          <ul class="dropdown-content menu shadow-lg bg-base-100 rounded-lg w-52 p-2 z-30">
+            <li><a routerLink="/products">All Products</a></li>
           </ul>
         </details>
-      </li>
-    </div>
-  </div>
-  <div class="navbar-end pe-4 flex align-items-center">
-    <div class="dropdown dropdown-end pe-4" routerLink="/user"></div>
-    <div tabindex="0" role="button">
-      <fa-icon [icon]="['fas', 'user']"></fa-icon>
-    </div>
-    <ul
-      class="dropdown-content menu menu-lg bg-base-100 rounded-box z-10 w-52 p-2 shadow"
-    >
-      <li>
-        <button class="link">Login</button>
       </li>
     </ul>
   </div>
-  <div class="dropdown dropdown-end me-2" routerLink="/cart">
-    <div tabindex="0" role="button">
-      <fa-icon [icon]="['fas', 'cart-shopping']"></fa-icon>
+
+  <!-- User and Cart Section -->
+  <div class="navbar-end gap-4">
+    <!-- User Dropdown -->
+    <div class="dropdown dropdown-end">
+      <button tabindex="0" class="btn btn-ghost btn-circle" aria-label="User menu">
+        <fa-icon [icon]="['fas', 'user']" class="text-lg"></fa-icon>
+      </button>
+      <ul class="dropdown-content menu shadow-lg bg-base-100 rounded-lg w-52 p-2 z-30 mt-2">
+        <li><a class="rounded-lg">Login</a></li>
+      </ul>
+    </div>
+
+    <!-- Cart Button -->
+    <div class="dropdown dropdown-end">
+      <button tabindex="0" class="btn btn-ghost btn-circle" aria-label="Shopping cart">
+        <fa-icon [icon]="['fas', 'cart-shopping']" class="text-lg"></fa-icon>
+      </button>
     </div>
   </div>
 </div>
