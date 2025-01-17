@@ -2,7 +2,7 @@
   "name": "el-marchi-ui",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "projectType": "application",
-  "prefix": "el-marchi",
+  "prefix": "app",
   "sourceRoot": "apps/el-marchi-ui/src",
   "tags": [],
   "targets": {

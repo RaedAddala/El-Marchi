@@ -1,0 +1,23 @@
+<div class="navbar bg-base-100">
+  <div class="navbar-start">
+    <div class="dropdown">
+      <a class="btn btn-ghost text-xl">
+        <div class="border-1 bg-secondary logo p-2" routerLink="/" routerLinkActive="router-link-active" >
+          El-Marchi
+        </div>
+      </a>
+    </div>
+  </div>
+  <div class="navbar-center flex">
+    <div class="menu menu-sm sm:menu-lg menu-horizontal px-1">
+      <li><a href="/">Home</a></li>
+      <li><details #productMenu>
+        <summary> Products </summary>
+        <ul class="z-30">
+          <li><a href="/products">All</a></li>
+        </ul>
+      </details></li>
+
+    </div>
+  </div>
+</div>
