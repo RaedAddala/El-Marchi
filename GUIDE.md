@@ -5,6 +5,21 @@ This project is a **Pnpm Workspace** powered by **Nx**. The Workspace consists o
 - **UI:** `./el-marchi-ui`containing an **Angular 19 Standalone App** with SSG (Server Side Generation) support, **Esbuild** as a bundler, **Cypress** as a test suite, **CSS** and **Tailwind** for styles, and support for reactive programming using **Rx.js**.
 - **API:** `./el-marchi-api` **Nestjs 10 Server** based on the **Express Platform**, **TypeORM** as ORM, and **Passport** as an Auth Middleware.
 
+## Installation
+
+### Prerequisites
+
+- Node.js (based on typescript version, recommend 18.x or higher)
+- PNPM
+- Docker
+
+### Set up the Project
+
+1. Go to  `.\el-marchi-ui`, run this command: `pnpm i`: this will install all the necessary packages.
+2. Go to `.\el-marchi-api`, run this command: `pnpm i`: this will install all the necessary packages.
+3. Add `.env` files using the `.env.dev/prod.example` files as a reference to the env file content.
+4. Follow the How to use guides below to understand how to run each one.
+
 ## How to use the UI
 
 1. **To Run the UI:**
@@ -14,15 +29,15 @@ This project is a **Pnpm Workspace** powered by **Nx**. The Workspace consists o
 
           ```sh
           cd el-marchi-ui
-          pnpm serve
+          pnpm start
           ```  
 
         - **Prod Mode:**  
 
           ```sh
           cd el-marchi-ui
-          pnpm build
-          pnpm start
+          pnpm build:prod
+          pnpm start:prod
           ```
 
 2. **To Run the UI Tests:**  
@@ -30,7 +45,7 @@ This project is a **Pnpm Workspace** powered by **Nx**. The Workspace consists o
     ```sh
     cd el-marchi-ui
     # for end to end testing
-    pnpm test:e2e
+    pnpm e2e
     # for unit testing
     pnpm test
     ```
@@ -68,7 +83,7 @@ This project is a **Pnpm Workspace** powered by **Nx**. The Workspace consists o
         - **Prod Mode:**  
 
           ```sh
-          pnpm build:production && pnpm start:production
+          pnpm build:prod && pnpm start:prod
           ```
 
 2. **To Run the API Tests:**  

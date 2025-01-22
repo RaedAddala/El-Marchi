@@ -3,12 +3,14 @@ import { CommonModule } from '@angular/common';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
 @Component({
-  selector: 'app-footer',
+  selector: 'app-not-found',
   imports: [CommonModule, FontAwesomeModule],
-  templateUrl: './footer.component.html',
-  styleUrl: './footer.component.css',
+  templateUrl: './not-found.component.html',
+  styleUrl: './not-found.component.css',
   standalone: true,
 })
-export class FooterComponent {
-  currentYear = new Date().getFullYear();
+export class NotFoundComponent {
+  goBack() {
+    window.history.back();
+  }
 }

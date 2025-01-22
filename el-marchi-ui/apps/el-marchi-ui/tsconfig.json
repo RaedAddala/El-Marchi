@@ -3,7 +3,12 @@
     "target": "es2022",
     "useDefineForClassFields": false,
     "esModuleInterop": true,
-    "strict": true
+    "strict": true,
+    "paths": {
+      "@features/*": ["apps/el-marchi-ui/src/app/features/*"],
+      "@pages/*": ["apps/el-marchi-ui/src/app/pages/*"],
+      "@shared/*": ["apps/el-marchi-ui/src/app/shared/*"]
+    }
   },
   "files": [],
   "include": [],

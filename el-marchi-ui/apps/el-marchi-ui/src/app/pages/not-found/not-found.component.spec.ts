@@ -1,28 +1,25 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { FooterComponent } from './footer.component';
-import { provideRouter } from '@angular/router';
+import { NotFoundComponent } from './not-found.component';
 import { FaIconLibrary, FaConfig } from '@fortawesome/angular-fontawesome';
 import { fas } from '@fortawesome/free-solid-svg-icons';
-import { fab } from '@fortawesome/free-brands-svg-icons';
 
-describe('FooterComponent', () => {
-  let component: FooterComponent;
-  let fixture: ComponentFixture<FooterComponent>;
+describe('NotFoundComponent', () => {
+  let component: NotFoundComponent;
+  let fixture: ComponentFixture<NotFoundComponent>;
   let faIconLibrary: FaIconLibrary;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [FooterComponent],
-      providers: [provideRouter([]), FaIconLibrary, FaConfig],
+      imports: [NotFoundComponent],
+      providers: [FaIconLibrary, FaConfig],
     }).compileComponents();
 
     faIconLibrary = TestBed.inject(FaIconLibrary);
     const faConfig = TestBed.inject(FaConfig);
     faConfig.defaultPrefix = 'fas';
     faIconLibrary.addIconPacks(fas);
-    faIconLibrary.addIconPacks(fab);
 
-    fixture = TestBed.createComponent(FooterComponent);
+    fixture = TestBed.createComponent(NotFoundComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
