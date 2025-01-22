@@ -4,7 +4,9 @@ export const PRODUCTS_ROUTES: Routes = [
   {
     path: 'new-arrivals',
     loadComponent: () =>
-      import('./pages/new-arrivals/new-arrivals.component').then(m => m.NewArrivalsComponent),
+      import('./pages/new-arrivals/new-arrivals.component').then(
+        m => m.NewArrivalsComponent,
+      ),
   },
   {
     path: 'products-list',

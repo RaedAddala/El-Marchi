@@ -6,19 +6,21 @@ export const appRoutes: Route[] = [
     path: '',
     loadComponent: () =>
       import('./pages/home/home.component').then(m => m.HomeComponent),
-    title: 'El-Marchi - Home'
+    title: 'El-Marchi - Home',
   },
   {
     path: 'products',
     loadChildren: () =>
-      import('./features/products/products.routes').then(m => m.PRODUCTS_ROUTES),
-    title: 'El-Marchi - Products'
+      import('./features/products/products.routes').then(
+        m => m.PRODUCTS_ROUTES,
+      ),
+    title: 'El-Marchi - Products',
   },
   {
     path: 'auth',
     loadChildren: () =>
       import('./features/auth/auth.routes').then(m => m.AUTH_ROUTES),
-    title: 'El-Marchi - Authentication'
+    title: 'El-Marchi - Authentication',
   },
   {
     path: 'admin',
@@ -26,15 +28,15 @@ export const appRoutes: Route[] = [
       import('./features/admin/admin.routes').then(m => m.ADMIN_ROUTES),
     // We'll add an auth guard later
     // canActivate: [() => import('./guards/auth.guard').then(m => m.authGuard())],
-    title: 'El-Marchi - Admin'
+    title: 'El-Marchi - Admin',
   },
   {
     path: '404',
     component: NotFoundComponent,
-    title: 'El-Marchi - Page Not Found'
+    title: 'El-Marchi - Page Not Found',
   },
   {
     path: '**',
-    redirectTo: '404'
-  }
+    redirectTo: '404',
+  },
 ];
