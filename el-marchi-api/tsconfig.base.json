@@ -4,10 +4,10 @@
     "rootDir": ".",
     "baseUrl": ".",
     "paths": {},
-    "target": "ES2022",
+    "target": "ESNext",
     "module": "NodeNext",
     "moduleResolution": "NodeNext",
-    "lib": ["ES2023"],
+    "lib": ["ESNext"],
     "strict": true,
     "noImplicitThis": true,
     "noUnusedLocals": true,
@@ -20,6 +20,7 @@
     "noFallthroughCasesInSwitch": true,
     "exactOptionalPropertyTypes": true,
     "useUnknownInCatchVariables": true,
+    "strictPropertyInitialization": true,
     "sourceMap": true,
     "declaration": true,
     "declarationMap": true,
@@ -32,7 +33,12 @@
     "emitDecoratorMetadata": true,
     "skipDefaultLibCheck": true,
     "skipLibCheck": true,
-    "importHelpers": true
+    "importHelpers": true,
+
+    "removeComments": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "strictBindCallApply": true,
   },
   "exclude": ["node_modules", "tmp", "dist"]
 }

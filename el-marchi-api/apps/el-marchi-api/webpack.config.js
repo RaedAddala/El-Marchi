@@ -4,30 +4,6 @@ const nodeExternals = require('webpack-node-externals');
 
 module.exports = env => {
   const isProd = env['node-env'] === 'production';
-  console.log(env);
-  console.log(isProd);
-  // const optimization = isProd ? {
-  //   minimize: true,
-  //   moduleIds: 'deterministic',
-  //   splitChunks: {
-  //     chunks: 'all',
-  //     minSize: 20000,
-  //     minChunks: 1,
-  //     cacheGroups: {
-  //       vendors: {
-  //         test: /[\\/]node_modules[\\/]/,
-  //         priority: -10,
-  //       },
-  //       default: {
-  //         minChunks: 2,
-  //         priority: -20,
-  //         reuseExistingChunk: true,
-  //       },
-  //     },
-  //   }
-  // } : false;
-  // console.log(optimization);
-
   return {
     target: 'node',
     mode: isProd ? 'production' : 'development',
@@ -49,9 +25,21 @@ module.exports = env => {
         outputHashing: 'none',
         generatePackageJson: true,
         sourceMap: true,
+        swcOptions: {
+          jsc: {
+            parser: {
+              syntax: 'typescript',
+              decorators: true,
+              useDefineForClassFields: true
+            },
+            transform: {
+              legacyDecorator: true,
+              decoratorMetadata: true
+            }
+          }
+        }
       }),
     ],
-
     experiments: {
       topLevelAwait: true,
     },

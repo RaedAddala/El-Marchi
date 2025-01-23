@@ -1,12 +1,6 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    "outDir": "../../dist/out-tsc",
-    "types": ["node"],
-    "target": "ES2022",
-    "sourceMap": true,
-    "composite": true,
-    "baseUrl": "./",
     "paths": {
       "@/*": ["src/*"]
     }

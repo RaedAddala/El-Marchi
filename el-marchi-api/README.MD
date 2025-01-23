@@ -14,10 +14,49 @@ El Marchi API is a Node.js application built using NestJS framework within an NX
 
 ## Installation
 
-```bash
-# Install dependencies
-pnpm install
-```
+In order to set the backend, you have to follow these steps:
+
+1. Install Dependencies
+
+    ```bash
+    # Install dependencies
+    pnpm install
+    ```
+
+2. Create the `.env` file using one of the two templates `.env.dev.example` or `.env.prod.example` and Fill the placeholders.
+
+    ```bash
+    cp .env.dev.example .env
+    # OR
+    cp .env.prod.example .env
+    ```
+
+3. Open a separate terminal, go to the `./docker` directory, and then run the command:
+
+    ```sh
+    docker compose up
+    ```
+
+4. Run the server using one of these two commands:
+
+- For Dev Mode:
+
+    ```bash
+    pnpm run start
+    ```
+
+- For Prod Mode:
+
+    ```bash
+    pnpm run start:prod
+    ```
+
+## API Description
+
+This API Server is setup with OpenAPI. The Swagger module generates a documentation of the available routes and their parameters and responses.
+
+- To see the web version check this link: `http://${hostname}:${port}/api-docs`
+- To see the json version check this link: `http://${hostname}:${port}/api-docs-json`
 
 ## Available Scripts
 
