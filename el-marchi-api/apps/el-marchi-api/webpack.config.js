@@ -5,7 +5,7 @@ const nodeExternals = require('webpack-node-externals');
 module.exports = env => {
   const isProd = env['node-env'] === 'production';
   return {
-    target: 'node',
+    target: 'node22',
     mode: isProd ? 'production' : 'development',
     devtool: isProd ? 'source-map' : 'eval-source-map',
     output: {
@@ -17,7 +17,7 @@ module.exports = env => {
     plugins: [
       new NxAppWebpackPlugin({
         target: 'node',
-        compiler: 'swc',
+        compiler: 'tsc',
         main: './src/main.ts',
         tsConfig: './tsconfig.app.json',
         assets: ['./src/assets'],
@@ -25,19 +25,6 @@ module.exports = env => {
         outputHashing: 'none',
         generatePackageJson: true,
         sourceMap: true,
-        swcOptions: {
-          jsc: {
-            parser: {
-              syntax: 'typescript',
-              decorators: true,
-              useDefineForClassFields: true
-            },
-            transform: {
-              legacyDecorator: true,
-              decoratorMetadata: true
-            }
-          }
-        }
       }),
     ],
     experiments: {
