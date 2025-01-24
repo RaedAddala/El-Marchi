@@ -1,13 +1,22 @@
-import type { Routes } from '@angular/router';
+import type {Routes} from '@angular/router';
+//import {roleCheckGuard} from "@features/admin/guards/role-check.guard";
 
 export const ADMIN_ROUTES: Routes = [
   {
-    path: 'products',
+    path: 'products/list',
     loadComponent: () =>
-      import('./pages/manage-products/manage-products.component').then(
-        m => m.ManageProductsComponent,
+      import('./pages/product/admin-products/admin-products.component').then(
+        m => m.AdminProductsComponent,
       ),
   },
+  {
+    path: 'products/create',
+    loadComponent: () =>
+      import('./pages/product/create-product/create-product.component').then(
+        m => m.CreateProductComponent,
+      ),
+  },
+
   {
     path: 'orders',
     loadComponent: () =>
@@ -19,5 +28,27 @@ export const ADMIN_ROUTES: Routes = [
       import('./pages/customers/customers.component').then(
         m => m.CustomersComponent,
       ),
+  },
+  {
+    path: 'categories/list',
+    loadComponent: () =>
+      import('./pages/category/admin-categories/admin-categories.component').then(
+        m => m.AdminCategoriesComponent,
+      ),
+    /*canActivate: [roleCheckGuard],
+    data: {
+      authorities: ['ROLE_ADMIN'],
+    }*/
+  },
+  {
+    path: 'categories/create',
+    loadComponent: () =>
+      import('./pages/category/create-category/create-category.component').then(
+        m => m.CreateCategoryComponent,
+      ),
+    /*canActivate: [roleCheckGuard],
+    data: {
+      authorities: ['ROLE_ADMIN'],
+    }*/
   },
 ];
