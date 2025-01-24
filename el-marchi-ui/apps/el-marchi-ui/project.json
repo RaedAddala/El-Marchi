@@ -13,7 +13,9 @@
         "outputPath": "dist/apps/el-marchi-ui",
         "index": "apps/el-marchi-ui/src/index.html",
         "browser": "apps/el-marchi-ui/src/main.ts",
-        "polyfills": [],
+        "polyfills": [
+          "zone.js"
+        ],
         "tsConfig": "apps/el-marchi-ui/tsconfig.app.json",
         "assets": [
           {

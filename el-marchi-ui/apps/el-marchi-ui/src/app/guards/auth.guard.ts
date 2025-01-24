@@ -18,12 +18,12 @@ export class AuthGuard implements CanActivate {
   constructor(private authService: AuthService, private router: Router) {}
 
   canActivate(
-    route: ActivatedRouteSnapshot,
-    state: RouterStateSnapshot
+    _route: ActivatedRouteSnapshot,
+    state: RouterStateSnapshot,
   ): Observable<boolean> | boolean {
     // Check if the user is authenticated
     return this.authService.isLoggedIn().pipe(
-      map((isLoggedIn) => {
+      map(isLoggedIn => {
         if (isLoggedIn) {
           return true; // Allow access to the route
         } else {
@@ -33,7 +33,7 @@ export class AuthGuard implements CanActivate {
           });
           return false; // Deny access to the route
         }
-      })
+      }),
     );
   }
 }
