@@ -12,8 +12,17 @@ import '@total-typescript/ts-reset';
 import compression from 'compression';
 import helmet from 'helmet';
 
+
+import { ZodValidationPipe } from './app/common/pipes/zod-validation.pipe';
+import type { EnvConfig } from './app/common/config/env.schema';
+import { ConfigService } from '@nestjs/config';
+
 async function bootstrap() {
   const app: NestExpressApplication = await NestFactory.create(AppModule);
+  const configService = app.get(ConfigService<EnvConfig, true>);
+
+
+  app.useGlobalPipes(new ZodValidationPipe());
 
   app.enableCors({
     origin: '*',
@@ -24,14 +33,14 @@ async function bootstrap() {
   app.use(compression());
   app.use(helmet());
   app.useLogger(
-    new Logger(process.env.MODE == 'production' ? 'log' : 'verbose'),
+    new Logger(configService.get('MODE') === 'production' ? 'log' : 'verbose'),
   );
 
   const globalPrefix = 'api';
   app.setGlobalPrefix(globalPrefix);
 
-  const port = process.env.PORT || 3000;
-  const hostname = process.env.HOSTNAME || '0.0.0.0';
+  const port = configService.get('PORT', { infer: true });
+  const hostname = configService.get('HOSTNAME', { infer: true });
 
   const config = new DocumentBuilder()
     .setTitle('El-Marchi-API')
@@ -42,11 +51,13 @@ async function bootstrap() {
     .build();
   const documentFactory = () => SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api-docs', app, documentFactory);
-
+  
   await app.listen(port, hostname);
 
   Logger.log(
-    `🚀 Application is running on:\n- http://${hostname}:${port}/${globalPrefix}\n- ${await app.getUrl()}`,
+    `🚀 Application is running in ${configService.get('NODE_ENV')} mode on:\n` +
+    `- http://${hostname}:${port}/${globalPrefix}\n` +
+    `- ${await app.getUrl()}`
   );
 }
 
