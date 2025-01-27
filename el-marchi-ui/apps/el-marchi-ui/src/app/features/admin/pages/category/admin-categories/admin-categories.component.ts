@@ -7,7 +7,7 @@ import { ToastService } from "@shared/toast/toast.service";
 import { HttpClient } from '@angular/common/http';
 
 @Component({
-  selector: 'ecom-admin-categories',
+  selector: 'admin-categories',
   standalone: true,
   imports: [CommonModule, RouterLink, FaIconComponent],
   templateUrl: './admin-categories.component.html',

@@ -21,7 +21,7 @@ import {
 } from "@features/admin/models/product.model";
 
 @Component({
-  selector: 'ecom-create-product',
+  selector: 'create-product',
   standalone: true,
   imports: [CommonModule, FormsModule, ReactiveFormsModule, NgxControlError],
   templateUrl: './create-product.component.html',
