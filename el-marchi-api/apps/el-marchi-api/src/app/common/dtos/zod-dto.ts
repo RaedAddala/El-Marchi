@@ -1,6 +1,6 @@
-import { ZodSchema, z } from 'zod';
 import { extendApi, generateSchema } from '@anatine/zod-openapi';
 import { ApiProperty, ApiPropertyOptions } from '@nestjs/swagger';
+import { ZodSchema, z } from 'zod';
 import { fromZodError } from 'zod-validation-error';
 
 export interface ZodDtoStatic<T extends ZodSchema> {
@@ -36,6 +36,8 @@ export function createZodDto<T extends ZodSchema>(schema: T): ZodDtoStatic<T> {
   return BaseDto as ZodDtoStatic<T>;
 }
 
-export function isZodDto(metatype: unknown): metatype is ZodDtoStatic<ZodSchema> {
+export function isZodDto(
+  metatype: unknown,
+): metatype is ZodDtoStatic<ZodSchema> {
   return typeof metatype === 'function' && 'schema' in metatype;
 }

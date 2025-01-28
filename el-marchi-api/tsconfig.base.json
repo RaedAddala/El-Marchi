@@ -34,11 +34,10 @@
     "skipDefaultLibCheck": true,
     "skipLibCheck": true,
     "importHelpers": true,
-
     "removeComments": true,
     "noImplicitAny": true,
     "strictNullChecks": true,
-    "strictBindCallApply": true,
+    "strictBindCallApply": true
   },
   "exclude": ["node_modules", "tmp", "dist"]
 }

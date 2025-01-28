@@ -7,13 +7,8 @@
   "bracketSpacing": true,
   "arrowParens": "avoid",
   "endOfLine": "lf",
-  "importOrder": [
-    "^(child_process|crypto|events|fs|http|https|os|path)(\\/(.*))?$",
-    "<THIRD_PARTY_MODULES>",
-    "^[./]"
-  ],
-  "importOrderParserPlugins": [
-    "typescript",
-    "decorators-legacy"
+  "organizeImportsSkipDestructiveCodeActions": true,
+  "plugins": [
+    "prettier-plugin-organize-imports"
   ]
 }

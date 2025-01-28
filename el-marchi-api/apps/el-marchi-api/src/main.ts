@@ -1,9 +1,7 @@
+import { Logger } from '@nestjs/common';
+import { NestFactory } from '@nestjs/core';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { NestFactory } from '@nestjs/core';
-import { Logger } from '@nestjs/common';
-
-import 'reflect-metadata';
 
 import { AppModule } from './app/app.module';
 
@@ -12,15 +10,13 @@ import '@total-typescript/ts-reset';
 import compression from 'compression';
 import helmet from 'helmet';
 
-
-import { ZodValidationPipe } from './app/common/pipes/zod-validation.pipe';
-import type { EnvConfig } from './app/common/config/env.schema';
 import { ConfigService } from '@nestjs/config';
+import type { EnvConfig } from './app/common/config/env.schema';
+import { ZodValidationPipe } from './app/common/pipes/zod-validation.pipe';
 
 async function bootstrap() {
   const app: NestExpressApplication = await NestFactory.create(AppModule);
   const configService = app.get(ConfigService<EnvConfig, true>);
-
 
   app.useGlobalPipes(new ZodValidationPipe());
 
@@ -51,13 +47,13 @@ async function bootstrap() {
     .build();
   const documentFactory = () => SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api-docs', app, documentFactory);
-  
+
   await app.listen(port, hostname);
 
   Logger.log(
     `🚀 Application is running in ${configService.get('NODE_ENV')} mode on:\n` +
-    `- http://${hostname}:${port}/${globalPrefix}\n` +
-    `- ${await app.getUrl()}`
+      `- http://${hostname}:${port}/${globalPrefix}\n` +
+      `- ${await app.getUrl()}`,
   );
 }
 
