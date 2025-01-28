@@ -1,36 +1,117 @@
-import { IRepository } from './irepository';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Repository,
+  DeepPartial,
+  FindOptionsWhere,
+  ILike,
+  FindManyOptions,
+} from 'typeorm';
 import { BaseEntity } from './base.entity';
-import { PaginatedResponse, PaginationOptions } from './types';
-import { DeepPartial } from 'typeorm';
+import { IBaseService, SearchCondition } from './base.interface';
+import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity.js';
 
-export abstract class BaseService<T extends BaseEntity> {
-  constructor(protected readonly repository: IRepository<T>) { }
-
-  async findAll(options?: PaginationOptions): Promise<PaginatedResponse<T>> {
-    return this.repository.findAll(options);
-  }
-
-  async findById(id: string): Promise<T | null> {
-    return this.repository.findById(id);
-  }
+@Injectable()
+export abstract class BaseService<T extends BaseEntity> implements IBaseService<T> {
+  constructor(protected readonly repository: Repository<T>) { }
 
   async create(data: DeepPartial<T>): Promise<T> {
-    return this.repository.create(data);
+    const entity = this.repository.create(data);
+    return await this.repository.save(entity);
   }
 
-  async update(id: string, data: DeepPartial<T>): Promise<T | null> {
-    return this.repository.update(id, data);
+  async findOne(id: string): Promise<T | null> {
+    return await this.repository.findOne({
+      where: {
+        id: id
+      } as FindOptionsWhere<T>
+    });
+  }
+
+  async findOneOrFail(id: string): Promise<T> {
+    const entity = await this.findOne(id);
+    if (!entity) {
+      throw new NotFoundException(`Entity with ID "${id}" not found`);
+    }
+    return entity;
+  }
+
+  async findAll(options?: FindOptionsWhere<T>): Promise<T[]> {
+    const findOptions: FindManyOptions<T> = {};
+    if (options) {
+      findOptions.where = options;
+    }
+    return await this.repository.find(findOptions);
+  }
+
+  async update(id: string, data: DeepPartial<T>): Promise<T> {
+    await this.findOneOrFail(id);
+    await this.repository.update(
+      { id: id } as FindOptionsWhere<T>,
+      data as QueryDeepPartialEntity<T>
+    );
+    const updated = await this.findOne(id);
+    if (!updated) {
+      throw new NotFoundException(`Entity with ID "${id}" not found after update`);
+    }
+    return updated;
   }
 
   async softDelete(id: string): Promise<boolean> {
-    return this.repository.softDelete(id);
+    await this.findOneOrFail(id);
+    const result = await this.repository.softDelete({
+      id: id
+    } as FindOptionsWhere<T>);
+    return result.affected ? result.affected > 0 : false;
   }
 
   async hardDelete(id: string): Promise<boolean> {
-    return this.repository.hardDelete(id);
+    await this.findOneOrFail(id);
+    const result = await this.repository.delete({
+      id: id
+    } as FindOptionsWhere<T>);
+    return result.affected ? result.affected > 0 : false;
   }
 
   async restore(id: string): Promise<boolean> {
-    return this.repository.restore(id);
+    const result = await this.repository.restore({
+      id: id
+    } as FindOptionsWhere<T>);
+    return result.affected ? result.affected > 0 : false;
+  }
+
+  async findWithPagination(
+    page = 1,
+    limit = 10,
+    search?: string,
+    searchFields?: Array<keyof T & string>
+  ): Promise<{
+    data: T[];
+    total: number;
+    page: number;
+    lastPage: number;
+  }> {
+    const skip = (page - 1) * limit;
+    const findOptions: FindManyOptions<T> = {
+      skip,
+      take: limit,
+    };
+
+    if (search && searchFields && searchFields.length > 0) {
+      const whereCondition = searchFields.reduce((acc, field) => {
+        acc[field] = ILike(`%${search}%`);
+        return acc;
+      }, {} as SearchCondition<T>);
+
+      findOptions.where = whereCondition as FindOptionsWhere<T>;
+    }
+
+    const [data, total] = await this.repository.findAndCount(findOptions);
+
+    return {
+      data,
+      total,
+      page,
+      lastPage: Math.ceil(total / limit),
+    };
   }
 }

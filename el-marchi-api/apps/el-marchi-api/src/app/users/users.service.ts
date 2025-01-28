@@ -1,22 +1,24 @@
 import { Injectable, ConflictException, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { CryptoService } from '../crypto/crypto.service';
 import { BaseService } from '../common/database/base.service';
 import { User } from './entities/user.entity';
-import { UsersRepository } from './users.repository';
 import { CreateUserDto } from './dtos/create.user.dto';
 import { UpdateUserDto } from './dtos/update.user.dto';
 
 @Injectable()
 export class UsersService extends BaseService<User> {
   constructor(
-    private readonly userRepository: UsersRepository,
+    @InjectRepository(User)
+    protected readonly repository: Repository<User>,
     private readonly cryptoService: CryptoService,
   ) {
-    super(userRepository);
+    super(repository);
   }
 
   override async create(dto: CreateUserDto) {
-    const existingUser = await this.userRepository.findByEmail(dto.email);
+    const existingUser = await this.findByEmail(dto.email);
     if (existingUser) {
       throw new ConflictException('Email already exists');
     }
@@ -33,7 +35,7 @@ export class UsersService extends BaseService<User> {
   }
 
   override async update(id: string, dto: UpdateUserDto) {
-    const user = await this.findById(id);
+    const user = await this.findOne(id);
     if (!user) {
       throw new NotFoundException('User not found');
     }
@@ -57,8 +59,32 @@ export class UsersService extends BaseService<User> {
     return updatedUser;
   }
 
+  async findByEmail(email: string): Promise<User | null> {
+    return this.repository.findOne({
+      where: { email }
+    });
+  }
+
+  async findByEmailWithPassword(email: string): Promise<User | null> {
+    return this.repository.findOne({
+      where: { email },
+      select: {
+        id: true,
+        email: true,
+        firstName: true,
+        lastName: true,
+        birthDate: true,
+        passwordHash: true,
+        passwordSalt: true,
+        createdAt: true,
+        updatedAt: true,
+        deletedAt: true
+      }
+    });
+  }
+
   async validateCredentials(email: string, password: string): Promise<User | null> {
-    const user = await this.userRepository.findByEmailWithPassword(email);
+    const user = await this.findByEmailWithPassword(email);
     if (!user) {
       return null;
     }

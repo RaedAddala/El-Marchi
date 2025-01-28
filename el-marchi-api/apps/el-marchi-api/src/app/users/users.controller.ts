@@ -8,6 +8,7 @@ import { UsersService } from './users.service';
 @ApiTags('users')
 export class UsersController {
   constructor(private readonly userService: UsersService) { }
+
   @Post()
   create(@Body() createUserDto: CreateUserDto) {
     return this.userService.create(createUserDto);
@@ -20,7 +21,7 @@ export class UsersController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.userService.findById(id);
+    return this.userService.findOne(id);
   }
 
   @Patch(':id')
