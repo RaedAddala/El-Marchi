@@ -1,7 +1,17 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+} from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import { CreateUserDto } from './dtos/create.user.dto';
 import { UpdateUserDto } from './dtos/update.user.dto';
-import { ApiTags } from '@nestjs/swagger';
+import { loginDto } from './dtos/login.dto';
+
 import { UsersService } from './users.service';
 
 @Controller('users')
@@ -9,9 +19,14 @@ import { UsersService } from './users.service';
 export class UsersController {
   constructor(private readonly userService: UsersService) { }
 
-  @Post()
-  create(@Body() createUserDto: CreateUserDto) {
+  @Post('signup')
+  signup(@Body() createUserDto: CreateUserDto) {
     return this.userService.create(createUserDto);
+  }
+
+  @Post('login')
+  login(@Body() loginDto: loginDto) {
+    return this.userService.login(loginDto);
   }
 
   @Get()
@@ -25,10 +40,7 @@ export class UsersController {
   }
 
   @Patch(':id')
-  update(
-    @Param('id') id: string,
-    @Body() updateUserDto: UpdateUserDto,
-  ) {
+  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
     return this.userService.update(id, updateUserDto);
   }
 

@@ -1,9 +1,9 @@
 import {
-  BaseEntity as TypeOrmBaseEntity,
-  PrimaryGeneratedColumn,
   CreateDateColumn,
+  DeleteDateColumn,
+  PrimaryGeneratedColumn,
+  BaseEntity as TypeOrmBaseEntity,
   UpdateDateColumn,
-  DeleteDateColumn
 } from 'typeorm';
 
 export abstract class BaseEntity extends TypeOrmBaseEntity {
@@ -12,20 +12,20 @@ export abstract class BaseEntity extends TypeOrmBaseEntity {
 
   @CreateDateColumn({
     name: 'created_at',
-    type: 'timestamp with time zone'
+    type: 'timestamp with time zone',
   })
   createdAt!: Date;
 
   @UpdateDateColumn({
     name: 'updated_at',
-    type: 'timestamp with time zone'
+    type: 'timestamp with time zone',
   })
   updatedAt!: Date;
 
   @DeleteDateColumn({
     name: 'deleted_at',
     type: 'timestamp with time zone',
-    nullable: true
+    nullable: true,
   })
   deletedAt?: Date;
 }

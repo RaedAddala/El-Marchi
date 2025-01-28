@@ -1,9 +1,5 @@
+import { DeepPartial, FindOperator, FindOptionsWhere } from 'typeorm';
 import { BaseEntity } from './base.entity';
-import {
-  DeepPartial,
-  FindOptionsWhere,
-  FindOperator
-} from 'typeorm';
 
 export type SearchCondition<T> = {
   [P in keyof T & string]?: FindOperator<string>;
@@ -22,7 +18,7 @@ export interface IBaseService<T extends BaseEntity> {
     page?: number,
     limit?: number,
     search?: string,
-    searchFields?: Array<keyof T & string>
+    searchFields?: Array<keyof T & string>,
   ): Promise<{
     data: T[];
     total: number;

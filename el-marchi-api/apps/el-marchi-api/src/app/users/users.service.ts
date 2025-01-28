@@ -1,18 +1,27 @@
-import { Injectable, ConflictException, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { CryptoService } from '../crypto/crypto.service';
 import { BaseService } from '../common/database/base.service';
-import { User } from './entities/user.entity';
+import { CryptoService } from '../crypto/crypto.service';
 import { CreateUserDto } from './dtos/create.user.dto';
 import { UpdateUserDto } from './dtos/update.user.dto';
+import { User } from './entities/user.entity';
+import { loginDto } from './dtos/login.dto';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class UsersService extends BaseService<User> {
+
   constructor(
     @InjectRepository(User)
-    protected readonly repository: Repository<User>,
+    repository: Repository<User>,
     private readonly cryptoService: CryptoService,
+    private readonly jwtService: JwtService,
   ) {
     super(repository);
   }
@@ -20,7 +29,7 @@ export class UsersService extends BaseService<User> {
   override async create(dto: CreateUserDto) {
     const existingUser = await this.findByEmail(dto.email);
     if (existingUser) {
-      throw new ConflictException('Email already exists');
+      throw new ConflictException('Email already exists!');
     }
 
     const { hash, salt } = await this.cryptoService.hashPassword(dto.password);
@@ -42,7 +51,9 @@ export class UsersService extends BaseService<User> {
 
     let passwordUpdate = {};
     if (dto.password) {
-      const { hash, salt } = await this.cryptoService.hashPassword(dto.password);
+      const { hash, salt } = await this.cryptoService.hashPassword(
+        dto.password,
+      );
       passwordUpdate = {
         passwordHash: hash,
         passwordSalt: salt,
@@ -61,7 +72,7 @@ export class UsersService extends BaseService<User> {
 
   async findByEmail(email: string): Promise<User | null> {
     return this.repository.findOne({
-      where: { email }
+      where: { email },
     });
   }
 
@@ -78,12 +89,15 @@ export class UsersService extends BaseService<User> {
         passwordSalt: true,
         createdAt: true,
         updatedAt: true,
-        deletedAt: true
-      }
+        deletedAt: true,
+      },
     });
   }
 
-  async validateCredentials(email: string, password: string): Promise<User | null> {
+  async validateCredentials(
+    email: string,
+    password: string,
+  ): Promise<User | null> {
     const user = await this.findByEmailWithPassword(email);
     if (!user) {
       return null;
@@ -96,5 +110,23 @@ export class UsersService extends BaseService<User> {
     );
 
     return isValid ? user : null;
+  }
+
+  async login(dto: loginDto) {
+    const existingUser = await this.findByEmail(dto.email);
+    if (!existingUser) {
+      throw new UnauthorizedException('Email or Password is wrong!');
+    }
+
+    const match = await this.cryptoService.verifyPassword(dto.password, existingUser.passwordHash, existingUser.passwordSalt)
+    if (!match) {
+      throw new UnauthorizedException('Email or Password is wrong!');
+    }
+    return await this.generateUserTokens(existingUser.id);
+  }
+
+  private async generateUserTokens(userId: string,) {
+    const accessToken = this.jwtService.sign({ userId }, { expiresIn: '1h' });
+    return { accessToken };
   }
 }

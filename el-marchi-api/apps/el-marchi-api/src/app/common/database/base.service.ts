@@ -1,18 +1,20 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import {
-  Repository,
   DeepPartial,
+  FindManyOptions,
   FindOptionsWhere,
   ILike,
-  FindManyOptions,
+  Repository,
 } from 'typeorm';
+import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity.js';
 import { BaseEntity } from './base.entity';
 import { IBaseService, SearchCondition } from './base.interface';
-import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity.js';
 
 @Injectable()
-export abstract class BaseService<T extends BaseEntity> implements IBaseService<T> {
-  constructor(protected readonly repository: Repository<T>) { }
+export abstract class BaseService<T extends BaseEntity>
+  implements IBaseService<T>
+{
+  constructor(protected readonly repository: Repository<T>) {}
 
   async create(data: DeepPartial<T>): Promise<T> {
     const entity = this.repository.create(data);
@@ -22,8 +24,8 @@ export abstract class BaseService<T extends BaseEntity> implements IBaseService<
   async findOne(id: string): Promise<T | null> {
     return await this.repository.findOne({
       where: {
-        id: id
-      } as FindOptionsWhere<T>
+        id: id,
+      } as FindOptionsWhere<T>,
     });
   }
 
@@ -47,11 +49,13 @@ export abstract class BaseService<T extends BaseEntity> implements IBaseService<
     await this.findOneOrFail(id);
     await this.repository.update(
       { id: id } as FindOptionsWhere<T>,
-      data as QueryDeepPartialEntity<T>
+      data as QueryDeepPartialEntity<T>,
     );
     const updated = await this.findOne(id);
     if (!updated) {
-      throw new NotFoundException(`Entity with ID "${id}" not found after update`);
+      throw new NotFoundException(
+        `Entity with ID "${id}" not found after update`,
+      );
     }
     return updated;
   }
@@ -59,7 +63,7 @@ export abstract class BaseService<T extends BaseEntity> implements IBaseService<
   async softDelete(id: string): Promise<boolean> {
     await this.findOneOrFail(id);
     const result = await this.repository.softDelete({
-      id: id
+      id: id,
     } as FindOptionsWhere<T>);
     return result.affected ? result.affected > 0 : false;
   }
@@ -67,14 +71,14 @@ export abstract class BaseService<T extends BaseEntity> implements IBaseService<
   async hardDelete(id: string): Promise<boolean> {
     await this.findOneOrFail(id);
     const result = await this.repository.delete({
-      id: id
+      id: id,
     } as FindOptionsWhere<T>);
     return result.affected ? result.affected > 0 : false;
   }
 
   async restore(id: string): Promise<boolean> {
     const result = await this.repository.restore({
-      id: id
+      id: id,
     } as FindOptionsWhere<T>);
     return result.affected ? result.affected > 0 : false;
   }
@@ -83,7 +87,7 @@ export abstract class BaseService<T extends BaseEntity> implements IBaseService<
     page = 1,
     limit = 10,
     search?: string,
-    searchFields?: Array<keyof T & string>
+    searchFields?: Array<keyof T & string>,
   ): Promise<{
     data: T[];
     total: number;

@@ -18,7 +18,6 @@
     "allowUnreachableCode": false,
     "noUncheckedIndexedAccess": true,
     "noFallthroughCasesInSwitch": true,
-    "exactOptionalPropertyTypes": true,
     "useUnknownInCatchVariables": true,
     "strictPropertyInitialization": true,
     "sourceMap": true,

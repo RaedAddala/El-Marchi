@@ -7,6 +7,7 @@ import { AppService } from './app.service';
 import { EnvConfig, envSchema } from './common/config/env.schema';
 import { entitiesList } from './common/entities/entities';
 import { UsersModule } from './users/users.module';
+import { JwtModule } from '@nestjs/jwt';
 
 @Module({
   imports: [
@@ -48,6 +49,12 @@ import { UsersModule } from './users/users.module';
           logging: mode == 'development' ? 'all' : ['error', 'warn', 'info'],
         };
       },
+    }),
+    JwtModule.registerAsync({
+      inject: [ConfigService],
+      useFactory: async (
+        config: ConfigService<EnvConfig, true>,
+      ) => ({ secret: config.get<EnvConfig["JWT_SECRET"]>("JWT_SECRET") })
     }),
     UsersModule,
   ],

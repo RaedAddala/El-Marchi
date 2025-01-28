@@ -40,6 +40,7 @@ export const envSchema = z.object({
     description: 'Database name',
     example: 'ElMarchi',
   }),
+  JWT_SECRET: extendApi(z.string({ message: "You have to Provide JWT Secret." }).min(12, { message: "For Security Reasons JWT_Secret must be longer than 12." }))
 });
 
 export type EnvConfig = z.infer<typeof envSchema>;

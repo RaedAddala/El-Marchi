@@ -10,7 +10,9 @@ export class CryptoService {
   private readonly keylen = 64;
   private readonly digest = 'sha512';
 
-  async hashPassword(password: string): Promise<{ hash: string; salt: string }> {
+  async hashPassword(
+    password: string,
+  ): Promise<{ hash: string; salt: string }> {
     const salt = crypto.randomBytes(32).toString('hex');
     const hash = await this.generateHash(password, salt);
     return { hash, salt };
