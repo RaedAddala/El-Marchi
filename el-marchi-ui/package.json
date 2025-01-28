@@ -42,6 +42,7 @@
     "@fortawesome/free-regular-svg-icons": "^6.7.2",
     "@fortawesome/free-solid-svg-icons": "^6.7.2",
     "@tanstack/angular-query-experimental": "^5.64.2",
+    "ngx-stripe": "^19.0.0",
     "ngxtension": "^4.2.1",
     "rxjs": "^7.8.1",
     "zone.js": "^0.15.0"

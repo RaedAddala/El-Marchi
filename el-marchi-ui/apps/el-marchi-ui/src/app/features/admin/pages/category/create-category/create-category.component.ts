@@ -13,7 +13,7 @@ import { ToastService } from "@shared/toast/toast.service";
 import { CreateCategoryFormContent, ProductCategory } from "@features/admin/models/product.model";
 
 @Component({
-  selector: 'ecom-create-category',
+  selector: 'create-category',
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, NgxControlError],
   templateUrl: './create-category.component.html',

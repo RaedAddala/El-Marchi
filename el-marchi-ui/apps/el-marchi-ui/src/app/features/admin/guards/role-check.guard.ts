@@ -1,31 +1,28 @@
-import {
-  ActivatedRouteSnapshot,
-  CanActivateFn,
-  RouterStateSnapshot,
-} from '@angular/router';
+import { ActivatedRouteSnapshot, CanActivateFn, Router } from '@angular/router';
 import { inject } from '@angular/core';
 import { AuthService } from '@features/auth/auth.service';
-import { map, timeout } from 'rxjs';
+import { map, catchError, of } from 'rxjs';
 
-export const roleCheckGuard: CanActivateFn = (
-  next: ActivatedRouteSnapshot,
-  state: RouterStateSnapshot
-) => {
+export const roleCheckGuard: CanActivateFn = (next: ActivatedRouteSnapshot) => {
   const authService = inject(AuthService);
+  const router = inject(Router);
   const authorities = next.data['authorities'] as string[];
 
   // Check authentication status
   authService.checkAuthentication();
 
-  // Fetch user data if not already cached
+  // If no user data is available, redirect to login
   if (!authService.getConnectedUser()) {
-    authService.fetch().subscribe();
+    router.navigate(['/login']); // Redirect to login page
+    return of(false); // Deny access
   }
 
+  // Check if the user has the required authorities
   return authService.user$.pipe(
     map((user) => {
       if (!user) {
-        return false; // Deny access if user data is not available
+        router.navigate(['/login']); // Redirect to login page
+        return false; // Deny access
       }
 
       // Check if the user has the required authorities
@@ -35,12 +32,15 @@ export const roleCheckGuard: CanActivateFn = (
         authService.hasAnyAuthorities(user, authorities);
 
       if (!hasAccess) {
-        authService.logout(); // Log out the user if they don't have access
-        return false;
+        router.navigate(['/404']); // Redirect to unauthorized page
+        return false; // Deny access
       }
 
       return true; // Grant access
     }),
-    timeout(3000) // Timeout after 3 seconds
+    catchError(() => {
+      router.navigate(['/login']); // Redirect to login page on error
+      return of(false); // Deny access
+    })
   );
 };

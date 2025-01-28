@@ -39,8 +39,11 @@ export function createPaginationOption(pagination: Pagination): HttpParams {
   let params = new HttpParams();
   params = params.set('page', pagination.page.toString());
   params = params.set('size', pagination.size.toString());
+
+  // Append each sort parameter as a separate query param
   for (const sort of pagination.sort) {
     params = params.append('sort', sort);
   }
+
   return params;
 }

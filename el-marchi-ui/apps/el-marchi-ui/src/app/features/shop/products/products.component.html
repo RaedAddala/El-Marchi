@@ -1,0 +1,30 @@
+<div class="grid grid-cols-[1fr_6fr] gap-5">
+  <div class="ms-5">
+    <products-filter
+      [sort]="sort()!"
+      [size]="size()!"
+      (productFilter)="onFilterChange($event)"
+    ></products-filter>
+  </div>
+
+  <!-- Handle filteredProducts$ observable with async pipe -->
+  @if (filteredProducts$ | async; as result) {
+    @if (result.content.length > 0) {
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        @for (product of result.content; track product.publicId) {
+          <product-card [product]="product"></product-card>
+        }
+      </div>
+    } @else {
+      <div class="flex flex-col items-center justify-center">
+        <div class="font-bold text-2xl">No results found</div>
+        <div>Try to change your filters</div>
+      </div>
+    }
+  } @else {
+    <!-- Loading state -->
+    <div class="flex w-full justify-center">
+      <span class="loading loading-spinner loading-lg"></span>
+    </div>
+  }
+</div>

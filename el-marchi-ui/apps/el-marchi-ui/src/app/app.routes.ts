@@ -1,5 +1,9 @@
 import type { Route } from '@angular/router';
 import { NotFoundComponent } from './pages/not-found/not-found.component';
+import {ProductDetailComponent} from "@features/shop/product-detail/product-detail.component";
+import {ProductsComponent} from "@features/shop/products/products.component";
+import {CartComponent} from "@features/shop/cart/cart.component";
+import {CartSuccessComponent} from "@features/shop/cart-success/cart-success.component";
 
 export const appRoutes: Route[] = [
   {
@@ -29,6 +33,22 @@ export const appRoutes: Route[] = [
     // We'll add an auth guard later
     // canActivate: [() => import('./guards/auth.guard').then(m => m.authGuard())],
     title: 'El-Marchi - Admin',
+  },
+  {
+    path: 'product/:publicId',
+    component: ProductDetailComponent,
+  },
+  {
+    path: 'products',
+    component: ProductsComponent,
+  },
+  {
+    path: 'cart',
+    component: CartComponent,
+  },
+  {
+    path: 'cart/success',
+    component: CartSuccessComponent,
   },
   {
     path: '404',
