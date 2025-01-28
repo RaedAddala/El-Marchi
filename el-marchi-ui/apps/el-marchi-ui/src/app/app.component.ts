@@ -33,7 +33,8 @@ export class AppComponent implements OnInit {
 
   ngOnInit(): void {
     this.initFontAwesome();
-    this.toastService.show('Welcome to El-Marchi', 'SUCCESS');
+    //
+    // this.toastService.show('Welcome to El-Marchi', 'SUCCESS');
   }
   initFontAwesome() {
     this.faConfig.defaultPrefix = 'far';
