@@ -15,8 +15,7 @@
         "development": {
           "args": ["--env", "node-env=development"]
         }
-      },
-      "deve"
+      }
     },
     "serve": {
       "executor": "@nx/js:node",
