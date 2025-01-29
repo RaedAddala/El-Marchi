@@ -4,7 +4,7 @@ import { User } from './user.entity';
 
 @Entity('refresh_tokens')
 export class RefreshToken extends BaseEntity {
-  @Column({ nullable: false })
+  @Column({ nullable: false, unique: true })
   token!: string;
 
   @ManyToOne(() => User, undefined, { nullable: false, eager: true })
@@ -15,5 +15,4 @@ export class RefreshToken extends BaseEntity {
     type: 'date',
   })
   expiryDate!: Date;
-
 }

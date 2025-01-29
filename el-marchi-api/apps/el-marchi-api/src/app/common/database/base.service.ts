@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import {
   DeepPartial,
   FindManyOptions,
+  FindOneOptions,
   FindOptionsWhere,
   ILike,
   Repository,
@@ -35,6 +36,44 @@ export abstract class BaseService<T extends BaseEntity>
       throw new NotFoundException(`Entity with ID "${id}" not found`);
     }
     return entity;
+  }
+
+  async findOneBy(options?: FindOptionsWhere<T>): Promise<T | null> {
+    const findOptions: FindOneOptions<T> = {};
+    if (options) {
+      findOptions.where = options;
+    }
+    return await this.repository.findOne(findOptions);
+  }
+
+  async findOneByOrFail(options?: FindOptionsWhere<T>): Promise<T> {
+    const findOptions: FindOneOptions<T> = {};
+    if (options) {
+      findOptions.where = options;
+    }
+    if (!Array.isArray(findOptions.where)) {
+      const entity = await this.findOneBy(
+        findOptions.where as FindOptionsWhere<T>,
+      );
+      if (!entity) {
+        throw new NotFoundException(
+          `Couldn't find Entity with Parameters "${JSON.stringify(
+            findOptions,
+            null,
+            4,
+          )}"!`,
+        );
+      }
+      return entity;
+    } else {
+      throw new NotFoundException(
+        `Couldn't find Entity with Parameters "${JSON.stringify(
+          findOptions,
+          null,
+          4,
+        )}"!`,
+      );
+    }
   }
 
   async findAll(options?: FindOptionsWhere<T>): Promise<T[]> {

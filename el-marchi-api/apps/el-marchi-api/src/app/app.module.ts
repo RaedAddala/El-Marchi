@@ -52,9 +52,11 @@ import { JwtModule } from '@nestjs/jwt';
     }),
     JwtModule.registerAsync({
       inject: [ConfigService],
-      useFactory: async (
-        config: ConfigService<EnvConfig, true>,
-      ) => ({ secret: config.get<EnvConfig["JWT_SECRET"]>("JWT_SECRET") })
+      useFactory: async (config: ConfigService<EnvConfig, true>) => ({
+        secret: config.get<EnvConfig['JWT_SECRET']>('JWT_SECRET'),
+        signOptions: { algorithm: 'HS512' },
+        verifyOptions: { algorithms: ['HS512'] },
+      }),
     }),
     UsersModule,
   ],

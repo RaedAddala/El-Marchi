@@ -4,21 +4,22 @@ import {
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
+import { randomUUID } from 'crypto';
 import { Repository } from 'typeorm';
 import { BaseService } from '../common/database/base.service';
 import { CryptoService } from '../crypto/crypto.service';
 import { CreateUserDto } from './dtos/create.user.dto';
+import { loginDto } from './dtos/login.dto';
+import { RefreshTokensType } from './dtos/refresh.token.dto';
 import { UpdateUserDto } from './dtos/update.user.dto';
 import { User } from './entities/user.entity';
-import { loginDto } from './dtos/login.dto';
-import { JwtService } from '@nestjs/jwt';
 import { RefreshTokenService } from './refreshtoken.service';
-import { randomUUID } from 'crypto';
+import { jwtStruct } from './dtos/jwt.struct';
 
 @Injectable()
 export class UsersService extends BaseService<User> {
-
   constructor(
     @InjectRepository(User)
     repository: Repository<User>,
@@ -116,30 +117,63 @@ export class UsersService extends BaseService<User> {
   }
 
   async login(dto: loginDto) {
-    const existingUser = await this.findByEmail(dto.email);
+    const existingUser = await this.findByEmailWithPassword(dto.email);
     if (!existingUser) {
       throw new UnauthorizedException('Email or Password is wrong!');
     }
 
-    const match = await this.cryptoService.verifyPassword(dto.password, existingUser.passwordHash, existingUser.passwordSalt)
+    const match = await this.cryptoService.verifyPassword(
+      dto.password,
+      existingUser.passwordHash,
+      existingUser.passwordSalt,
+    );
     if (!match) {
       throw new UnauthorizedException('Email or Password is wrong!');
     }
     return await this.generateUserTokens(existingUser.id);
   }
 
-  private async generateUserTokens(userId: string,) {
-    const accessToken = this.jwtService.sign({ userId }, { expiresIn: '1h' });
+  private async generateUserTokens(userId: string) {
+    const accessToken = this.generateAccessToken(userId);
     const refreshToken = randomUUID();
 
     await this.storeRefreshToken(refreshToken, userId);
     return { accessToken, refreshToken };
   }
 
+  private generateAccessToken(userId: string) {
+    return this.jwtService.sign({ userId } as jwtStruct, { expiresIn: '1h' });
+  }
+
   private async storeRefreshToken(token: string, userId: string) {
     const expiryDate = new Date();
     expiryDate.setDate(expiryDate.getDate() + 3);
 
-    await this.refreshTokenService.create({ token, user: { id: userId }, expiryDate })
+    await this.refreshTokenService.create({
+      token,
+      user: { id: userId },
+      expiryDate,
+    });
+  }
+
+  async refreshTokens(refreshTokensDto: RefreshTokensType) {
+    const token = await this.refreshTokenService.findOneBy({
+      token: refreshTokensDto.token,
+    });
+
+    if (!token) {
+      throw new UnauthorizedException("Token Invalid");
+    }
+
+    // delete old refresh token:
+    // either it is expired and will throw unauthroized
+    // or     it is correct and we will generate new tokens
+    await this.refreshTokenService.hardDelete(token.id);
+
+    if (token.expiryDate > new Date()) {
+      throw new UnauthorizedException("Token Invalid");
+    }
+
+    return this.generateUserTokens(token.user.id);
   }
 }

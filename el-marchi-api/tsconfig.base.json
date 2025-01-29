@@ -25,7 +25,7 @@
     "declarationMap": true,
     "incremental": true,
     "composite": true,
-    "tsBuildInfoFile": "./dist/.tsbuildinfo",
+
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "experimentalDecorators": true,

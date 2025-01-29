@@ -34,16 +34,12 @@ export class User extends BaseEntity {
 
   @Column({
     nullable: false,
-    length: 100,
-    type: 'varchar',
     select: false,
   })
   passwordHash!: string;
 
   @Column({
     nullable: false,
-    length: 32,
-    type: 'varchar',
     select: false,
   })
   passwordSalt!: string;
