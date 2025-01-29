@@ -1,12 +1,19 @@
-
-<div class="flex flex-col min-h-screen">
+@if (showSplash){
+<div  class="splash-screen">
+  <h1 class="handwritten-font">EL MARCHI</h1>
+  <div class="spinner"></div>
+</div>
+}
+@else
+{
+<div  class="flex flex-col min-h-screen">
   <app-navbar></app-navbar>
   <div class="fixed z-50 top-4 right-4">
     @for (toast of toastService.toasts; track toast) {
       <div role="alert"
            class="alert my-2 flex justify-start items-center bg-transparent backdrop-blur-lg border border-opacity-20 group"
            [ngClass]="{'border-red-500 text-red-500': toast.type === 'ERROR',
-                     'border-green-500 text-green-500': toast.type === 'SUCCESS'}">
+                       'border-green-500 text-green-500': toast.type === 'SUCCESS'}">
         @if(toast.type === 'ERROR') {
           <fa-icon [icon]="['fas', 'xmark']" class="mr-2" size="lg"></fa-icon>
         }
@@ -27,3 +34,4 @@
   </div>
   <app-footer></app-footer>
 </div>
+}
