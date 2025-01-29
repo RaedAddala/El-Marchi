@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, tap } from 'rxjs';
 import { Router } from '@angular/router';
 import {environment} from "../../../../environments/environment.development";
@@ -19,17 +19,7 @@ export class AuthService {
   private userSubject = new BehaviorSubject<ConnectedUser | null>(null);
   user$ = this.userSubject.asObservable();
 
-  fetch(forceResync = false): Observable<ConnectedUser> {
-    const params = new HttpParams().set('forceResync', forceResync);
-    return this.http
-      .get<ConnectedUser>(`${environment.apiUrl}/users/authenticated`, { params })
-      .pipe(
-        tap((user) => {
-          this.userSubject.next(user); // Cache the user data
-          this.loggedIn.next(true); // Mark user as logged in
-        })
-      );
-  }
+
 
   login(credentials: { email: string; password: string }): Observable<any> {
     return this.http.post(`${environment.apiUrl}/auth/login`, credentials).pipe(

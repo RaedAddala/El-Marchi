@@ -1,17 +1,16 @@
 import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+
+
+import { Observable } from 'rxjs';
 import {
   createPaginationOption,
   Page,
   Pagination,
-} from '../models/request.model';
-import { Observable } from 'rxjs';
-import {
-  Product,
-  ProductCategory,
-  ProductFilter,
-} from '../../features/admin/models/product.model';
-import { environment } from '../../../../environments/environment.development';
+} from '@shared/models/request.model';
+import {Product, ProductCategory, ProductFilter} from '@features/admin/models/product.model';
+import {environment} from "../../../../environments/environment.development";
+
 
 @Injectable({
   providedIn: 'root',

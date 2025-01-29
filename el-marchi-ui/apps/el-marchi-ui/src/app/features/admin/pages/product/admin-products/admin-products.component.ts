@@ -8,7 +8,7 @@ import { Pagination } from "@shared/models/request.model";
 import { HttpClient } from '@angular/common/http';
 
 @Component({
-  selector: "ecom-admin-products",
+  selector: "admin-products",
   standalone: true,
   imports: [CommonModule, RouterLink, FaIconComponent],
   templateUrl: './admin-products.component.html',

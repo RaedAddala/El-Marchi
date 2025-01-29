@@ -1,6 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { UserProductService } from '../../../shared/service/user-product.service';
+import { UserProductService } from '../../../features/shop/user-product.service';
 import { Pagination } from '../../../shared/models/request.model';
 import { injectQuery } from '@tanstack/angular-query-experimental';
 import { lastValueFrom } from 'rxjs';
