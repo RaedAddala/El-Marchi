@@ -1,7 +1,8 @@
 import type { IconDefinition } from '@fortawesome/angular-fontawesome';
 import { faUser as faRUser } from '@fortawesome/free-regular-svg-icons';
 import {
-  faCartShopping, faCheck,
+  faArrowLeft,
+  faCartShopping, faCheck, faHome,
   faTruckFast,
   faUser as faSUser, faXmark,
 } from '@fortawesome/free-solid-svg-icons';
@@ -25,4 +26,7 @@ export const fontAwesomeIcons: IconDefinition[] = [
   faInstagram,
   faXmark,
   faCheck,
+  faHome,
+  faArrowLeft
+
 ];

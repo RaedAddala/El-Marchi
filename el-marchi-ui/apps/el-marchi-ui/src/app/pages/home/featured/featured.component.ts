@@ -1,19 +1,17 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { UserProductService } from '../../../features/shop/user-product.service';
 import { Pagination } from '../../../shared/models/request.model';
-import { injectQuery } from '@tanstack/angular-query-experimental';
-import { lastValueFrom } from 'rxjs';
-
+import { catchError, of } from 'rxjs';
 
 @Component({
   selector: 'featured',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule,],
   templateUrl: './featured.component.html',
   styleUrl: './featured.component.scss',
 })
-export class FeaturedComponent {
+export class FeaturedComponent implements OnInit {
   productService = inject(UserProductService);
 
   pageRequest: Pagination = {
@@ -22,11 +20,31 @@ export class FeaturedComponent {
     sort: [],
   };
 
-  featuredProductQuery = injectQuery(() => ({
-    queryKey: ['featured-products', this.pageRequest],
-    queryFn: () =>
-      lastValueFrom(
-        this.productService.findAllFeaturedProducts(this.pageRequest)
-      ),
-  }));
+  featuredProducts: any[] = [];
+  isLoading = true;
+  isError = false;
+
+  ngOnInit(): void {
+    this.loadFeaturedProducts();
+  }
+
+  loadFeaturedProducts(): void {
+    this.isLoading = true;
+    this.isError = false;
+
+    this.productService
+      .findAllFeaturedProducts(this.pageRequest)
+      .pipe(
+        catchError(() => {
+          this.isError = true;
+          return of(null);
+        })
+      )
+      .subscribe((response) => {
+        this.isLoading = false;
+        if (response) {
+          this.featuredProducts = response.content;
+        }
+      });
+  }
 }

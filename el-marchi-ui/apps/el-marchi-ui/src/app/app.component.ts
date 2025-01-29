@@ -30,11 +30,11 @@ export class AppComponent implements OnInit {
 
   ngOnInit(): void {
     this.initFontAwesome();
-    this.toastService.show('Welcome to El-Marchi', 'SUCCESS');
 
-    // Simulate a delay for the splash screen (e.g., 3 seconds)
+
     setTimeout(() => {
       this.showSplash = false;
+      this.toastService.show('Welcome to El-Marchi', 'SUCCESS');
     }, 3000);
   }
 
