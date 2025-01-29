@@ -11,12 +11,12 @@ import { Repository } from 'typeorm';
 import { BaseService } from '../common/database/base.service';
 import { CryptoService } from '../crypto/crypto.service';
 import { CreateUserDto } from './dtos/create.user.dto';
+import { jwtStruct } from './dtos/jwt.struct';
 import { loginDto } from './dtos/login.dto';
 import { RefreshTokensType } from './dtos/refresh.token.dto';
 import { UpdateUserDto } from './dtos/update.user.dto';
 import { User } from './entities/user.entity';
 import { RefreshTokenService } from './refreshtoken.service';
-import { jwtStruct } from './dtos/jwt.struct';
 
 @Injectable()
 export class UsersService extends BaseService<User> {
@@ -162,7 +162,7 @@ export class UsersService extends BaseService<User> {
     });
 
     if (!token) {
-      throw new UnauthorizedException("Token Invalid");
+      throw new UnauthorizedException('Token Invalid');
     }
 
     // delete old refresh token:
@@ -171,7 +171,7 @@ export class UsersService extends BaseService<User> {
     await this.refreshTokenService.hardDelete(token.id);
 
     if (token.expiryDate > new Date()) {
-      throw new UnauthorizedException("Token Invalid");
+      throw new UnauthorizedException('Token Invalid');
     }
 
     return this.generateUserTokens(token.user.id);

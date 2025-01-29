@@ -7,4 +7,4 @@ export const environment = {
     audience: 'https://codecake.kinde.com/api',
   },
   apiUrl: 'http://localhost:8080/api',
-}
+};

@@ -1,3 +1,3 @@
 export class jwtStruct {
-  userId!: string
+  userId!: string;
 }

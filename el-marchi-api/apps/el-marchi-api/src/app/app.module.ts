@@ -1,13 +1,14 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { JwtModule } from '@nestjs/jwt';
 import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { fromZodError } from 'zod-validation-error';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { EnvConfig, envSchema } from './common/config/env.schema';
 import { entitiesList } from './common/entities/entities';
+import { jwtFactory } from './common/jwt/jwt.def';
 import { UsersModule } from './users/users.module';
-import { JwtModule } from '@nestjs/jwt';
 
 @Module({
   imports: [
@@ -52,15 +53,11 @@ import { JwtModule } from '@nestjs/jwt';
     }),
     JwtModule.registerAsync({
       inject: [ConfigService],
-      useFactory: async (config: ConfigService<EnvConfig, true>) => ({
-        secret: config.get<EnvConfig['JWT_SECRET']>('JWT_SECRET'),
-        signOptions: { algorithm: 'HS512' },
-        verifyOptions: { algorithms: ['HS512'] },
-      }),
+      useFactory: jwtFactory,
     }),
     UsersModule,
   ],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule { }
+export class AppModule {}
