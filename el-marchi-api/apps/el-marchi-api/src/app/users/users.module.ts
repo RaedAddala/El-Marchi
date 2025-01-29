@@ -4,10 +4,12 @@ import { CryptoService } from '../crypto/crypto.service';
 import { User } from './entities/user.entity';
 import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
+import { RefreshTokenService } from './refreshtoken.service';
+import { RefreshToken } from './entities/refreshToken.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User])],
-  providers: [UsersService, CryptoService],
+  imports: [TypeOrmModule.forFeature([User, RefreshToken])],
+  providers: [UsersService, RefreshTokenService, CryptoService],
   controllers: [UsersController],
 })
-export class UsersModule {}
+export class UsersModule { }

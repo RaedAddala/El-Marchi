@@ -13,6 +13,8 @@ import { UpdateUserDto } from './dtos/update.user.dto';
 import { User } from './entities/user.entity';
 import { loginDto } from './dtos/login.dto';
 import { JwtService } from '@nestjs/jwt';
+import { RefreshTokenService } from './refreshtoken.service';
+import { randomUUID } from 'crypto';
 
 @Injectable()
 export class UsersService extends BaseService<User> {
@@ -22,6 +24,7 @@ export class UsersService extends BaseService<User> {
     repository: Repository<User>,
     private readonly cryptoService: CryptoService,
     private readonly jwtService: JwtService,
+    private readonly refreshTokenService: RefreshTokenService,
   ) {
     super(repository);
   }
@@ -127,6 +130,16 @@ export class UsersService extends BaseService<User> {
 
   private async generateUserTokens(userId: string,) {
     const accessToken = this.jwtService.sign({ userId }, { expiresIn: '1h' });
-    return { accessToken };
+    const refreshToken = randomUUID();
+
+    await this.storeRefreshToken(refreshToken, userId);
+    return { accessToken, refreshToken };
+  }
+
+  private async storeRefreshToken(token: string, userId: string) {
+    const expiryDate = new Date();
+    expiryDate.setDate(expiryDate.getDate() + 3);
+
+    await this.refreshTokenService.create({ token, user: { id: userId }, expiryDate })
   }
 }
