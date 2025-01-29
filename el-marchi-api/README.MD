@@ -2,6 +2,12 @@
 
 A NestJS-based API project built with NX monorepo architecture.
 
+The code was developed with strict typing and type safety in mind. This improved developement experience by removing any runtime errors related to TypeError Problems:
+
+- strong and strict typescript configurations in tsconfig.
+- using unknown instead of any when the type isn't known to enforce type checking.
+- using libraries like `@total-typescript/ts-reset` which improve typescript typesafety.
+
 ## Project Overview
 
 El Marchi API is a Node.js application built using NestJS framework within an NX monorepo structure. The project uses Webpack for bundling and includes comprehensive testing and documentation setups.
@@ -11,13 +17,53 @@ El Marchi API is a Node.js application built using NestJS framework within an NX
 - Node.js (based on typescript version, recommend 18.17 or higher)
 - pnpm
 - NX CLI
+- Docker
 
 ## Installation
 
-```bash
-# Install dependencies
-pnpm install
-```
+In order to set the backend, you have to follow these steps:
+
+1. Install Dependencies
+
+    ```bash
+    # Install dependencies
+    pnpm install
+    ```
+
+2. Create the `.env` file using one of the two templates `.env.dev.example` or `.env.prod.example` and Fill the placeholders.
+
+    ```bash
+    cp .env.dev.example .env
+    # OR
+    cp .env.prod.example .env
+    ```
+
+3. Open a separate terminal, go to the `./docker` directory, and then run the command:
+
+    ```bash
+    docker compose up
+    ```
+
+4. Run the server using one of these two commands:
+
+- For Dev Mode:
+
+    ```bash
+    pnpm start
+    ```
+
+- For Prod Mode:
+
+    ```bash
+    pnpm start:prod
+    ```
+
+## API Description
+
+This API Server is setup with OpenAPI. The Swagger module generates a documentation of the available routes and their parameters and responses.
+
+- To see the web version check this link: `http://${hostname}:${port}/api-docs`
+- To see the json version check this link: `http://${hostname}:${port}/api-docs-json`
 
 ## Available Scripts
 
@@ -25,90 +71,90 @@ pnpm install
 
 ```bash
 # Start the development server
-pnpm run start
+pnpm start
 
 # Build for development
-pnpm run build
+pnpm build
 
 # Watch mode development
-pnpm run start:dev
+pnpm start:dev
 ```
 
 ### Production
 
 ```bash
 # Build for production
-pnpm run build:prod
+pnpm build:prod
 
 # Start production server
-pnpm run start:prod
+pnpm start:prod
 ```
 
 ### Testing
 
 ```bash
 # Run unit tests
-pnpm run test
+pnpm test
 
 # Run tests with watch mode
-pnpm run test:watch
+pnpm test:watch
 
 # Generate test coverage
-pnpm run test:coverage
+pnpm test:coverage
 
 # Debug tests
-pnpm run test:debug
+pnpm test:debug
 
 # Run e2e tests
-pnpm run e2e
+pnpm e2e
 
 # Run e2e tests in watch mode
-pnpm run e2e:watch
+pnpm e2e:watch
 ```
 
 ### Code Quality
 
 ```bash
 # Lint code
-pnpm run lint
+pnpm lint
 
 # Fix linting issues
-pnpm run lint:fix
+pnpm lint:fix
 
 # Format code
-pnpm run format
+pnpm format
 
 # Check formatting
-pnpm run format:check
+pnpm format:check
 ```
 
 ### Documentation Generation Using Compodoc
 
 ```bash
 # Generate documentation
-pnpm run documentation
+pnpm documentation
 ```
 
 ### Other Commands
 
 ```bash
 # Clean dist directory and reset NX cache
-pnpm run clean
+pnpm clean
 
 # View dependency graph
-pnpm run graph
+pnpm graph
 
 # Run affected tests
-pnpm run affected:test
+pnpm affected:test
 
 # Run affected lint
-pnpm run affected:lint
+pnpm affected:lint
 
 # Run affected builds
-pnpm run affected:build
+pnpm affected:build
 
 # Run affected e2e tests
-pnpm run affected:e2e
+pnpm affected:e2e
 ```
 
 ## Project Structure

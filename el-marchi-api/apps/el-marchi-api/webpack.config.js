@@ -4,32 +4,8 @@ const nodeExternals = require('webpack-node-externals');
 
 module.exports = env => {
   const isProd = env['node-env'] === 'production';
-  console.log(env);
-  console.log(isProd);
-  // const optimization = isProd ? {
-  //   minimize: true,
-  //   moduleIds: 'deterministic',
-  //   splitChunks: {
-  //     chunks: 'all',
-  //     minSize: 20000,
-  //     minChunks: 1,
-  //     cacheGroups: {
-  //       vendors: {
-  //         test: /[\\/]node_modules[\\/]/,
-  //         priority: -10,
-  //       },
-  //       default: {
-  //         minChunks: 2,
-  //         priority: -20,
-  //         reuseExistingChunk: true,
-  //       },
-  //     },
-  //   }
-  // } : false;
-  // console.log(optimization);
-
   return {
-    target: 'node',
+    target: 'node22',
     mode: isProd ? 'production' : 'development',
     devtool: isProd ? 'source-map' : 'eval-source-map',
     output: {
@@ -41,7 +17,7 @@ module.exports = env => {
     plugins: [
       new NxAppWebpackPlugin({
         target: 'node',
-        compiler: 'swc',
+        compiler: 'tsc',
         main: './src/main.ts',
         tsConfig: './tsconfig.app.json',
         assets: ['./src/assets'],
@@ -51,7 +27,6 @@ module.exports = env => {
         sourceMap: true,
       }),
     ],
-
     experiments: {
       topLevelAwait: true,
     },

@@ -10,9 +10,4 @@
       "path": "./tsconfig.spec.json"
     }
   ],
-  "compilerOptions": {
-    "esModuleInterop": true,
-    "module": "NodeNext",
-    "moduleResolution": "NodeNext"
-  }
 }
