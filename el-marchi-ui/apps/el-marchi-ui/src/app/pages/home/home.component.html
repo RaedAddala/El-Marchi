@@ -1,12 +1,13 @@
-<div class="hero min-h-screen rounded-xl"
-style="background-image: url(/hero.jpg); background-size: cover">
+<div
+  class="hero min-h-screen rounded-xl"
+  style="background-image: url(/hero.jpg); background-size: cover"
+>
   <div class="hero-overlay bg-opacity-20"></div>
-  <div class="hero-content justify-start text-neutral-content
-  w-full px-6 sm:px-8 lg:px-10">
+  <div
+    class="hero-content justify-start text-neutral-content w-full px-6 sm:px-8 lg:px-10"
+  >
     <div class="text-left">
-      <h1 class="mb-5 text-3xl sm:text-5xl text-white font-bold">
-        El Marchi
-      </h1>
+      <h1 class="mb-5 text-3xl sm:text-5xl text-white font-bold">El Marchi</h1>
       <p class="mb-5 text-lg sm:text-2xl text-white">
         Check out our collection of products
       </p>
@@ -21,8 +22,8 @@ style="background-image: url(/hero.jpg); background-size: cover">
     Featured products
   </h2>
   @defer (on immediate) {
-    <featured></featured>
+  <app-featured></app-featured>
   } @placeholder {
-    <div>Loading... </div>
+  <div>Loading...</div>
   }
 </div>

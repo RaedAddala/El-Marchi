@@ -1,7 +1,11 @@
-import {Component, inject, OnInit} from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { FaConfig, FaIconLibrary, FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { fontAwesomeIcons } from '../shared/font-awesome-icons';
+import {
+  FaConfig,
+  FaIconLibrary,
+  FontAwesomeModule,
+} from '@fortawesome/angular-fontawesome';
+import { fontAwesomeIcons } from './shared/font-awesome-icons';
 import { NavbarComponent } from './layout/navbar/navbar.component';
 import { FooterComponent } from './layout/footer/footer.component';
 import { ToastService } from '@shared/toast/toast.service';
@@ -22,7 +26,6 @@ import { NgClass } from '@angular/common';
 })
 export class AppComponent implements OnInit {
   title = 'el-marchi-ui';
-  showSplash = true; // Control splash screen visibility
   toastService = inject(ToastService);
 
   private readonly faIconLibrary = inject(FaIconLibrary);
@@ -31,9 +34,7 @@ export class AppComponent implements OnInit {
   ngOnInit(): void {
     this.initFontAwesome();
 
-
     setTimeout(() => {
-      this.showSplash = false;
       this.toastService.show('Welcome to El-Marchi', 'SUCCESS');
     }, 3000);
   }

@@ -1,18 +1,19 @@
-import {Component, inject, OnInit} from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
-import { AdminProductService } from "@features/admin/admin-product.mock.service";
-import { ToastService } from "@shared/toast/toast.service";
-import { Pagination } from "@shared/models/request.model";
+import { AdminProductService } from '@features/admin/admin-product.mock.service';
+import { ToastService } from '@shared/toast/toast.service';
+import { Pagination } from '@shared/models/request.model';
 import { HttpClient } from '@angular/common/http';
+import { Product } from '@features/admin/models/product.model';
 
 @Component({
-  selector: "admin-products",
+  selector: 'app-admin-products',
   standalone: true,
   imports: [CommonModule, RouterLink, FaIconComponent],
   templateUrl: './admin-products.component.html',
-  styleUrl: './admin-products.component.scss',
+  styleUrl: './admin-products.component.css',
 })
 export class AdminProductsComponent implements OnInit {
   productService = inject(AdminProductService);
@@ -25,7 +26,7 @@ export class AdminProductsComponent implements OnInit {
     sort: ['createdDate,desc'],
   };
 
-  products: any[] = [];
+  products: Product[] = [];
   loading = false;
   error = false;
 
@@ -37,15 +38,18 @@ export class AdminProductsComponent implements OnInit {
     this.loading = true;
     this.error = false;
     this.productService.findAllProducts(this.pageRequest).subscribe({
-      next: (data) => {
+      next: data => {
         this.products = data.content;
         this.loading = false;
       },
       error: () => {
         this.error = true;
         this.loading = false;
-        this.toastService.show('Error failed to load products, please try again', 'ERROR');
-      }
+        this.toastService.show(
+          'Error failed to load products, please try again',
+          'ERROR',
+        );
+      },
     });
   }
 

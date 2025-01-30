@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   FormBuilder,
@@ -10,24 +10,25 @@ import {
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { NgxControlError } from 'ngxtension/control-error';
-import { AdminProductService } from "@features/admin/admin-product.mock.service";
-import { ToastService } from "@shared/toast/toast.service";
+import { AdminProductService } from '@features/admin/admin-product.mock.service';
+import { ToastService } from '@shared/toast/toast.service';
 import {
   BaseProduct,
   CreateProductFormContent,
+  ProductCategory,
   ProductPicture,
   ProductSizes,
-  sizes
-} from "@features/admin/models/product.model";
+  sizes,
+} from '@features/admin/models/product.model';
 
 @Component({
-  selector: 'create-product',
+  selector: 'app-create-product',
   standalone: true,
   imports: [CommonModule, FormsModule, ReactiveFormsModule, NgxControlError],
   templateUrl: './create-product.component.html',
-  styleUrl: './create-product.component.scss',
+  styleUrl: './create-product.component.css',
 })
-export class CreateProductComponent {
+export class CreateProductComponent implements OnInit {
   public formBuilder = inject(FormBuilder);
   productService = inject(AdminProductService);
   toastService = inject(ToastService);
@@ -83,7 +84,7 @@ export class CreateProductComponent {
     nonNullable: true,
     validators: [
       Validators.required,
-      (control) => {
+      control => {
         if (!control.value || control.value.length === 0) {
           return { picturesRequired: true };
         }
@@ -115,7 +116,7 @@ export class CreateProductComponent {
     });
 
   loading = false;
-  categories: any[] = [];
+  categories: ProductCategory[] = [];
 
   ngOnInit() {
     this.loadCategories();
@@ -123,12 +124,12 @@ export class CreateProductComponent {
 
   loadCategories() {
     this.productService.findAllCategories().subscribe({
-      next: (data) => {
+      next: data => {
         this.categories = data.content;
       },
-      error: (err) => {
+      error: err => {
         console.error('Failed to load categories', err);
-      }
+      },
     });
   }
 
@@ -153,7 +154,7 @@ export class CreateProductComponent {
     this.productService.createProduct(productToCreate).subscribe({
       next: () => this.onCreationSuccess(),
       error: () => this.onCreationError(),
-      complete: () => this.onCreationSettled()
+      complete: () => this.onCreationSettled(),
     });
   }
 

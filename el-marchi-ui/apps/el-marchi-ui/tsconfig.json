@@ -1,10 +1,5 @@
 {
   "compilerOptions": {
-    "target": "es2022",
-    "useDefineForClassFields": false,
-    "esModuleInterop": true,
-    "verbatimModuleSyntax": false,
-    "strict": true,
     "paths": {
       "@features/*": ["apps/el-marchi-ui/src/app/features/*"],
       "@pages/*": ["apps/el-marchi-ui/src/app/pages/*"],

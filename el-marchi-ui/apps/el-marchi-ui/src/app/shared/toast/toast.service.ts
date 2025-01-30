@@ -1,12 +1,9 @@
-import {Injectable} from "@angular/core";
-import {AlertType, ToastInfo} from "@shared/toast/toast-info.model";
-import {delay, of} from "rxjs";
+import { Injectable } from '@angular/core';
+import { AlertType, ToastInfo } from '@shared/toast/toast-info.model';
+import { delay, of } from 'rxjs';
 
-@Injectable(
-  {providedIn: 'root'}
-)
+@Injectable({ providedIn: 'root' })
 export class ToastService {
-
   toasts: ToastInfo[] = [];
 
   show(body: string, type: AlertType, timeout = 2300) {
@@ -19,10 +16,8 @@ export class ToastService {
   }
 
   remove(toast: ToastInfo) {
-    this.toasts = this.toasts.filter(
-      (toastToCompare) => toastToCompare != toast
-    );
+    this.toasts = this.toasts.filter(toastToCompare => toastToCompare != toast);
     console.log(this.toasts);
-    console.log("Toast should be removed");
+    console.log('Toast should be removed');
   }
 }

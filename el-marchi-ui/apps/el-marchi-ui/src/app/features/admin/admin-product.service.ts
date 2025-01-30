@@ -1,17 +1,20 @@
-import {inject, Injectable} from "@angular/core";
-import {HttpClient, HttpParams} from "@angular/common/http";
-import {environment} from "../../../../environments/environment.development";
-import {Observable} from "rxjs";
-import {createPaginationOption, Page, Pagination} from "@shared/models/request.model";
-import {BaseProduct, Product, ProductCategory} from "./models/product.model";
-
+import { inject, Injectable } from '@angular/core';
+import { HttpClient, HttpParams } from '@angular/common/http';
+import { environment } from '../../../../environments/environment.development';
+import { Observable } from 'rxjs';
+import {
+  createPaginationOption,
+  Page,
+  Pagination,
+} from '@shared/models/request.model';
+import { BaseProduct, Product, ProductCategory } from './models/product.model';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class AdminProductService {
-  http=inject(HttpClient);
-  createCategory(category: any) {
+  http = inject(HttpClient);
+  createCategory(category: ProductCategory) {
     return this.http.post(`${environment.apiUrl}/admin/category`, category);
   }
   deleteCategory(publicId: string) {
@@ -21,7 +24,7 @@ export class AdminProductService {
 
   findAllCategories(): Observable<Page<ProductCategory>> {
     return this.http.get<Page<ProductCategory>>(
-      `${environment.apiUrl}/categories`
+      `${environment.apiUrl}/categories`,
     );
   }
   createProduct(product: BaseProduct): Observable<Product> {
@@ -47,5 +50,4 @@ export class AdminProductService {
       params,
     });
   }
-
 }

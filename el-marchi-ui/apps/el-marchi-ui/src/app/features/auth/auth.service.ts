@@ -2,10 +2,18 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, tap } from 'rxjs';
 import { Router } from '@angular/router';
-import {environment} from "../../../../environments/environment.development";
+import { environment } from '../../../../environments/environment.development';
 
 export interface ConnectedUser {
   authorities: string[];
+}
+
+export interface RegisterCredentials {
+  firstName: string;
+  lastName: string;
+  email: string;
+  birthDate: Date;
+  password: string;
 }
 
 @Injectable({
@@ -19,19 +27,17 @@ export class AuthService {
   private userSubject = new BehaviorSubject<ConnectedUser | null>(null);
   user$ = this.userSubject.asObservable();
 
-
-
-  login(credentials: { email: string; password: string }): Observable<any> {
+  login(credentials: { email: string; password: string }) {
     return this.http.post(`${environment.apiUrl}/auth/login`, credentials).pipe(
       tap((response: any) => {
         localStorage.setItem('token', response.token); // Store the token
         this.loggedIn.next(true); // Mark user as logged in
         this.router.navigate(['/dashboard']); // Redirect to dashboard
-      })
+      }),
     );
   }
 
-  register(credentials: { email: string; password: string }): Observable<any> {
+  register(credentials: RegisterCredentials) {
     return this.http.post(`${environment.apiUrl}/auth/register`, credentials);
   }
 
@@ -61,22 +67,21 @@ export class AuthService {
 
   hasAnyAuthorities(
     connectedUser: ConnectedUser,
-    authorities: Array<string> | string
+    authorities: Array<string> | string,
   ): boolean {
     if (!Array.isArray(authorities)) {
       authorities = [authorities];
     }
     if (connectedUser.authorities) {
       return connectedUser.authorities.some((authority: string) =>
-        authorities.includes(authority)
+        authorities.includes(authority),
       );
     } else {
       return false;
     }
   }
 
-  getConnectedUser():ConnectedUser|null {
+  getConnectedUser(): ConnectedUser | null {
     return this.userSubject.value;
-
   }
 }

@@ -4,10 +4,10 @@ import { RouterLink } from '@angular/router';
 import { FeaturedComponent } from './featured/featured.component';
 
 @Component({
-  selector: 'ecom-home',
+  selector: 'app-home',
   standalone: true,
   imports: [CommonModule, RouterLink, FeaturedComponent],
   templateUrl: './home.component.html',
-  styleUrl: './home.component.scss',
+  styleUrl: './home.component.css',
 })
-export class HomeComponent {}
+export class HomeComponent { }

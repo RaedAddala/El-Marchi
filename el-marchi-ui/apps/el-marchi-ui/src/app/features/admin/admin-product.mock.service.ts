@@ -5,10 +5,9 @@ import { Page, Pagination } from '@shared/models/request.model';
 import { dummyCategories, dummyProducts } from '../../dummyData/products';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class AdminProductService {
-
   // Mock method to create a category
   createCategory(category: ProductCategory): Observable<ProductCategory> {
     const newCategory: ProductCategory = {
@@ -36,7 +35,7 @@ export class AdminProductService {
         sort: { sorted: true, unsorted: false, empty: false },
         offset: 0,
         paged: true,
-        unpaged: false
+        unpaged: false,
       },
       totalElements: dummyCategories.length,
       totalPages: 1,
@@ -46,7 +45,7 @@ export class AdminProductService {
       numberOfElements: dummyCategories.length,
       first: true,
       empty: false,
-      sort: { sorted: true, unsorted: false, empty: false }
+      sort: { sorted: true, unsorted: false, empty: false },
     };
     return of(page);
   }
@@ -58,15 +57,17 @@ export class AdminProductService {
       ...product,
     };
 
-    dummyProducts.push(newProduct);  // Simulate adding the product to the list
+    dummyProducts.push(newProduct); // Simulate adding the product to the list
     return of(newProduct);
   }
 
   // Mock method to delete a product
   deleteProduct(publicId: string): Observable<string> {
-    const index = dummyProducts.findIndex(product => product.publicId === publicId);
+    const index = dummyProducts.findIndex(
+      product => product.publicId === publicId,
+    );
     if (index !== -1) {
-      dummyProducts.splice(index, 1);  // Simulate deleting the product
+      dummyProducts.splice(index, 1); // Simulate deleting the product
       return of(`Product with publicId ${publicId} deleted successfully.`);
     }
     return of(`Product with publicId ${publicId} not found.`);
@@ -75,24 +76,29 @@ export class AdminProductService {
   // Mock method to find all products with pagination
   findAllProducts(pageRequest: Pagination): Observable<Page<Product>> {
     const page: Page<Product> = {
-      content: dummyProducts.slice(pageRequest.page * pageRequest.size, (pageRequest.page + 1) * pageRequest.size),
+      content: dummyProducts.slice(
+        pageRequest.page * pageRequest.size,
+        (pageRequest.page + 1) * pageRequest.size,
+      ),
       pageable: {
         pageNumber: pageRequest.page,
         pageSize: pageRequest.size,
         sort: { sorted: true, unsorted: false, empty: false },
         offset: pageRequest.page * pageRequest.size,
         paged: true,
-        unpaged: false
+        unpaged: false,
       },
       totalElements: dummyProducts.length,
       totalPages: Math.ceil(dummyProducts.length / pageRequest.size),
-      last: pageRequest.page === Math.ceil(dummyProducts.length / pageRequest.size) - 1,
+      last:
+        pageRequest.page ===
+        Math.ceil(dummyProducts.length / pageRequest.size) - 1,
       size: pageRequest.size,
       number: pageRequest.page,
       numberOfElements: pageRequest.size,
       first: pageRequest.page === 0,
       empty: dummyProducts.length === 0,
-      sort: { sorted: true, unsorted: false, empty: false }
+      sort: { sorted: true, unsorted: false, empty: false },
     };
     return of(page);
   }
