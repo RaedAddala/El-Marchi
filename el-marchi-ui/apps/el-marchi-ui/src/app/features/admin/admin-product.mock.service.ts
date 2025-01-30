@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
-import { Product, ProductCategory, BaseProduct } from './models/product.model';
+import { Product, ProductCategory, BaseProduct } from '../../shared/models/product.model';
 import { Page, Pagination } from '@shared/models/request.model';
 import { dummyCategories, dummyProducts } from '../../dummyData/products';
 

@@ -13,7 +13,7 @@ import { ToastService } from '@shared/toast/toast.service';
 import {
   CreateCategoryFormContent,
   ProductCategory,
-} from '@features/admin/models/product.model';
+} from '@shared/models/product.model';
 
 @Component({
   selector: 'app-create-category',

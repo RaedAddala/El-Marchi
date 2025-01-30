@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, of } from 'rxjs';
 import { delay } from 'rxjs/operators';
 import { Cart, CartItem, CartItemAdd, StripeSession } from './cart.model';
-import { Product } from '@features/admin/models/product.model';
+import { Product } from '@shared/models/product.model';
 import { dummyProducts } from '../../dummyData/products';
 
 @Injectable({

@@ -11,7 +11,7 @@ import {
   Product,
   ProductCategory,
   ProductFilter,
-} from '@features/admin/models/product.model';
+} from '@shared/models/product.model';
 import { environment } from '../../../../environments/environment.development';
 
 @Injectable({

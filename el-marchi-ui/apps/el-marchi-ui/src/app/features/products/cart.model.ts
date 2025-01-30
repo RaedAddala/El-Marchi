@@ -1,4 +1,4 @@
-import { ProductPicture } from '@features/admin/models/product.model';
+import { ProductPicture } from '@shared/models/product.model';
 
 export interface CartItemAdd {
   publicId: string;

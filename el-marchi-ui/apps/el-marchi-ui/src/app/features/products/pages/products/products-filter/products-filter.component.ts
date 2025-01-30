@@ -5,7 +5,7 @@ import {
   ProductFilter,
   ProductFilterForm,
   sizes,
-} from '@features/admin/models/product.model';
+} from '@shared/models/product.model';
 import {
   FormBuilder,
   FormControl,

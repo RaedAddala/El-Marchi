@@ -9,7 +9,7 @@ import { ToastService } from '@shared/toast/toast.service';
 import { UserProductService } from '@features/products/user-product.mock.service';
 import { ProductCardComponent } from '@features/products/pages/product-card/product-card.component';
 import { Pagination } from '@shared/models/request.model';
-import { Product } from '@features/admin/models/product.model';
+import { Product } from '@shared/models/product.model';
 
 @Component({
   selector: 'app-product-detail',

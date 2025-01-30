@@ -5,7 +5,7 @@ import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import { AdminProductService } from '@features/admin/admin-product.mock.service';
 import { ToastService } from '@shared/toast/toast.service';
 import { HttpClient } from '@angular/common/http';
-import { ProductCategory } from '@features/admin/models/product.model';
+import { ProductCategory } from '@shared/models/product.model';
 
 @Component({
   selector: 'app-admin-categories',

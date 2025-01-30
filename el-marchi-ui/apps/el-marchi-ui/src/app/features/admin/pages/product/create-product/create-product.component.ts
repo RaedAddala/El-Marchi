@@ -19,7 +19,7 @@ import {
   ProductPicture,
   ProductSizes,
   sizes,
-} from '@features/admin/models/product.model';
+} from '@shared/models/product.model';
 
 @Component({
   selector: 'app-create-product',
