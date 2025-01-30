@@ -5,7 +5,7 @@ import {
   Product,
   ProductCategory,
   ProductFilter,
-} from '@features/admin/models/product.model';
+} from '@shared/models/product.model';
 import { dummyProducts, dummyCategories } from '../../dummyData/products';
 
 @Injectable({

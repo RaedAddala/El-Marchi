@@ -6,7 +6,7 @@ import { AdminProductService } from '@features/admin/admin-product.mock.service'
 import { ToastService } from '@shared/toast/toast.service';
 import { Pagination } from '@shared/models/request.model';
 import { HttpClient } from '@angular/common/http';
-import { Product } from '@features/admin/models/product.model';
+import { Product } from '@shared/models/product.model';
 
 @Component({
   selector: 'app-admin-products',

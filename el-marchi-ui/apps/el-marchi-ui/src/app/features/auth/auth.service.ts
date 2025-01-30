@@ -84,4 +84,8 @@ export class AuthService {
   getConnectedUser(): ConnectedUser | null {
     return this.userSubject.value;
   }
+
+  requestPasswordReset(email: string) {
+    return this.http.post('/api/auth/forgot-password', { email });
+  }
 }

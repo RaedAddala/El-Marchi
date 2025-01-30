@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { UserProductService } from '../../../features/products/user-product.mock.service';
 import { Pagination } from '../../../shared/models/request.model';
 import { catchError, of } from 'rxjs';
-import { Product } from '@features/admin/models/product.model';
+import { Product } from '@shared/models/product.model';
 
 @Component({
   selector: 'app-featured',

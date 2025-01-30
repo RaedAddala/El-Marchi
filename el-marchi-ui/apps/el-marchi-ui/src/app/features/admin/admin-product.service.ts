@@ -7,7 +7,7 @@ import {
   Page,
   Pagination,
 } from '@shared/models/request.model';
-import { BaseProduct, Product, ProductCategory } from './models/product.model';
+import { BaseProduct, Product, ProductCategory } from '../../shared/models/product.model';
 
 @Injectable({
   providedIn: 'root',

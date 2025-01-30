@@ -1,4 +1,9 @@
-import { ChangeDetectionStrategy, Component, inject, OnInit } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  inject,
+  OnInit,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ProductsFilterComponent } from './products-filter/products-filter.component';
 import { injectQueryParams } from 'ngxtension/inject-query-params';
@@ -6,7 +11,7 @@ import { Router } from '@angular/router';
 import { UserProductService } from '@features/products/user-product.mock.service';
 import { ToastService } from '@shared/toast/toast.service';
 import { Pagination } from '@shared/models/request.model';
-import { ProductFilter } from '@features/admin/models/product.model';
+import { ProductFilter } from '@shared/models/product.model';
 import { ProductCardComponent } from '../product-card/product-card.component';
 import { BehaviorSubject, switchMap, catchError, of } from 'rxjs';
 
@@ -18,7 +23,6 @@ import { BehaviorSubject, switchMap, catchError, of } from 'rxjs';
   styleUrl: './products.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-
 export class ProductsComponent implements OnInit {
   category = injectQueryParams('category');
   size = injectQueryParams('size');
@@ -41,7 +45,9 @@ export class ProductsComponent implements OnInit {
 
   lastCategory = '';
 
-  private filterSubject = new BehaviorSubject<ProductFilter>(this.filterProducts);
+  private filterSubject = new BehaviorSubject<ProductFilter>(
+    this.filterProducts,
+  );
 
   filteredProducts$ = this.filterSubject.pipe(
     switchMap(filter =>
