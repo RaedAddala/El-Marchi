@@ -1,6 +1,4 @@
-
-// Dummy Data for Multiple Product Categories
-import {Product, ProductCategory} from "@features/admin/models/product.model";
+import { Product, ProductCategory } from '@features/admin/models/product.model';
 
 export const dummyProducts: Product[] = [
   {
@@ -14,8 +12,14 @@ export const dummyProducts: Product[] = [
     category: { publicId: '1', name: 'Category A' },
     featured: true,
     pictures: [
-      { file: new File([""], "imageA1.jpg", { type: "image/jpeg" }), mimeType: "image/jpeg" },
-      { file: new File([""], "imageA2.jpg", { type: "image/jpeg" }), mimeType: "image/jpeg" },
+      {
+        file: new File([''], 'imageA1.jpg', { type: 'image/jpeg' }),
+        mimeType: 'image/jpeg',
+      },
+      {
+        file: new File([''], 'imageA2.jpg', { type: 'image/jpeg' }),
+        mimeType: 'image/jpeg',
+      },
     ],
     nbInStock: 50,
   },
@@ -30,8 +34,14 @@ export const dummyProducts: Product[] = [
     category: { publicId: '2', name: 'Category B' },
     featured: false,
     pictures: [
-      { file: new File([""], "imageB1.png", { type: "image/png" }), mimeType: "image/png" },
-      { file: new File([""], "imageB2.png", { type: "image/png" }), mimeType: "image/png" },
+      {
+        file: new File([''], 'imageB1.png', { type: 'image/png' }),
+        mimeType: 'image/png',
+      },
+      {
+        file: new File([''], 'imageB2.png', { type: 'image/png' }),
+        mimeType: 'image/png',
+      },
     ],
     nbInStock: 30,
   },
@@ -46,8 +56,14 @@ export const dummyProducts: Product[] = [
     category: { publicId: '3', name: 'Category C' },
     featured: true,
     pictures: [
-      { file: new File([""], "imageC1.jpg", { type: "image/jpeg" }), mimeType: "image/jpeg" },
-      { file: new File([""], "imageC2.jpg", { type: "image/jpeg" }), mimeType: "image/jpeg" },
+      {
+        file: new File([''], 'imageC1.jpg', { type: 'image/jpeg' }),
+        mimeType: 'image/jpeg',
+      },
+      {
+        file: new File([''], 'imageC2.jpg', { type: 'image/jpeg' }),
+        mimeType: 'image/jpeg',
+      },
     ],
     nbInStock: 40,
   },
@@ -62,8 +78,14 @@ export const dummyProducts: Product[] = [
     category: { publicId: '4', name: 'Category D' },
     featured: true,
     pictures: [
-      { file: new File([""], "imageD1.png", { type: "image/png" }), mimeType: "image/png" },
-      { file: new File([""], "imageD2.png", { type: "image/png" }), mimeType: "image/png" },
+      {
+        file: new File([''], 'imageD1.png', { type: 'image/png' }),
+        mimeType: 'image/png',
+      },
+      {
+        file: new File([''], 'imageD2.png', { type: 'image/png' }),
+        mimeType: 'image/png',
+      },
     ],
     nbInStock: 15,
   },
@@ -78,8 +100,14 @@ export const dummyProducts: Product[] = [
     category: { publicId: '5', name: 'Category E' },
     featured: false,
     pictures: [
-      { file: new File([""], "imageE1.jpg", { type: "image/jpeg" }), mimeType: "image/jpeg" },
-      { file: new File([""], "imageE2.jpg", { type: "image/jpeg" }), mimeType: "image/jpeg" },
+      {
+        file: new File([''], 'imageE1.jpg', { type: 'image/jpeg' }),
+        mimeType: 'image/jpeg',
+      },
+      {
+        file: new File([''], 'imageE2.jpg', { type: 'image/jpeg' }),
+        mimeType: 'image/jpeg',
+      },
     ],
     nbInStock: 70,
   },
@@ -94,8 +122,14 @@ export const dummyProducts: Product[] = [
     category: { publicId: '6', name: 'Category F' },
     featured: false,
     pictures: [
-      { file: new File([""], "imageF1.png", { type: "image/png" }), mimeType: "image/png" },
-      { file: new File([""], "imageF2.png", { type: "image/png" }), mimeType: "image/png" },
+      {
+        file: new File([''], 'imageF1.png', { type: 'image/png' }),
+        mimeType: 'image/png',
+      },
+      {
+        file: new File([''], 'imageF2.png', { type: 'image/png' }),
+        mimeType: 'image/png',
+      },
     ],
     nbInStock: 20,
   },
@@ -110,8 +144,14 @@ export const dummyProducts: Product[] = [
     category: { publicId: '7', name: 'Category G' },
     featured: true,
     pictures: [
-      { file: new File([""], "imageG1.jpg", { type: "image/jpeg" }), mimeType: "image/jpeg" },
-      { file: new File([""], "imageG2.jpg", { type: "image/jpeg" }), mimeType: "image/jpeg" },
+      {
+        file: new File([''], 'imageG1.jpg', { type: 'image/jpeg' }),
+        mimeType: 'image/jpeg',
+      },
+      {
+        file: new File([''], 'imageG2.jpg', { type: 'image/jpeg' }),
+        mimeType: 'image/jpeg',
+      },
     ],
     nbInStock: 25,
   },
@@ -126,8 +166,14 @@ export const dummyProducts: Product[] = [
     category: { publicId: '8', name: 'Category H' },
     featured: false,
     pictures: [
-      { file: new File([""], "imageH1.jpg", { type: "image/jpeg" }), mimeType: "image/jpeg" },
-      { file: new File([""], "imageH2.jpg", { type: "image/jpeg" }), mimeType: "image/jpeg" },
+      {
+        file: new File([''], 'imageH1.jpg', { type: 'image/jpeg' }),
+        mimeType: 'image/jpeg',
+      },
+      {
+        file: new File([''], 'imageH2.jpg', { type: 'image/jpeg' }),
+        mimeType: 'image/jpeg',
+      },
     ],
     nbInStock: 60,
   },

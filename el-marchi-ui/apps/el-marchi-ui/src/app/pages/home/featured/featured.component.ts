@@ -1,15 +1,16 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { UserProductService } from '../../../features/shop/user-product.mock.service';
+import { UserProductService } from '../../../features/products/user-product.mock.service';
 import { Pagination } from '../../../shared/models/request.model';
 import { catchError, of } from 'rxjs';
+import { Product } from '@features/admin/models/product.model';
 
 @Component({
-  selector: 'featured',
+  selector: 'app-featured',
   standalone: true,
-  imports: [CommonModule,],
+  imports: [CommonModule],
   templateUrl: './featured.component.html',
-  styleUrl: './featured.component.scss',
+  styleUrl: './featured.component.css',
 })
 export class FeaturedComponent implements OnInit {
   productService = inject(UserProductService);
@@ -20,7 +21,7 @@ export class FeaturedComponent implements OnInit {
     sort: [],
   };
 
-  featuredProducts: any[] = [];
+  featuredProducts: Product[] = [];
   isLoading = true;
   isError = false;
 
@@ -38,9 +39,9 @@ export class FeaturedComponent implements OnInit {
         catchError(() => {
           this.isError = true;
           return of(null);
-        })
+        }),
       )
-      .subscribe((response) => {
+      .subscribe(response => {
         this.isLoading = false;
         if (response) {
           this.featuredProducts = response.content;

@@ -1,24 +1,25 @@
-import {Component, inject, OnInit} from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
-import { AdminProductService } from "@features/admin/admin-product.mock.service";
-import { ToastService } from "@shared/toast/toast.service";
+import { AdminProductService } from '@features/admin/admin-product.mock.service';
+import { ToastService } from '@shared/toast/toast.service';
 import { HttpClient } from '@angular/common/http';
+import { ProductCategory } from '@features/admin/models/product.model';
 
 @Component({
-  selector: 'admin-categories',
+  selector: 'app-admin-categories',
   standalone: true,
   imports: [CommonModule, RouterLink, FaIconComponent],
   templateUrl: './admin-categories.component.html',
-  styleUrl: './admin-categories.component.scss',
+  styleUrl: './admin-categories.component.css',
 })
 export class AdminCategoriesComponent implements OnInit {
   productAdminService = inject(AdminProductService);
   toastService = inject(ToastService);
   http = inject(HttpClient);
 
-  categories: any[] = [];
+  categories: ProductCategory[] = [];
   loading = false;
   error = false;
 
@@ -30,15 +31,18 @@ export class AdminCategoriesComponent implements OnInit {
     this.loading = true;
     this.error = false;
     this.productAdminService.findAllCategories().subscribe({
-      next: (data) => {
+      next: data => {
         this.categories = data.content;
         this.loading = false;
       },
       error: () => {
         this.error = true;
         this.loading = false;
-        this.toastService.show('Error! Failed to load categories. Please try again.', 'ERROR');
-      }
+        this.toastService.show(
+          'Error! Failed to load categories. Please try again.',
+          'ERROR',
+        );
+      },
     });
   }
 

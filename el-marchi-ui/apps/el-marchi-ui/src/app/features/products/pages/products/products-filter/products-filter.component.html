@@ -1,0 +1,53 @@
+<form
+  [formGroup]="formFilterProducts"
+  class="bg-base-100 p-6 rounded-lg shadow-soft"
+>
+  <div class="space-y-4">
+    <h3 class="font-bold text-lg text-secondary-800">Size</h3>
+    <form [formGroup]="getSizeFormGroup()" class="grid grid-cols-2 gap-3">
+      @for(size of sizes; track size) {
+      <label
+        class="flex items-center space-x-3 p-2 rounded-md hover:bg-secondary-50 transition-colors"
+      >
+        <input
+          type="checkbox"
+          class="checkbox checkbox-primary checkbox-sm"
+          formControlName="{{ size }}"
+        />
+        <span class="label-text text-secondary-700">{{ size }}</span>
+      </label>
+      }
+    </form>
+  </div>
+
+  <!-- Sort Section -->
+  <div class="mt-8 space-y-4">
+    <h3 class="font-bold text-lg text-secondary-800">Sort By</h3>
+    <div class="space-y-3">
+      <label
+        class="flex items-center space-x-3 p-2 rounded-md hover:bg-secondary-50 transition-colors"
+      >
+        <input
+          type="radio"
+          name="sort"
+          value="asc"
+          class="radio radio-primary radio-sm"
+          formControlName="sort"
+        />
+        <span class="label-text text-secondary-700">Oldest First</span>
+      </label>
+      <label
+        class="flex items-center space-x-3 p-2 rounded-md hover:bg-secondary-50 transition-colors"
+      >
+        <input
+          type="radio"
+          name="sort"
+          value="desc"
+          class="radio radio-primary radio-sm"
+          formControlName="sort"
+        />
+        <span class="label-text text-secondary-700">Newest First</span>
+      </label>
+    </div>
+  </div>
+</form>

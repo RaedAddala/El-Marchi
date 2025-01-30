@@ -1,15 +1,17 @@
-<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 w-full">
+<div
+  class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 w-full"
+>
   @for (product of featuredProducts; track product.publicId) {
-    <p>placeholder</p>
+  <p>placeholder</p>
   }
 </div>
 
 @if(isLoading) {
-  <div class="flex w-full justify-center">
-    <span class="loading loading-spinner loading-lg"></span>
-  </div>
+<div class="flex w-full justify-center">
+  <span class="loading loading-spinner loading-lg"></span>
+</div>
 } @else if (isError) {
-  <div class="alert alert-error">
-    <span>Error! Failed to load featured products, please try again.</span>
-  </div>
+<div class="alert alert-error">
+  <span>Error! Failed to load featured products, please try again.</span>
+</div>
 }

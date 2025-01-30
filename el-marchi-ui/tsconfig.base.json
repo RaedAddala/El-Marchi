@@ -3,10 +3,10 @@
   "compilerOptions": {
     "rootDir": ".",
     "baseUrl": ".",
-    "target": "es2022",
-    "module": "esnext",
+    "target": "ESNext",
+    "module": "ESNext",
     "moduleResolution": "bundler",
-    "lib": ["es2020", "dom", "dom.iterable"],
+    "lib": ["ESNext", "dom", "dom.iterable"],
     "paths": {},
     "sourceMap": true,
     "declaration": false,
@@ -27,7 +27,8 @@
     "maxNodeModuleJsDepth": 1,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "verbatimModuleSyntax": true
+    "esModuleInterop": true,
+    "verbatimModuleSyntax": false,
   },
   "exclude": ["node_modules", "tmp", "dist"]
 }

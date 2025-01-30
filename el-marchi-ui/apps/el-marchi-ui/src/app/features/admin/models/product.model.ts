@@ -1,6 +1,6 @@
-import {FormControl, FormRecord} from '@angular/forms';
+import { FormControl, FormRecord } from '@angular/forms';
 
-export type ProductSizes = 'XS'|'S'|'M'|'L'|'XL'|'XXL'|'XXXL';
+export type ProductSizes = 'XS' | 'S' | 'M' | 'L' | 'XL' | 'XXL' | 'XXXL';
 export const sizes: ProductSizes[] = ['XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL'];
 
 export interface ProductCategory {
@@ -59,12 +59,14 @@ export interface ProductFilter {
 
 export type FilterProductsFormContent = {
   sort: FormControl<string>;
-  size: FormRecord<FormControl<boolean>>
-}
+  size: FormRecord<FormControl<boolean>>;
+};
 
 export interface ProductFilterForm {
-  size?: {
-    [size: string]: boolean;
-  } | undefined;
-  sort: string
+  size?:
+    | {
+        [size: string]: boolean;
+      }
+    | undefined;
+  sort: string;
 }
