@@ -10,7 +10,7 @@ import {
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { NgxControlError } from 'ngxtension/control-error';
-import { AdminProductService } from "@features/admin/admin-product.service";
+import { AdminProductService } from "@features/admin/admin-product.mock.service";
 import { ToastService } from "@shared/toast/toast.service";
 import {
   BaseProduct,
@@ -38,15 +38,26 @@ export class CreateProductComponent {
 
   name = new FormControl<string>('', {
     nonNullable: true,
-    validators: [Validators.required],
+    validators: [
+      Validators.required,
+      Validators.minLength(3), // Minimum length of 3 characters
+      Validators.maxLength(100), // Maximum length of 100 characters
+    ],
   });
   description = new FormControl<string>('', {
     nonNullable: true,
-    validators: [Validators.required],
+    validators: [
+      Validators.required,
+      Validators.minLength(10), // Description should be at least 10 characters
+      Validators.maxLength(500), // Description should be at most 500 characters
+    ],
   });
   price = new FormControl<number>(0, {
     nonNullable: true,
-    validators: [Validators.required],
+    validators: [
+      Validators.required,
+      Validators.min(1), // Price should be greater than or equal to 1
+    ],
   });
   size = new FormControl<ProductSizes>('XS', {
     nonNullable: true,
@@ -70,11 +81,23 @@ export class CreateProductComponent {
   });
   pictures = new FormControl<Array<ProductPicture>>([], {
     nonNullable: true,
-    validators: [Validators.required],
+    validators: [
+      Validators.required,
+      (control) => {
+        if (!control.value || control.value.length === 0) {
+          return { picturesRequired: true };
+        }
+        return null;
+      },
+    ],
   });
   stock = new FormControl<number>(0, {
     nonNullable: true,
-    validators: [Validators.required],
+    validators: [
+      Validators.required,
+      Validators.min(1), // Stock should be at least 1
+      Validators.max(1000), // Stock should not exceed 1000
+    ],
   });
 
   public createForm =

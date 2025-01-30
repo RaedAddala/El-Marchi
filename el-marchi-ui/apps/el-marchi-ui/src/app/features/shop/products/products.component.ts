@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ProductsFilterComponent } from './products-filter/products-filter.component';
 import { injectQueryParams } from 'ngxtension/inject-query-params';
 import { Router } from '@angular/router';
-import { UserProductService } from '@features/shop/user-product.service';
+import { UserProductService } from '@features/shop/user-product.mock.service';////
 import { ToastService } from '@shared/toast/toast.service';
 import { Pagination } from '@shared/models/request.model';
 import { ProductFilter } from '@features/admin/models/product.model';

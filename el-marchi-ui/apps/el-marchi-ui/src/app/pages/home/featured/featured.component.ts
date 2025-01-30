@@ -1,6 +1,6 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { UserProductService } from '../../../features/shop/user-product.service';
+import { UserProductService } from '../../../features/shop/user-product.mock.service';
 import { Pagination } from '../../../shared/models/request.model';
 import { catchError, of } from 'rxjs';
 
