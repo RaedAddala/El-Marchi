@@ -1,6 +1,6 @@
 import { Component, inject, OnInit, PLATFORM_ID } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
-import { CartService } from '../cart.service';
+import { CartService } from '../cart.mock.service';
 import { AuthService } from '../../auth/auth.service';
 import { CartItem, CartItemAdd, StripeSession } from '../cart.model';
 import { RouterLink } from '@angular/router';

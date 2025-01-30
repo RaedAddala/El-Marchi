@@ -12,14 +12,14 @@ export const appRoutes: Route[] = [
       import('./pages/home/home.component').then(m => m.HomeComponent),
     title: 'El-Marchi - Home',
   },
-  {
+  /*{
     path: 'products',
     loadChildren: () =>
       import('./features/products/products.routes').then(
         m => m.PRODUCTS_ROUTES,
       ),
     title: 'El-Marchi - Products',
-  },
+  }*/
   {
     path: 'auth',
     loadChildren: () =>

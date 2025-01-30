@@ -2,7 +2,7 @@ import {Component, inject, OnInit} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
-import { AdminProductService } from "@features/admin/admin-product.service";
+import { AdminProductService } from "@features/admin/admin-product.mock.service";
 import { ToastService } from "@shared/toast/toast.service";
 import { HttpClient } from '@angular/common/http';
 

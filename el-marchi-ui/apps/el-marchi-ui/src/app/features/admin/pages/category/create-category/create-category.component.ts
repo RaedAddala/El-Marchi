@@ -8,7 +8,7 @@ import {
 } from '@angular/forms';
 import { Router } from '@angular/router';
 import { NgxControlError } from 'ngxtension/control-error';
-import { AdminProductService } from "@features/admin/admin-product.service";
+import { AdminProductService } from "@features/admin/admin-product.mock.service";
 import { ToastService } from "@shared/toast/toast.service";
 import { CreateCategoryFormContent, ProductCategory } from "@features/admin/models/product.model";
 

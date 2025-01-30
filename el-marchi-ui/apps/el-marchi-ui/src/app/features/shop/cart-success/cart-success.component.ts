@@ -1,7 +1,7 @@
 import { afterNextRender, Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { injectQueryParams } from 'ngxtension/inject-query-params';
-import { CartService } from '../cart.service';
+import { CartService } from '../cart.mock.service';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 
 @Component({
