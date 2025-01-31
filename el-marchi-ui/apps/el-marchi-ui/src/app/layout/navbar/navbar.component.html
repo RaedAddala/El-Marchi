@@ -60,22 +60,6 @@
                 All Products
               </a>
             </li>
-            <li>
-              <a
-                routerLink="/products/new"
-                class="rounded-lg px-4 py-2 hover:bg-primary-50 transition-all duration-200"
-              >
-                New Arrivals
-              </a>
-            </li>
-            <li>
-              <a
-                routerLink="/products/sale"
-                class="rounded-lg px-4 py-2 hover:bg-primary-50 transition-all duration-200"
-              >
-                Sale Items
-              </a>
-            </li>
           </ul>
         </li>
 
@@ -116,7 +100,7 @@
                 routerLink="/admin/orders"
                 class="rounded-lg px-4 py-2 hover:bg-primary-50 transition-all duration-200"
               >
-                Orders
+                Manage Orders
               </a>
             </li>
             <li>
@@ -124,7 +108,15 @@
                 routerLink="/admin/customers"
                 class="rounded-lg px-4 py-2 hover:bg-primary-50 transition-all duration-200"
               >
-                Customers
+                Manage Customers
+              </a>
+            </li>
+            <li>
+              <a
+                routerLink="/admin/categories/list"
+                class="rounded-lg px-4 py-2 hover:bg-primary-50 transition-all duration-200"
+              >
+                Manage Categories
               </a>
             </li>
           </ul>
@@ -163,12 +155,20 @@
               Register
             </a>
           </li>
+          <li>
+            <a
+              routerLink="/auth/forgot-password"
+              class="rounded-lg px-4 py-2 hover:bg-primary-50 transition-all duration-200"
+            >
+              Forgot Password
+            </a>
+          </li>
         </ul>
       </div>
       <button
         class="btn btn-ghost btn-circle hover:bg-primary-50 transition-all duration-200"
         aria-label="Shopping cart"
-        routerLink="/cart"
+        routerLink="/products/cart"
       >
         <fa-icon
           [icon]="['fas', 'cart-shopping']"

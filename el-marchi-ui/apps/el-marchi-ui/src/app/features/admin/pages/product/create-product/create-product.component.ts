@@ -20,6 +20,7 @@ import {
   ProductSizes,
   sizes,
 } from '@shared/models/product.model';
+import { v4 as uuidv4 } from 'uuid';
 
 @Component({
   selector: 'app-create-product',
@@ -29,13 +30,13 @@ import {
   styleUrl: './create-product.component.css',
 })
 export class CreateProductComponent implements OnInit {
-  public formBuilder = inject(FormBuilder);
-  productService = inject(AdminProductService);
-  toastService = inject(ToastService);
-  router = inject(Router);
-  http = inject(HttpClient);
+  private formBuilder = inject(FormBuilder);
+  private productService = inject(AdminProductService);
+  private toastService = inject(ToastService);
+  private router = inject(Router);
+  private http = inject(HttpClient);
 
-  public productPictures = new Array<ProductPicture>();
+  public productPictures: ProductPicture[] = [];
 
   name = new FormControl<string>('', {
     nonNullable: true,
@@ -158,29 +159,64 @@ export class CreateProductComponent implements OnInit {
     });
   }
 
+  private async saveFileToAssets(file: File, publicId: string): Promise<void> {
+    const arrayBuffer = await file.arrayBuffer();
+    const uint8Array = new Uint8Array(arrayBuffer);
+
+    // Use HttpClient to save the file
+    return new Promise((resolve, reject) => {
+      this.http
+        .post('/api/upload-product-image', {
+          publicId,
+          file: Array.from(uint8Array),
+          mimeType: file.type,
+        })
+        .subscribe({
+          next: () => resolve(),
+          error: err => {
+            console.error('File upload failed', err);
+            reject(err);
+          },
+        });
+    });
+  }
+
+  async onUploadNewPicture(target: EventTarget | null) {
+    this.productPictures = [];
+    const picturesFileList = this.extractFileFromTarget(target);
+
+    if (picturesFileList !== null) {
+      for (let i = 0; i < picturesFileList.length; i++) {
+        const file = picturesFileList.item(i);
+        if (file !== null) {
+          // Generate a unique publicId for the product picture
+          const publicId = uuidv4();
+
+          const productPicture: ProductPicture = {
+            publicId,
+            mimeType: file.type,
+          };
+
+          try {
+            // Save the file to assets
+            await this.saveFileToAssets(file, publicId);
+
+            // Add to product pictures
+            this.productPictures.push(productPicture);
+          } catch (error) {
+            this.toastService.show('Failed to upload image', 'ERROR');
+          }
+        }
+      }
+    }
+  }
+
   private extractFileFromTarget(target: EventTarget | null): FileList | null {
     const htmlInputTarget = target as HTMLInputElement;
     if (target === null || htmlInputTarget.files === null) {
       return null;
     }
     return htmlInputTarget.files;
-  }
-
-  onUploadNewPicture(target: EventTarget | null) {
-    this.productPictures = [];
-    const picturesFileList = this.extractFileFromTarget(target);
-    if (picturesFileList !== null) {
-      for (let i = 0; i < picturesFileList.length; i++) {
-        const picture = picturesFileList.item(i);
-        if (picture !== null) {
-          const productPicture: ProductPicture = {
-            file: picture,
-            mimeType: picture.type,
-          };
-          this.productPictures.push(productPicture);
-        }
-      }
-    }
   }
 
   private onCreationSettled() {

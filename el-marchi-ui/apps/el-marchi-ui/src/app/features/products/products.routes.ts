@@ -2,19 +2,13 @@ import type { Routes } from '@angular/router';
 
 export const PRODUCTS_ROUTES: Routes = [
   {
-    path: 'product/:publicId',
-    loadComponent: () =>
-      import('./pages/product-detail/product-detail.component').then(
-        m => m.ProductDetailComponent,
-      ),
-  },
-  {
-    path: 'products',
+    path: '',
     loadComponent: () =>
       import('./pages/products/products.component').then(
         m => m.ProductsComponent,
       ),
   },
+
   {
     path: 'cart',
     loadComponent: () =>
@@ -25,6 +19,13 @@ export const PRODUCTS_ROUTES: Routes = [
     loadComponent: () =>
       import('./pages/cart-success/cart-success.component').then(
         m => m.CartSuccessComponent,
+      ),
+  },
+  {
+    path: ':publicId',
+    loadComponent: () =>
+      import('./pages/product-detail/product-detail.component').then(
+        m => m.ProductDetailComponent,
       ),
   },
 ];

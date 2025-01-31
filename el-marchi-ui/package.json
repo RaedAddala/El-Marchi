@@ -41,10 +41,11 @@
     "@fortawesome/free-brands-svg-icons": "^6.7.2",
     "@fortawesome/free-regular-svg-icons": "^6.7.2",
     "@fortawesome/free-solid-svg-icons": "^6.7.2",
-    "@tanstack/angular-query-experimental": "^5.65.0",
+    "@tanstack/angular-query-experimental": "^5.66.0",
     "ngx-stripe": "^19.0.0",
     "ngxtension": "^4.2.1",
     "rxjs": "^7.8.1",
+    "uuid": "^11.0.5",
     "zone.js": "^0.15.0"
   },
   "devDependencies": {

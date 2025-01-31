@@ -1,6 +1,14 @@
 import { FormControl, FormRecord } from '@angular/forms';
 
-export type ProductSizes = 'XS' | 'S' | 'M' | 'L' | 'XL' | 'XXL' | 'XXXL';
+export type ProductSizes =
+  | 'XS'
+  | 'S'
+  | 'M'
+  | 'L'
+  | 'XL'
+  | 'XXL'
+  | 'XXXL'
+  | string;
 export const sizes: ProductSizes[] = ['XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL'];
 
 export interface ProductCategory {
@@ -9,8 +17,13 @@ export interface ProductCategory {
 }
 
 export interface ProductPicture {
-  file: File;
+  publicId: string;
   mimeType: string;
+}
+
+export interface ProductRating {
+  average: number;
+  count: number;
 }
 
 export interface BaseProduct {
@@ -18,16 +31,19 @@ export interface BaseProduct {
   color: string;
   description: string;
   name: string;
+  material?: string;
+  sku?: string;
+  careInstructions?: string;
+  rating?: ProductRating;
   price: number;
+  salePrice?: number;
+  tags?: string[];
+  isOnSale?: boolean;
   size: ProductSizes;
   category: ProductCategory;
   featured: boolean;
   pictures: ProductPicture[];
   nbInStock: number;
-}
-
-export interface Product extends BaseProduct {
-  publicId: string;
 }
 
 export interface Product extends BaseProduct {

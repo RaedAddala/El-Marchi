@@ -5,7 +5,12 @@
     <div class="flex flex-col">
       <div class="rounded-lg overflow-hidden bg-gray-100">
         <img
-          [src]="'/assets/products/' + product.publicId + '.jpg'"
+          [src]="
+            '/assets/products/' +
+            product.pictures[0].publicId +
+            '.' +
+            product.pictures[0].mimeType.split('/')[1]
+          "
           [alt]="product.name"
           class="w-full h-full object-center object-cover"
         />
