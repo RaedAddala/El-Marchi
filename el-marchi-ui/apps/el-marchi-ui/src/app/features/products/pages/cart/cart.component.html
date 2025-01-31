@@ -1,83 +1,135 @@
-<div class="text-2xl mb-2">Shopping cart</div>
-<div class="flex flex-col lg:flex-row">
-  <div class="flex-grow me-5 w-full">
-    @if (!isLoadingCart && this.cart.length !== 0) { @for (item of cart; track
-    item.publicId) {
-    <div class="border-t border-gray-200"></div>
-    <div class="flex items-center justify-between">
-      <div class="p-4 flex">
-        <img
-          [src]="
-            item.picture
-              ? 'data:' + item.picture.mimeType + ';base64,' + item.picture.file
-              : ''
-          "
-          alt="{{ item.name }}"
-          width="110px"
-          class="max-w-full lg:max-w-none me-5"
-        />
-        <div class="w-40">
-          <a [routerLink]="['/product', item.publicId]">{{ item.name }}</a>
-          <div class="text-sm">{{ item.brand }}</div>
-          <div class="font-bold">{{ item.price | currency }}</div>
+<div class="container mx-auto px-4 py-8">
+  <h2 class="text-3xl font-bold mb-6">Your Shopping Cart</h2>
+
+  <div class="flex flex-col lg:flex-row gap-8">
+    <!-- Cart Items Section -->
+    <div class="flex-grow lg:w-2/3">
+      @if (!isLoadingCart && cart.length !== 0) { @for (item of cart; track
+      item.publicId) {
+      <div
+        class="border-b border-gray-200 py-4 flex items-center hover:bg-gray-50 transition-colors"
+      >
+        <div class="w-24 h-24 mr-6 flex-shrink-0">
+          <img
+            [src]="
+              '/assets/products/' +
+              item.picture.publicId +
+              '.' +
+              item.picture.mimeType.split('/')[1]
+            "
+            [alt]="item.name"
+            class="w-full h-full object-cover rounded-md"
+          />
+        </div>
+
+        <div class="flex-grow">
+          <div class="flex justify-between items-start">
+            <div>
+              <a
+                [routerLink]="['/product', item.publicId]"
+                class="font-semibold text-lg hover:text-primary transition-colors"
+              >
+                {{ item.name }}
+              </a>
+              <p class="text-gray-500 text-sm">{{ item.brand }}</p>
+              <p class="font-bold text-primary">{{ item.price | currency }}</p>
+            </div>
+
+            <div class="flex items-center">
+              <div class="flex items-center border rounded-full">
+                <button
+                  class="px-3 py-1 text-gray-600 hover:bg-gray-100 rounded-l-full"
+                  (click)="removeQuantityToCart(item.publicId, item.quantity)"
+                  [disabled]="item.quantity <= 1"
+                >
+                  -
+                </button>
+                <span class="px-3">{{ item.quantity }}</span>
+                <button
+                  class="px-3 py-1 text-gray-600 hover:bg-gray-100 rounded-r-full"
+                  (click)="addQuantityToCart(item.publicId)"
+                >
+                  +
+                </button>
+              </div>
+
+              <button
+                class="ml-4 text-red-500 hover:bg-red-50 p-2 rounded-full"
+                (click)="removeItem(item.publicId)"
+                title="Remove item"
+              >
+                🗑️
+              </button>
+            </div>
+          </div>
         </div>
       </div>
-      <div class="flex">
-        <div class="w-32 flex justify-around items-center">
-          <button
-            class="btn btn-sm btn-outline-primary"
-            (click)="removeQuantityToCart(item.publicId, item.quantity)"
-          >
-            -
-          </button>
-          <div>{{ item.quantity }}</div>
-          <button
-            class="btn btn-sm btn-outline-primary"
-            (click)="addQuantityToCart(item.publicId)"
-          >
-            +
-          </button>
-        </div>
+      } } @else if (isLoadingCart) {
+      <div class="flex justify-center items-center h-64">
         <div
-          class="ms-5 btn btn-error btn-outline"
-          (click)="removeItem(item.publicId)"
+          class="loader ease-linear rounded-full border-4 border-t-4 border-gray-200 h-12 w-12 animate-spin"
+        ></div>
+      </div>
+      } @else {
+      <div class="text-center py-16 bg-gray-100 rounded-lg">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="h-24 w-24 mx-auto text-gray-400 mb-4"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
         >
-          Remove
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
+          />
+        </svg>
+        <h3 class="text-2xl font-semibold text-gray-600 mb-2">
+          Your cart is empty
+        </h3>
+        <p class="text-gray-500">
+          Looks like you haven't added any items to your cart yet
+        </p>
+      </div>
+      }
+    </div>
+
+    <!-- Order Summary Section -->
+    <div class="lg:w-1/3 bg-white shadow-md rounded-lg p-6">
+      <h3 class="text-xl font-bold mb-4">Order Summary</h3>
+
+      <div class="space-y-4">
+        <div class="flex justify-between">
+          <span class="text-gray-600">Subtotal</span>
+          <span class="font-semibold">{{ computeTotal() | currency }}</span>
+        </div>
+
+        <div class="flex justify-between">
+          <span class="text-gray-600">Delivery</span>
+          <span class="font-semibold">{{ 0 | currency }}</span>
+        </div>
+
+        <hr class="my-4 border-gray-200" />
+
+        <div class="flex justify-between text-lg font-bold">
+          <span>Total</span>
+          <span>{{ computeTotal() | currency }}</span>
         </div>
       </div>
+
+      <button
+        class="w-full mt-6 btn btn-primary py-3 rounded-lg transition-colors"
+        [disabled]="cart.length === 0"
+        (click)="checkout()"
+      >
+        @if (isInitPaymentSessionLoading) {
+        <span class="loading loading-spinner loading-sm"></span>
+        } @else {
+        {{ labelCheckout }}
+        }
+      </button>
     </div>
-    } } @else if (isLoadingCart) {
-    <div class="flex w-full justify-center">
-      <span class="loading loading-spinner loading-lg"></span>
-    </div>
-    } @else if (checkIfEmptyCart()) {
-    <div class="flex flex-col items-center justify-center h-60">
-      <div class="font-bold text-2xl">No items in cart</div>
-      <div>Add some items to your cart</div>
-    </div>
-    }
-  </div>
-  <div
-    class="bg-gray-100 border-gray-400 p-5 w-full lg:w-96 h-72 mt-6 lg:mt-0 rounded-md"
-  >
-    <div class="font-bold">Order Summary</div>
-    <div class="border-t border-gray-300 my-5"></div>
-    <div class="flex justify-between">
-      <div>Delivery</div>
-      <div>{{ 0 | currency }}</div>
-    </div>
-    <div class="border-t border-gray-300 my-5"></div>
-    <div class="flex justify-between font-bold">
-      <div>Total</div>
-      <div>{{ computeTotal() | currency }}</div>
-    </div>
-    <div class="border-t border-gray-300 my-5"></div>
-    <button
-      class="btn btn-primary w-full"
-      [disabled]="cart.length === 0"
-      (click)="checkout()"
-    >
-      {{ labelCheckout }}
-    </button>
   </div>
 </div>
