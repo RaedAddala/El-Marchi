@@ -47,6 +47,7 @@ export class User extends BaseEntity {
   @Column({
     nullable: true,
     select: false,
+    type: 'varchar'
   })
   hashedRefreshToken!: string | null;
 }
