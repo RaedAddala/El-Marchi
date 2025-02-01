@@ -17,9 +17,11 @@ import { RefreshTokensType } from './dtos/refresh.token.dto';
 import { UpdateUserDto } from './dtos/update.user.dto';
 import { User } from './entities/user.entity';
 import { RefreshTokenService } from './refreshtoken.service';
+import { ChangePasswordDto } from './dtos/change.password.dto';
 
 @Injectable()
 export class UsersService extends BaseService<User> {
+
   constructor(
     @InjectRepository(User)
     repository: Repository<User>,
@@ -52,23 +54,9 @@ export class UsersService extends BaseService<User> {
     if (!user) {
       throw new NotFoundException('User not found');
     }
-
-    let passwordUpdate = {};
-    if (dto.password) {
-      const { hash, salt } = await this.cryptoService.hashPassword(
-        dto.password,
-      );
-      passwordUpdate = {
-        passwordHash: hash,
-        passwordSalt: salt,
-      };
-    }
-
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { password, ...updateData } = dto;
     const updatedUser = await super.update(id, {
-      ...updateData,
-      ...passwordUpdate,
+      ...user,
+      ...dto,
     });
 
     return updatedUser;
@@ -175,5 +163,43 @@ export class UsersService extends BaseService<User> {
     }
 
     return this.generateUserTokens(token.user.id);
+  }
+
+  async changePassword(userId: string | undefined, changePasswordDto: ChangePasswordDto) {
+    if (!userId) {
+      throw new UnauthorizedException();
+    }
+    const user = await this.findOne(userId);
+    if (!user) {
+      throw new UnauthorizedException();
+    }
+
+    const isValid = await this.cryptoService.verifyPassword(
+      changePasswordDto.oldPassword,
+      user.passwordHash,
+      user.passwordSalt,
+    );
+
+    if (!isValid) {
+      throw new UnauthorizedException();
+    }
+
+    let passwordUpdate = {};
+
+    const { hash, salt } = await this.cryptoService.hashPassword(
+      changePasswordDto.newPassword,
+    );
+    passwordUpdate = {
+      passwordHash: hash,
+      passwordSalt: salt,
+    };
+
+    const updatedUser = await super.update(userId, {
+      ...user,
+      ...passwordUpdate,
+    });
+
+    return updatedUser;
+
   }
 }

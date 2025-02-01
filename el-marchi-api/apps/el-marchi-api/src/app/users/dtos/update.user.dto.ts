@@ -12,14 +12,9 @@ const UpdateUserSchema = z.object({
     .optional(),
   email: z.string().email({ message: 'Invalid email address' }).optional(),
   birthDate: z.coerce.date().optional(),
-  password: z
-    .string()
-    .min(8, { message: 'Password must be at least 8 characters long' })
-    .max(60, { message: 'Password must be at most 60 characters long' })
-    .optional(),
 });
 
-export class UpdateUserDto extends createZodDto(UpdateUserSchema) {}
+export class UpdateUserDto extends createZodDto(UpdateUserSchema) { }
 
 export type UpdateUserType = z.infer<typeof UpdateUserSchema>;
 export { UpdateUserSchema };

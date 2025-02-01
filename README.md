@@ -15,7 +15,7 @@ Of course for now this is only a projection on what we imagine this platform to 
 
 This a monorepo consisting of two parts: the _UI_ and the _API_ both powered by **Nx**.
 
-It is built using **Nestjs**, **Angular 19**, **Docker**, **tRPC**, **PostgresSQL**, and **TypeORM**.
+It is built using **Nestjs**, **Angular 19**, **Docker**, **PostgresSQL**, and **TypeORM**.
 
 This software is built with **Robustness**, **System High-Availability** and **Reliability** in mind.
 
