@@ -19,7 +19,6 @@ import { User } from './entities/user.entity';
 
 @Injectable()
 export class UsersService extends BaseService<User> {
-
   constructor(
     @InjectRepository(User)
     repository: Repository<User>,
@@ -61,7 +60,6 @@ export class UsersService extends BaseService<User> {
     const tokens = await this.getTokens(existingUser.id, existingUser.email);
     await this.updateRefreshTokenHash(existingUser.id, tokens.refresh_token);
     return tokens;
-
   }
 
   async localSignup(dto: CreateUserDto) {
@@ -79,7 +77,7 @@ export class UsersService extends BaseService<User> {
     });
 
     if (!user) {
-      throw new InternalServerErrorException("User Creation Failed!");
+      throw new InternalServerErrorException('User Creation Failed!');
     }
 
     const tokens = await this.getTokens(user.id, user.email);
@@ -88,18 +86,24 @@ export class UsersService extends BaseService<User> {
   }
 
   async logout(userId: string) {
-    await this.repository.update({ id: userId, hashedRefreshToken: Not(IsNull()) }, { hashedRefreshToken: null });
+    await this.repository.update(
+      { id: userId, hashedRefreshToken: Not(IsNull()) },
+      { hashedRefreshToken: null },
+    );
   }
 
   async refreshTokens(id: string, refreshToken: string) {
     const existingUser = await this.findOne(id);
     if (!existingUser || !existingUser.hashedRefreshToken) {
-      throw new ForbiddenException("Access Denied!");
+      throw new ForbiddenException('Access Denied!');
     }
 
-    const isMatch = this.cryptoService.verifyToken(refreshToken, existingUser.hashedRefreshToken);
+    const isMatch = this.cryptoService.verifyToken(
+      refreshToken,
+      existingUser.hashedRefreshToken,
+    );
     if (!isMatch) {
-      throw new ForbiddenException("Access Denied!");
+      throw new ForbiddenException('Access Denied!');
     }
   }
 
@@ -143,25 +147,34 @@ export class UsersService extends BaseService<User> {
     return updatedUser;
   }
 
-
-
   async getTokens(userId: string, email: string) {
     const [at, rt] = await Promise.all([
-      this.jwtService.signAsync({ sub: userId, email: email }, { secret: "my very amazing secret that is soooo secure!!!!", expiresIn: 60 * 60 }),
-      this.jwtService.signAsync({ sub: userId, email: email }, { secret: "my very amazing secret that is soooo secure!!!!", expiresIn: 60 * 60 * 24 * 7 * 3 }),
+      this.jwtService.signAsync(
+        { sub: userId, email: email },
+        {
+          secret: 'my very amazing secret that is soooo secure!!!!',
+          expiresIn: 60 * 60,
+        },
+      ),
+      this.jwtService.signAsync(
+        { sub: userId, email: email },
+        {
+          secret: 'my very amazing secret that is soooo secure!!!!',
+          expiresIn: 60 * 60 * 24 * 7 * 3,
+        },
+      ),
     ]);
 
     return {
       access_token: at,
       refresh_token: rt,
-    }
+    };
   }
 
   async updateRefreshTokenHash(userId: string, refreshToken: string) {
     const hash = await this.cryptoService.hashToken(refreshToken);
     await this.repository.update({ id: userId }, { hashedRefreshToken: hash });
   }
-
 
   async findByEmail(email: string): Promise<User | null> {
     return this.repository.findOne({
@@ -186,6 +199,4 @@ export class UsersService extends BaseService<User> {
       },
     });
   }
-
-
 }

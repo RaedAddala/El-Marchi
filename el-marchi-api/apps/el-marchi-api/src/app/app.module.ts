@@ -5,10 +5,10 @@ import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { fromZodError } from 'zod-validation-error';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { UsersModule } from './authentication_authorization/users.module';
 import { EnvConfig, envSchema } from './common/config/env.schema';
 import { entitiesList } from './common/entities/entities';
 import { jwtFactory } from './common/jwt/jwt.def';
-import { UsersModule } from './authentication_authorization/users.module';
 
 @Module({
   imports: [
@@ -60,4 +60,4 @@ import { UsersModule } from './authentication_authorization/users.module';
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule { }
+export class AppModule {}

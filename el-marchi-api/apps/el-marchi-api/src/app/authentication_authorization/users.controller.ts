@@ -5,8 +5,6 @@ import {
   HttpStatus,
   Post,
   Put,
-  Req,
-  UnauthorizedException,
   UseGuards,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
@@ -16,15 +14,14 @@ import { loginDto } from './dtos/login.dto';
 import { ChangePasswordDto } from './dtos/change.password.dto';
 import { UpdateUserDto } from './dtos/update.user.dto';
 import { UsersService } from './users.service';
-import { AuthGuard } from '@nestjs/passport';
 
+import { GetCurrentUser, GetCurrentUserId } from '../common/decorators';
+import { AccessTokenGuard, RefreshTokenGuard } from '../common/guards';
 
-import { Request } from "express";
-import { JWTPayload } from '../common/types/jwt.payload';
 @Controller('users')
 @ApiTags('users')
 export class UsersController {
-  constructor(private readonly userService: UsersService) { }
+  constructor(private readonly userService: UsersService) {}
 
   @Post('local/signup')
   @HttpCode(HttpStatus.CREATED)
@@ -39,40 +36,39 @@ export class UsersController {
   }
 
   @Post('logout')
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(AccessTokenGuard)
   @HttpCode(HttpStatus.OK)
-  logout(@Req() req: Request) {
-    const user = req.user as JWTPayload;
-    return this.userService.logout(user.sub);
+  logout(@GetCurrentUserId() userId: string) {
+    return this.userService.logout(userId);
   }
 
   @Post('refresh')
-  @UseGuards(AuthGuard('jwt-refresh'))
+  @UseGuards(RefreshTokenGuard)
   @HttpCode(HttpStatus.OK)
-  refreshTokens(@Req() req: Request) {
-    const user = req.user as JWTPayload & { refreshToken: string };
-    return this.userService.refreshTokens(user.sub, user.refreshToken);
+  refreshTokens(
+    @GetCurrentUserId() userId: string,
+    @GetCurrentUser('refreshToken') refreshToken: string,
+  ) {
+    return this.userService.refreshTokens(userId, refreshToken);
   }
 
   @Put('change-password')
   @HttpCode(HttpStatus.OK)
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(AccessTokenGuard)
   changePassword(
     @Body() changePasswordDto: ChangePasswordDto,
-    @Req() req: Request,
+    @GetCurrentUserId() userId: string,
   ) {
-    const user = req.user as JWTPayload;
-    return this.userService.changePassword(user.sub, changePasswordDto);
+    return this.userService.changePassword(userId, changePasswordDto);
   }
 
   @Put('update-profile')
   @HttpCode(HttpStatus.OK)
-  @UseGuards(AuthGuard('jwt'))
-  updateUser(@Body() update: UpdateUserDto, @Req() req: Request) {
-    const user = req.user as JWTPayload;
-    if (!user) {
-      throw new UnauthorizedException();
-    }
-    return this.userService.update(user.sub, update);
+  @UseGuards(AccessTokenGuard)
+  updateUser(
+    @Body() update: UpdateUserDto,
+    @GetCurrentUserId() userId: string,
+  ) {
+    return this.userService.update(userId, update);
   }
 }

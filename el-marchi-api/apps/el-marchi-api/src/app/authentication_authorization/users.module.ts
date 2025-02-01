@@ -5,9 +5,9 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { jwtFactory } from '../common/jwt/jwt.def';
 import { CryptoService } from '../crypto/crypto.service';
 import { User } from './entities/user.entity';
+import { AccessTokenStrategy, RefreshTokenStrategy } from './strategies';
 import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
-import { AccessTokenStrategy, RefreshTokenStrategy } from './strategies';
 
 @Module({
   imports: [
@@ -17,7 +17,12 @@ import { AccessTokenStrategy, RefreshTokenStrategy } from './strategies';
       useFactory: jwtFactory,
     }),
   ],
-  providers: [UsersService, CryptoService, AccessTokenStrategy, RefreshTokenStrategy],
+  providers: [
+    UsersService,
+    CryptoService,
+    AccessTokenStrategy,
+    RefreshTokenStrategy,
+  ],
   controllers: [UsersController],
 })
-export class UsersModule { }
+export class UsersModule {}
