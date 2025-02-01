@@ -10,6 +10,7 @@ import { randomUUID } from 'crypto';
 import { Repository } from 'typeorm';
 import { BaseService } from '../common/database/base.service';
 import { CryptoService } from '../crypto/crypto.service';
+import { ChangePasswordDto } from './dtos/change.password.dto';
 import { CreateUserDto } from './dtos/create.user.dto';
 import { jwtStruct } from './dtos/jwt.struct';
 import { loginDto } from './dtos/login.dto';
@@ -17,11 +18,9 @@ import { RefreshTokensType } from './dtos/refresh.token.dto';
 import { UpdateUserDto } from './dtos/update.user.dto';
 import { User } from './entities/user.entity';
 import { RefreshTokenService } from './refreshtoken.service';
-import { ChangePasswordDto } from './dtos/change.password.dto';
 
 @Injectable()
 export class UsersService extends BaseService<User> {
-
   constructor(
     @InjectRepository(User)
     repository: Repository<User>,
@@ -165,7 +164,10 @@ export class UsersService extends BaseService<User> {
     return this.generateUserTokens(token.user.id);
   }
 
-  async changePassword(userId: string | undefined, changePasswordDto: ChangePasswordDto) {
+  async changePassword(
+    userId: string | undefined,
+    changePasswordDto: ChangePasswordDto,
+  ) {
     if (!userId) {
       throw new UnauthorizedException();
     }
@@ -200,6 +202,5 @@ export class UsersService extends BaseService<User> {
     });
 
     return updatedUser;
-
   }
 }

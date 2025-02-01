@@ -1,19 +1,27 @@
-import { Body, Controller, Post, Put, Req, UnauthorizedException, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Post,
+  Put,
+  Req,
+  UnauthorizedException,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { CreateUserDto } from './dtos/create.user.dto';
 import { loginDto } from './dtos/login.dto';
 
-import { RefreshTokensType } from './dtos/refresh.token.dto';
-import { UsersService } from './users.service';
-import { ChangePasswordDto } from './dtos/change.password.dto';
-import { AuthGuard } from './guards/auth.guard';
 import { UsedRequest } from '../common/request/request.def';
+import { ChangePasswordDto } from './dtos/change.password.dto';
+import { RefreshTokensType } from './dtos/refresh.token.dto';
 import { UpdateUserDto } from './dtos/update.user.dto';
+import { AuthGuard } from './guards/auth.guard';
+import { UsersService } from './users.service';
 
 @Controller('users')
 @ApiTags('users')
 export class UsersController {
-  constructor(private readonly userService: UsersService) { }
+  constructor(private readonly userService: UsersService) {}
 
   @Post('signup')
   signup(@Body() createUserDto: CreateUserDto) {
@@ -32,7 +40,10 @@ export class UsersController {
 
   @UseGuards(AuthGuard)
   @Put('change-password')
-  changePassword(@Body() changePasswordDto: ChangePasswordDto, @Req() req: UsedRequest) {
+  changePassword(
+    @Body() changePasswordDto: ChangePasswordDto,
+    @Req() req: UsedRequest,
+  ) {
     return this.userService.changePassword(req.userId, changePasswordDto);
   }
 

@@ -14,7 +14,7 @@ const UpdateUserSchema = z.object({
   birthDate: z.coerce.date().optional(),
 });
 
-export class UpdateUserDto extends createZodDto(UpdateUserSchema) { }
+export class UpdateUserDto extends createZodDto(UpdateUserSchema) {}
 
 export type UpdateUserType = z.infer<typeof UpdateUserSchema>;
 export { UpdateUserSchema };

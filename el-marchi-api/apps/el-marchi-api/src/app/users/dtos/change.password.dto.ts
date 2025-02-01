@@ -10,7 +10,7 @@ const ChangePasswordSchema = z.object({
     .min(8, { message: 'oldPassword must be at least 8 characters long' }),
 });
 
-export class ChangePasswordDto extends createZodDto(ChangePasswordSchema) { }
+export class ChangePasswordDto extends createZodDto(ChangePasswordSchema) {}
 
 export type ChangePasswordType = z.infer<typeof ChangePasswordSchema>;
 export { ChangePasswordSchema };
