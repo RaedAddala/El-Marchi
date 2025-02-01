@@ -1,23 +1,21 @@
 import {
   ConflictException,
+  ForbiddenException,
   Injectable,
+  InternalServerErrorException,
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
-import { randomUUID } from 'crypto';
-import { Repository } from 'typeorm';
+import { IsNull, Not, Repository } from 'typeorm';
 import { BaseService } from '../common/database/base.service';
 import { CryptoService } from '../crypto/crypto.service';
 import { ChangePasswordDto } from './dtos/change.password.dto';
 import { CreateUserDto } from './dtos/create.user.dto';
-import { jwtStruct } from './dtos/jwt.struct';
 import { loginDto } from './dtos/login.dto';
-import { RefreshTokensType } from './dtos/refresh.token.dto';
 import { UpdateUserDto } from './dtos/update.user.dto';
 import { User } from './entities/user.entity';
-import { RefreshTokenService } from './refreshtoken.service';
 
 @Injectable()
 export class UsersService extends BaseService<User> {
@@ -27,9 +25,43 @@ export class UsersService extends BaseService<User> {
     repository: Repository<User>,
     private readonly cryptoService: CryptoService,
     private readonly jwtService: JwtService,
-    private readonly refreshTokenService: RefreshTokenService,
   ) {
     super(repository);
+  }
+
+  override async update(id: string, dto: UpdateUserDto) {
+    const user = await this.findOne(id);
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    const updatedUser = await super.update(id, {
+      ...user,
+      ...dto,
+    });
+
+    return updatedUser;
+  }
+
+  async localLogin(dto: loginDto) {
+    const existingUser = await this.findByEmailWithPassword(dto.email);
+    if (!existingUser) {
+      throw new UnauthorizedException('Email or Password is wrong!');
+    }
+
+    const match = await this.cryptoService.verifyPassword(
+      dto.password,
+      existingUser.passwordHash,
+      existingUser.passwordSalt,
+    );
+
+    if (!match) {
+      throw new UnauthorizedException('Email or Password is wrong!');
+    }
+
+    const tokens = await this.getTokens(existingUser.id, existingUser.email);
+    await this.updateRefreshTokenHash(existingUser.id, tokens.refresh_token);
+    return tokens;
+
   }
 
   async localSignup(dto: CreateUserDto) {
@@ -46,123 +78,29 @@ export class UsersService extends BaseService<User> {
       passwordSalt: salt,
     });
 
-    return user;
-  }
-
-  override async update(id: string, dto: UpdateUserDto) {
-    const user = await this.findOne(id);
     if (!user) {
-      throw new NotFoundException('User not found');
-    }
-    const updatedUser = await super.update(id, {
-      ...user,
-      ...dto,
-    });
-
-    return updatedUser;
-  }
-
-  async findByEmail(email: string): Promise<User | null> {
-    return this.repository.findOne({
-      where: { email },
-    });
-  }
-
-  async findByEmailWithPassword(email: string): Promise<User | null> {
-    return this.repository.findOne({
-      where: { email },
-      select: {
-        id: true,
-        email: true,
-        firstName: true,
-        lastName: true,
-        birthDate: true,
-        passwordHash: true,
-        passwordSalt: true,
-        createdAt: true,
-        updatedAt: true,
-        deletedAt: true,
-      },
-    });
-  }
-
-  async validateCredentials(
-    email: string,
-    password: string,
-  ): Promise<User | null> {
-    const user = await this.findByEmailWithPassword(email);
-    if (!user) {
-      return null;
+      throw new InternalServerErrorException("User Creation Failed!");
     }
 
-    const isValid = await this.cryptoService.verifyPassword(
-      password,
-      user.passwordHash,
-      user.passwordSalt,
-    );
-
-    return isValid ? user : null;
+    const tokens = await this.getTokens(user.id, user.email);
+    await this.updateRefreshTokenHash(user.id, tokens.refresh_token);
+    return tokens;
   }
 
-  async localLogin(dto: loginDto) {
-    const existingUser = await this.findByEmailWithPassword(dto.email);
-    if (!existingUser) {
-      throw new UnauthorizedException('Email or Password is wrong!');
+  async logout(userId: string) {
+    await this.repository.update({ id: userId, hashedRefreshToken: Not(IsNull()) }, { hashedRefreshToken: null });
+  }
+
+  async refreshTokens(id: string, refreshToken: string) {
+    const existingUser = await this.findOne(id);
+    if (!existingUser || !existingUser.hashedRefreshToken) {
+      throw new ForbiddenException("Access Denied!");
     }
 
-    const match = await this.cryptoService.verifyPassword(
-      dto.password,
-      existingUser.passwordHash,
-      existingUser.passwordSalt,
-    );
-    if (!match) {
-      throw new UnauthorizedException('Email or Password is wrong!');
+    const isMatch = this.cryptoService.verifyToken(refreshToken, existingUser.hashedRefreshToken);
+    if (!isMatch) {
+      throw new ForbiddenException("Access Denied!");
     }
-    return await this.generateUserTokens(existingUser.id);
-  }
-
-  private async generateUserTokens(userId: string) {
-    const accessToken = this.generateAccessToken(userId);
-    const refreshToken = randomUUID();
-
-    await this.storeRefreshToken(refreshToken, userId);
-    return { accessToken, refreshToken };
-  }
-
-  private generateAccessToken(userId: string) {
-    return this.jwtService.sign({ userId } as jwtStruct, { expiresIn: '1h' });
-  }
-
-  private async storeRefreshToken(token: string, userId: string) {
-    const expiryDate = new Date();
-    expiryDate.setDate(expiryDate.getDate() + 3);
-
-    await this.refreshTokenService.create({
-      token,
-      user: { id: userId },
-      expiryDate,
-    });
-  }
-
-  async refreshTokens(refreshTokensDto: RefreshTokensType) {
-    const token = await this.refreshTokenService.findOneBy({
-      token: refreshTokensDto.token,
-    });
-
-    if (!token) {
-      throw new UnauthorizedException('Token Invalid');
-    }
-
-    // delete old refresh token:
-    // either it is expired and will throw unauthroized
-    // or     it is correct and we will generate new tokens
-    await this.refreshTokenService.hardDelete(token.id);
-
-    if (token.expiryDate > new Date()) {
-      throw new UnauthorizedException('Token Invalid');
-    }
-
-    return this.generateUserTokens(token.user.id);
   }
 
   async changePassword(
@@ -205,8 +143,49 @@ export class UsersService extends BaseService<User> {
     return updatedUser;
   }
 
-  logout() {
-    throw new Error('Method not implemented.');
+
+
+  async getTokens(userId: string, email: string) {
+    const [at, rt] = await Promise.all([
+      this.jwtService.signAsync({ sub: userId, email: email }, { secret: "my very amazing secret that is soooo secure!!!!", expiresIn: 60 * 60 }),
+      this.jwtService.signAsync({ sub: userId, email: email }, { secret: "my very amazing secret that is soooo secure!!!!", expiresIn: 60 * 60 * 24 * 7 * 3 }),
+    ]);
+
+    return {
+      access_token: at,
+      refresh_token: rt,
+    }
   }
+
+  async updateRefreshTokenHash(userId: string, refreshToken: string) {
+    const hash = await this.cryptoService.hashToken(refreshToken);
+    await this.repository.update({ id: userId }, { hashedRefreshToken: hash });
+  }
+
+
+  async findByEmail(email: string): Promise<User | null> {
+    return this.repository.findOne({
+      where: { email },
+    });
+  }
+
+  async findByEmailWithPassword(email: string): Promise<User | null> {
+    return this.repository.findOne({
+      where: { email },
+      select: {
+        id: true,
+        email: true,
+        firstName: true,
+        lastName: true,
+        birthDate: true,
+        passwordHash: true,
+        passwordSalt: true,
+        createdAt: true,
+        updatedAt: true,
+        deletedAt: true,
+      },
+    });
+  }
+
 
 }

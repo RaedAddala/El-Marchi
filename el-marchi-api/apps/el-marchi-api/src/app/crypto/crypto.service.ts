@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import * as crypto from 'crypto';
+import { createHash, pbkdf2, randomBytes, timingSafeEqual } from 'crypto';
 import { promisify } from 'util';
 
-const pbkdf2 = promisify(crypto.pbkdf2);
+const pbkdf2P = promisify(pbkdf2);
 
 @Injectable()
 export class CryptoService {
@@ -10,10 +10,24 @@ export class CryptoService {
   private readonly keylen = 64;
   private readonly digest = 'sha512';
 
+  async hashToken(token: string): Promise<string> {
+    return createHash('sha256').update(token).digest('hex');
+  }
+
+  async verifyToken(token: string, storedHash: string): Promise<boolean> {
+    const computedHash = await this.hashToken(token);
+    const computedBuffer = Buffer.from(computedHash, 'hex');
+    const storedBuffer = Buffer.from(storedHash, 'hex');
+    if (computedBuffer.length !== storedBuffer.length) {
+      return false;
+    }
+    return timingSafeEqual(computedBuffer, storedBuffer);
+  }
+
   async hashPassword(
     password: string,
   ): Promise<{ hash: string; salt: string }> {
-    const salt = crypto.randomBytes(32).toString('hex');
+    const salt = randomBytes(32).toString('hex');
     const hash = await this.generateHash(password, salt);
     return { hash, salt };
   }
@@ -23,12 +37,17 @@ export class CryptoService {
     storedHash: string,
     storedSalt: string,
   ): Promise<boolean> {
-    const hash = await this.generateHash(password, storedSalt);
-    return storedHash === hash;
+    const computedHash = await this.generateHash(password, storedSalt);
+    const computedBuffer = Buffer.from(computedHash, 'hex');
+    const storedBuffer = Buffer.from(storedHash, 'hex');
+    if (computedBuffer.length !== storedBuffer.length) {
+      return false;
+    }
+    return timingSafeEqual(computedBuffer, storedBuffer);
   }
 
   private async generateHash(password: string, salt: string): Promise<string> {
-    const derivedKey = await pbkdf2(
+    const derivedKey = await pbkdf2P(
       password,
       salt,
       this.iterations,

@@ -43,4 +43,10 @@ export class User extends BaseEntity {
     select: false,
   })
   passwordSalt!: string;
+
+  @Column({
+    nullable: true,
+    select: false,
+  })
+  hashedRefreshToken!: string | null;
 }

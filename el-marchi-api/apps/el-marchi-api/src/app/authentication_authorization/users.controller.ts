@@ -1,6 +1,8 @@
 import {
   Body,
   Controller,
+  HttpCode,
+  HttpStatus,
   Post,
   Put,
   Req,
@@ -11,53 +13,66 @@ import { ApiTags } from '@nestjs/swagger';
 import { CreateUserDto } from './dtos/create.user.dto';
 import { loginDto } from './dtos/login.dto';
 
-import { UsedRequest } from '../common/request/request.def';
 import { ChangePasswordDto } from './dtos/change.password.dto';
-import { RefreshTokensType } from './dtos/refresh.token.dto';
 import { UpdateUserDto } from './dtos/update.user.dto';
-import { AuthGuard } from './guards/auth.guard';
 import { UsersService } from './users.service';
+import { AuthGuard } from '@nestjs/passport';
 
+
+import { Request } from "express";
+import { JWTPayload } from '../common/types/jwt.payload';
 @Controller('users')
 @ApiTags('users')
 export class UsersController {
-  constructor(private readonly userService: UsersService) {}
+  constructor(private readonly userService: UsersService) { }
 
-  @Post('/local/signup')
+  @Post('local/signup')
+  @HttpCode(HttpStatus.CREATED)
   localSignup(@Body() createUserDto: CreateUserDto) {
     return this.userService.localSignup(createUserDto);
   }
 
-  @Post('/local/login')
+  @Post('local/login')
+  @HttpCode(HttpStatus.OK)
   localLogin(@Body() loginDto: loginDto) {
     return this.userService.localLogin(loginDto);
   }
 
   @Post('logout')
-  logout() {
-    return this.userService.logout();
+  @UseGuards(AuthGuard('jwt'))
+  @HttpCode(HttpStatus.OK)
+  logout(@Req() req: Request) {
+    const user = req.user as JWTPayload;
+    return this.userService.logout(user.sub);
   }
 
   @Post('refresh')
-  refreshTokens(@Body() refreshTokensDto: RefreshTokensType) {
-    return this.userService.refreshTokens(refreshTokensDto);
+  @UseGuards(AuthGuard('jwt-refresh'))
+  @HttpCode(HttpStatus.OK)
+  refreshTokens(@Req() req: Request) {
+    const user = req.user as JWTPayload & { refreshToken: string };
+    return this.userService.refreshTokens(user.sub, user.refreshToken);
   }
 
-  @UseGuards(AuthGuard)
   @Put('change-password')
+  @HttpCode(HttpStatus.OK)
+  @UseGuards(AuthGuard('jwt'))
   changePassword(
     @Body() changePasswordDto: ChangePasswordDto,
-    @Req() req: UsedRequest,
+    @Req() req: Request,
   ) {
-    return this.userService.changePassword(req.userId, changePasswordDto);
+    const user = req.user as JWTPayload;
+    return this.userService.changePassword(user.sub, changePasswordDto);
   }
 
-  @UseGuards(AuthGuard)
   @Put('update-profile')
-  updateUser(@Body() update: UpdateUserDto, @Req() req: UsedRequest) {
-    if (!req.userId) {
+  @HttpCode(HttpStatus.OK)
+  @UseGuards(AuthGuard('jwt'))
+  updateUser(@Body() update: UpdateUserDto, @Req() req: Request) {
+    const user = req.user as JWTPayload;
+    if (!user) {
       throw new UnauthorizedException();
     }
-    return this.userService.update(req.userId, update);
+    return this.userService.update(user.sub, update);
   }
 }
