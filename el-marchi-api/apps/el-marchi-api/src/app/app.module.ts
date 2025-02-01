@@ -8,7 +8,7 @@ import { AppService } from './app.service';
 import { EnvConfig, envSchema } from './common/config/env.schema';
 import { entitiesList } from './common/entities/entities';
 import { jwtFactory } from './common/jwt/jwt.def';
-import { UsersModule } from './users/users.module';
+import { UsersModule } from './authentication_authorization/users.module';
 
 @Module({
   imports: [
@@ -60,4 +60,4 @@ import { UsersModule } from './users/users.module';
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule { }

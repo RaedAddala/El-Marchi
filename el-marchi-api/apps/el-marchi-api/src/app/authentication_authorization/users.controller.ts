@@ -23,14 +23,19 @@ import { UsersService } from './users.service';
 export class UsersController {
   constructor(private readonly userService: UsersService) {}
 
-  @Post('signup')
-  signup(@Body() createUserDto: CreateUserDto) {
-    return this.userService.create(createUserDto);
+  @Post('/local/signup')
+  localSignup(@Body() createUserDto: CreateUserDto) {
+    return this.userService.localSignup(createUserDto);
   }
 
-  @Post('login')
-  login(@Body() loginDto: loginDto) {
-    return this.userService.login(loginDto);
+  @Post('/local/login')
+  localLogin(@Body() loginDto: loginDto) {
+    return this.userService.localLogin(loginDto);
+  }
+
+  @Post('logout')
+  logout() {
+    return this.userService.logout();
   }
 
   @Post('refresh')

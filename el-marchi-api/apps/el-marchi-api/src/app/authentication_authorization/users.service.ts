@@ -21,6 +21,7 @@ import { RefreshTokenService } from './refreshtoken.service';
 
 @Injectable()
 export class UsersService extends BaseService<User> {
+
   constructor(
     @InjectRepository(User)
     repository: Repository<User>,
@@ -31,7 +32,7 @@ export class UsersService extends BaseService<User> {
     super(repository);
   }
 
-  override async create(dto: CreateUserDto) {
+  async localSignup(dto: CreateUserDto) {
     const existingUser = await this.findByEmail(dto.email);
     if (existingUser) {
       throw new ConflictException('Email already exists!');
@@ -39,7 +40,7 @@ export class UsersService extends BaseService<User> {
 
     const { hash, salt } = await this.cryptoService.hashPassword(dto.password);
 
-    const user = await super.create({
+    const user = await this.create({
       ...dto,
       passwordHash: hash,
       passwordSalt: salt,
@@ -103,7 +104,7 @@ export class UsersService extends BaseService<User> {
     return isValid ? user : null;
   }
 
-  async login(dto: loginDto) {
+  async localLogin(dto: loginDto) {
     const existingUser = await this.findByEmailWithPassword(dto.email);
     if (!existingUser) {
       throw new UnauthorizedException('Email or Password is wrong!');
@@ -203,4 +204,9 @@ export class UsersService extends BaseService<User> {
 
     return updatedUser;
   }
+
+  logout() {
+    throw new Error('Method not implemented.');
+  }
+
 }
