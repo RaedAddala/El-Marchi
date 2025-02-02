@@ -6,9 +6,16 @@ import { fromZodError } from 'zod-validation-error';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UsersModule } from './authentication_authorization/users.module';
+import { CategoriesModule } from './categories/categories.module';
 import { EnvConfig, envSchema } from './common/config/env.schema';
 import { entitiesList } from './common/entities/entities';
 import { jwtFactory } from './common/jwt/jwt.def';
+import { OrdersModule } from './orders/orders.module';
+import { PermissionsModule } from './permissions/permissions.module';
+import { ProductsModule } from './products/products.module';
+import { RolesModule } from './roles/roles.module';
+import { StockHistoryModule } from './stockHistory/stock-history.module';
+import { SubCategoriesModule } from './subCategories/sub-categories.module';
 
 @Module({
   imports: [
@@ -56,8 +63,15 @@ import { jwtFactory } from './common/jwt/jwt.def';
       useFactory: jwtFactory,
     }),
     UsersModule,
+    ProductsModule,
+    OrdersModule,
+    CategoriesModule,
+    SubCategoriesModule,
+    RolesModule,
+    PermissionsModule,
+    StockHistoryModule,
   ],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule { }

@@ -25,7 +25,6 @@
     "declarationMap": true,
     "incremental": true,
     "composite": true,
-
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "experimentalDecorators": true,
