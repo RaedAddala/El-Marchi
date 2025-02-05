@@ -8,7 +8,7 @@ import {
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
-import { IsNull, Not, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { BaseService } from '../common/database/base.service';
 import { CryptoService } from '../crypto/crypto.service';
 import { ChangePasswordDto } from './dtos/change.password.dto';
@@ -16,6 +16,8 @@ import { CreateUserDto } from './dtos/create.user.dto';
 import { loginDto } from './dtos/login.dto';
 import { UpdateUserDto } from './dtos/update.user.dto';
 import { User } from './entities/user.entity';
+import { JwtconfigService } from '../common/jwtconfig/jwtconfig.service';
+import { RedisService } from '../common/redis/redis.service';
 
 @Injectable()
 export class UsersService extends BaseService<User> {
@@ -24,21 +26,10 @@ export class UsersService extends BaseService<User> {
     repository: Repository<User>,
     private readonly cryptoService: CryptoService,
     private readonly jwtService: JwtService,
+    private readonly jwtConfig: JwtconfigService,
+    private readonly redisService: RedisService,
   ) {
     super(repository);
-  }
-
-  override async update(id: string, dto: UpdateUserDto) {
-    const user = await this.findOne(id);
-    if (!user) {
-      throw new NotFoundException('User not found');
-    }
-    const updatedUser = await super.update(id, {
-      ...user,
-      ...dto,
-    });
-
-    return updatedUser;
   }
 
   async localLogin(dto: loginDto) {
@@ -58,7 +49,6 @@ export class UsersService extends BaseService<User> {
     }
 
     const tokens = await this.getTokens(existingUser.id, existingUser.email);
-    await this.updateRefreshTokenHash(existingUser.id, tokens.refresh_token);
     return tokens;
   }
 
@@ -81,31 +71,13 @@ export class UsersService extends BaseService<User> {
     }
 
     const tokens = await this.getTokens(user.id, user.email);
-    await this.updateRefreshTokenHash(user.id, tokens.refresh_token);
     return tokens;
   }
 
   async logout(userId: string) {
-    await this.repository.update(
-      { id: userId, hashedRefreshToken: Not(IsNull()) },
-      { hashedRefreshToken: null },
-    );
+    await this.redisService.deleteRefreshToken(userId);
   }
 
-  async refreshTokens(id: string, refreshToken: string) {
-    const existingUser = await this.findOne(id);
-    if (!existingUser || !existingUser.hashedRefreshToken) {
-      throw new ForbiddenException('Access Denied!');
-    }
-
-    const isMatch = this.cryptoService.verifyToken(
-      refreshToken,
-      existingUser.hashedRefreshToken,
-    );
-    if (!isMatch) {
-      throw new ForbiddenException('Access Denied!');
-    }
-  }
 
   async changePassword(
     userId: string | undefined,
@@ -150,30 +122,55 @@ export class UsersService extends BaseService<User> {
   async getTokens(userId: string, email: string) {
     const [at, rt] = await Promise.all([
       this.jwtService.signAsync(
-        { sub: userId, email: email },
+        { sub: userId, email },
         {
-          secret: 'my very amazing secret that is soooo secure!!!!',
-          expiresIn: 60 * 60,
-        },
+          privateKey: this.jwtConfig.getJwtConfig().access.privateKey,
+          algorithm: 'ES512',
+          expiresIn: '15m',
+        }
       ),
       this.jwtService.signAsync(
-        { sub: userId, email: email },
+        { sub: userId },
         {
-          secret: 'my very amazing secret that is soooo secure!!!!',
-          expiresIn: 60 * 60 * 24 * 7 * 3,
-        },
+          privateKey: this.jwtConfig.getJwtConfig().refresh.privateKey,
+          algorithm: 'ES512',
+          expiresIn: '7d',
+        }
       ),
     ]);
 
+    await this.redisService.storeRefreshToken(userId, rt);
     return {
       access_token: at,
       refresh_token: rt,
     };
   }
 
-  async updateRefreshTokenHash(userId: string, refreshToken: string) {
-    const hash = await this.cryptoService.hashToken(refreshToken);
-    await this.repository.update({ id: userId }, { hashedRefreshToken: hash });
+  async refreshTokens(id: string, refreshToken: string) {
+    const existingUser = await this.findOne(id);
+    if (!existingUser) throw new ForbiddenException('Access Denied');
+
+    const isValid = await this.redisService.validateRefreshToken(id, refreshToken);
+    if (!isValid) throw new ForbiddenException('Access Denied');
+
+    // Delete old refresh token
+    await this.redisService.deleteRefreshToken(id);
+
+    const tokens = await this.getTokens(id, existingUser.email);
+    return tokens;
+  }
+
+  override async update(id: string, dto: UpdateUserDto) {
+    const user = await this.findOne(id);
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    const updatedUser = await super.update(id, {
+      ...user,
+      ...dto,
+    });
+
+    return updatedUser;
   }
 
   async findByEmail(email: string): Promise<User | null> {

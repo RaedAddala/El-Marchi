@@ -11,6 +11,8 @@ import { EnvConfig, envSchema } from './common/config/env.schema';
 import { entitiesList } from './common/entities/entities';
 import { jwtFactory } from './common/jwt/jwt.def';
 import { JwtconfigService } from './common/jwtconfig/jwtconfig.service';
+import { RedisService } from './common/redis/redis.service';
+import { RedisServiceService } from './common/redisService/redis-service.service';
 import { CouponsModule } from './coupons/coupons.module';
 import { CustomersModule } from './customers/customers.module';
 import { DiscountsModule } from './discounts/discounts.module';
@@ -92,6 +94,6 @@ import { TradersModule } from './traders/traders.module';
     CouponsModule,
   ],
   controllers: [AppController],
-  providers: [AppService, JwtconfigService],
+  providers: [AppService, JwtconfigService, RedisServiceService, RedisService],
 })
-export class AppModule { }
+export class AppModule {}

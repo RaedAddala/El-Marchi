@@ -1,7 +1,7 @@
 import { Column, Entity, Index, OneToOne } from 'typeorm';
 import { BaseEntity } from '../../common/database/base.entity';
-import { Trader } from '../../traders/entities/trader.entity';
 import { Customer } from '../../customers/entities/customer.entity';
+import { Trader } from '../../traders/entities/trader.entity';
 
 @Entity('users')
 export class User extends BaseEntity {
@@ -54,9 +54,9 @@ export class User extends BaseEntity {
   })
   passwordSalt!: string;
 
-  @OneToOne(() => Customer, (customer) => customer.user, { nullable: true })
+  @OneToOne(() => Customer, customer => customer.user, { nullable: true })
   customer?: Customer;
 
-  @OneToOne(() => Trader, (trader) => trader.user, { nullable: true })
+  @OneToOne(() => Trader, trader => trader.user, { nullable: true })
   trader?: Trader;
 }

@@ -1,5 +1,5 @@
-import { existsSync, mkdirSync, writeFileSync } from 'fs';
 import { generateKeyPairSync } from 'crypto';
+import { existsSync, mkdirSync, writeFileSync } from 'fs';
 
 /**
  * generateKeys
@@ -36,17 +36,33 @@ export function generateKeys() {
   const keyDir = './keys';
   if (!existsSync(keyDir)) mkdirSync(keyDir);
 
-  // Access Token Keys
+  // Access Token Keys (ECDSA)
   if (!existsSync(`${keyDir}/access_private.pem`)) {
-    const { privateKey, publicKey } = generateKeyPairSync('ed25519');
-    writeFileSync(`${keyDir}/access_private.pem`, privateKey.export({ type: 'pkcs8', format: 'pem' }));
-    writeFileSync(`${keyDir}/access_public.pem`, publicKey.export({ type: 'spki', format: 'pem' }));
+    const { privateKey, publicKey } = generateKeyPairSync('ec', {
+      namedCurve: 'secp521r1',
+    });
+    writeFileSync(
+      `${keyDir}/access_private.pem`,
+      privateKey.export({ type: 'pkcs8', format: 'pem' })
+    );
+    writeFileSync(
+      `${keyDir}/access_public.pem`,
+      publicKey.export({ type: 'spki', format: 'pem' })
+    );
   }
 
-  // Refresh Token Keys
+  // Refresh Token Keys (ECDSA)
   if (!existsSync(`${keyDir}/refresh_private.pem`)) {
-    const { privateKey, publicKey } = generateKeyPairSync('ed25519');
-    writeFileSync(`${keyDir}/refresh_private.pem`, privateKey.export({ type: 'pkcs8', format: 'pem' }));
-    writeFileSync(`${keyDir}/refresh_public.pem`, publicKey.export({ type: 'spki', format: 'pem' }));
+    const { privateKey, publicKey } = generateKeyPairSync('ec', {
+      namedCurve: 'secp521r1',
+    });
+    writeFileSync(
+      `${keyDir}/refresh_private.pem`,
+      privateKey.export({ type: 'pkcs8', format: 'pem' })
+    );
+    writeFileSync(
+      `${keyDir}/refresh_public.pem`,
+      publicKey.export({ type: 'spki', format: 'pem' })
+    );
   }
 }

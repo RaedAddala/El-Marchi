@@ -1,9 +1,8 @@
-import { Column, Entity } from "typeorm";
-import { BaseEntity } from "../../common/database/base.entity";
+import { Column, Entity } from 'typeorm';
+import { BaseEntity } from '../../common/database/base.entity';
 
-Entity('products')
+Entity('products');
 export class Product extends BaseEntity {
-
   @Column({ type: 'varchar', nullable: false })
   name!: string;
 
@@ -18,5 +17,4 @@ export class Product extends BaseEntity {
 
   @Column({ type: 'varchar', nullable: true })
   image?: string;
-
 }

@@ -14,11 +14,7 @@ import { ConfigService } from '@nestjs/config';
 import type { EnvConfig } from './app/common/config/env.schema';
 import { ZodValidationPipe } from './app/common/pipes/zod-validation.pipe';
 
-
 import { generateKeys } from './genKeys';
-
-
-
 
 async function bootstrap() {
   // generate the keys that will be used in the auth system later!
@@ -61,8 +57,8 @@ async function bootstrap() {
 
   Logger.log(
     `🚀 Application is running in ${configService.get('NODE_ENV')} mode on:\n` +
-    `- http://${hostname}:${port}/${globalPrefix}\n` +
-    `- ${await app.getUrl()}`,
+      `- http://${hostname}:${port}/${globalPrefix}\n` +
+      `- ${await app.getUrl()}`,
   );
 }
 

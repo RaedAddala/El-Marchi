@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { readFileSync } from 'fs';
 import { JwtModuleOptions } from '@nestjs/jwt';
+import { readFileSync } from 'fs';
 
 @Injectable()
 export class JwtconfigService {
@@ -8,7 +8,6 @@ export class JwtconfigService {
   private readonly accessPrivateKey: string;
   private readonly refreshPublicKey: string;
   private readonly refreshPrivateKey: string;
-
 
   constructor() {
     this.accessPublicKey = readFileSync('./keys/access_public.pem', 'utf8');
@@ -19,6 +18,7 @@ export class JwtconfigService {
 
   getJwtConfig() {
     return {
+      algorithm: 'ES512',
       access: {
         privateKey: this.accessPrivateKey,
         publicKey: this.accessPublicKey,

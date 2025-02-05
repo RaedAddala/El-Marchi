@@ -10,11 +10,15 @@ const CreateUserSchema = z.object({
     .string()
     .min(8, { message: 'Password must be at least 8 characters long' })
     .max(60, { message: 'Password must be at most 60 characters long' }),
-  phoneNumber: z.string().min(8, { message: 'Phone Number must be at least 8 characters long' }).regex(/^\+?\d+$/, { message: 'Phone Number must be numeric and may start with +' })
-
+  phoneNumber: z
+    .string()
+    .min(8, { message: 'Phone Number must be at least 8 characters long' })
+    .regex(/^\+?\d+$/, {
+      message: 'Phone Number must be numeric and may start with +',
+    }),
 });
 
-export class CreateUserDto extends createZodDto(CreateUserSchema) { }
+export class CreateUserDto extends createZodDto(CreateUserSchema) {}
 
 export type CreateUserType = z.infer<typeof CreateUserSchema>;
 export { CreateUserSchema };
