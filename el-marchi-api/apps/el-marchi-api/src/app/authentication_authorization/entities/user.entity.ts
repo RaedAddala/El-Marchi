@@ -1,5 +1,7 @@
-import { Column, Entity, Index } from 'typeorm';
+import { Column, Entity, Index, OneToOne } from 'typeorm';
 import { BaseEntity } from '../../common/database/base.entity';
+import { Trader } from '../../traders/entities/trader.entity';
+import { Customer } from '../../customers/entities/customer.entity';
 
 @Entity('users')
 export class User extends BaseEntity {
@@ -28,6 +30,14 @@ export class User extends BaseEntity {
 
   @Column({
     nullable: false,
+    name: 'phone_number',
+    type: 'varchar',
+    length: 20,
+  })
+  phoneNumber!: string;
+
+  @Column({
+    nullable: false,
     type: 'date',
   })
   birthDate!: Date;
@@ -44,10 +54,9 @@ export class User extends BaseEntity {
   })
   passwordSalt!: string;
 
-  @Column({
-    nullable: true,
-    select: false,
-    type: 'varchar'
-  })
-  hashedRefreshToken!: string | null;
+  @OneToOne(() => Customer, (customer) => customer.user, { nullable: true })
+  customer?: Customer;
+
+  @OneToOne(() => Trader, (trader) => trader.user, { nullable: true })
+  trader?: Trader;
 }

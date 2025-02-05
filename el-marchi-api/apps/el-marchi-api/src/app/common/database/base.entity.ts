@@ -13,12 +13,15 @@ export abstract class BaseEntity extends TypeOrmBaseEntity {
   @CreateDateColumn({
     name: 'created_at',
     type: 'timestamp with time zone',
+    default: 'now()',
+    readonly: true,
   })
   createdAt!: Date;
 
   @UpdateDateColumn({
     name: 'updated_at',
     type: 'timestamp with time zone',
+    default: 'now()',
   })
   updatedAt!: Date;
 

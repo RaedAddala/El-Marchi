@@ -45,6 +45,19 @@ export const envSchema = z.object({
       message: 'For Security Reasons JWT_Secret must be longer than 12.',
     }),
   ),
+
+  REDIS_HOSTNAME: extendApi(z.string().default('localhost'), {
+    description: 'REDIS host',
+    example: 'localhost',
+  }),
+  REDIS_PORT: extendApi(z.coerce.number().int().positive().default(6379), {
+    description: 'REDIS port',
+    example: 6379,
+  }),
+  REDIS_PASSWORD: extendApi(z.string().default('password'), {
+    description: 'REDIS password',
+    example: 'password',
+  }),
 });
 
 export type EnvConfig = z.infer<typeof envSchema>;

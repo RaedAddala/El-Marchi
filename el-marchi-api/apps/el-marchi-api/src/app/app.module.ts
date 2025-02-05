@@ -10,6 +10,7 @@ import { CategoriesModule } from './categories/categories.module';
 import { EnvConfig, envSchema } from './common/config/env.schema';
 import { entitiesList } from './common/entities/entities';
 import { jwtFactory } from './common/jwt/jwt.def';
+import { CouponsModule } from './coupons/coupons.module';
 import { CustomersModule } from './customers/customers.module';
 import { DiscountsModule } from './discounts/discounts.module';
 import { InvoicesModule } from './invoices/invoices.module';
@@ -86,6 +87,7 @@ import { TradersModule } from './traders/traders.module';
     InvoicesModule,
     CustomersModule,
     TradersModule,
+    CouponsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
