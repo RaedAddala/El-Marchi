@@ -43,3 +43,7 @@ Thumbs.db
 
 
 .env
+
+
+# Asymmetric Cryptography Keys
+*.pem
