@@ -1,6 +1,9 @@
 import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { JwtModuleOptions } from '@nestjs/jwt';
 import { readFileSync } from 'fs';
+import { join } from 'path';
+import { EnvConfig } from '../config/env.schema';
 
 @Injectable()
 export class JwtconfigService {
@@ -9,38 +12,59 @@ export class JwtconfigService {
   private readonly refreshPublicKey: string;
   private readonly refreshPrivateKey: string;
 
-  constructor() {
-    this.accessPublicKey = readFileSync('./keys/access_public.pem', 'utf8');
-    this.accessPrivateKey = readFileSync('./keys/access_private.pem', 'utf8');
-    this.refreshPublicKey = readFileSync('./keys/refresh_public.pem', 'utf8');
-    this.refreshPrivateKey = readFileSync('./keys/refresh_private.pem', 'utf8');
+  private readonly algorithm: string;
+  private readonly expiresInAccessToken: string;
+  private readonly expiresInRefreshToken: string;
+
+  constructor(private readonly config: ConfigService<EnvConfig, true>) {
+    this.accessPublicKey = readFileSync(
+      join(__dirname, '../../keys/access_public.pem'),
+      'utf8',
+    );
+    this.accessPrivateKey = readFileSync(
+      join(__dirname, '../../keys/access_private.pem'),
+      'utf8',
+    );
+    this.refreshPublicKey = readFileSync(
+      join(__dirname, '../../keys/refresh_public.pem'),
+      'utf8',
+    );
+    this.refreshPrivateKey = readFileSync(
+      join(__dirname, '../../keys/refresh_private.pem'),
+      'utf8',
+    );
+
+    this.algorithm = '1';
+    this.expiresInAccessToken = '1';
+    this.expiresInRefreshToken = '1';
   }
 
   getJwtConfig() {
     return {
-      algorithm: 'ES512',
+      algorithm: this.algorithm,
       access: {
         privateKey: this.accessPrivateKey,
         publicKey: this.accessPublicKey,
-        expiresIn: '15m',
+        expiresIn: this.expiresInAccessToken,
       },
       refresh: {
         privateKey: this.refreshPrivateKey,
         publicKey: this.refreshPublicKey,
-        expiresIn: '7d',
+        expiresIn: this.expiresInRefreshToken,
       },
     };
   }
 }
 
 export function jwtFactory(jwtconfig: JwtconfigService) {
+  const config = jwtconfig.getJwtConfig();
   return {
-    publicKey: jwtconfig.getJwtConfig().access.publicKey,
-    privateKey: jwtconfig.getJwtConfig().access.privateKey,
+    publicKey: config.access.publicKey,
+    privateKey: config.access.privateKey,
     signOptions: {
-      algorithm: 'EdDSA',
-      expiresIn: jwtconfig.getJwtConfig().access.expiresIn,
+      algorithm: config.algorithm,
+      expiresIn: config.access.expiresIn,
     },
-    verifyOptions: { algorithms: ['EdDSA'] },
+    verifyOptions: { algorithms: [config.algorithm] },
   } as JwtModuleOptions;
 }

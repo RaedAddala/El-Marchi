@@ -10,14 +10,14 @@ import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { BaseService } from '../common/database/base.service';
+import { JwtconfigService } from '../common/jwtconfig/jwtconfig.service';
+import { RedisService } from '../common/redis/redis.service';
 import { CryptoService } from '../crypto/crypto.service';
 import { ChangePasswordDto } from './dtos/change.password.dto';
 import { CreateUserDto } from './dtos/create.user.dto';
 import { loginDto } from './dtos/login.dto';
 import { UpdateUserDto } from './dtos/update.user.dto';
 import { User } from './entities/user.entity';
-import { JwtconfigService } from '../common/jwtconfig/jwtconfig.service';
-import { RedisService } from '../common/redis/redis.service';
 
 @Injectable()
 export class UsersService extends BaseService<User> {
@@ -78,7 +78,6 @@ export class UsersService extends BaseService<User> {
     await this.redisService.deleteRefreshToken(userId);
   }
 
-
   async changePassword(
     userId: string | undefined,
     changePasswordDto: ChangePasswordDto,
@@ -127,7 +126,7 @@ export class UsersService extends BaseService<User> {
           privateKey: this.jwtConfig.getJwtConfig().access.privateKey,
           algorithm: 'ES512',
           expiresIn: '15m',
-        }
+        },
       ),
       this.jwtService.signAsync(
         { sub: userId },
@@ -135,7 +134,7 @@ export class UsersService extends BaseService<User> {
           privateKey: this.jwtConfig.getJwtConfig().refresh.privateKey,
           algorithm: 'ES512',
           expiresIn: '7d',
-        }
+        },
       ),
     ]);
 
@@ -150,7 +149,10 @@ export class UsersService extends BaseService<User> {
     const existingUser = await this.findOne(id);
     if (!existingUser) throw new ForbiddenException('Access Denied');
 
-    const isValid = await this.redisService.validateRefreshToken(id, refreshToken);
+    const isValid = await this.redisService.validateRefreshToken(
+      id,
+      refreshToken,
+    );
     if (!isValid) throw new ForbiddenException('Access Denied');
 
     // Delete old refresh token

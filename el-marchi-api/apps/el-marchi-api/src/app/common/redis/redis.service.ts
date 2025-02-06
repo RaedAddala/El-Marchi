@@ -1,17 +1,20 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { createClient } from 'redis';
 import type { RedisClientType } from 'redis';
+import { createClient } from 'redis';
 import { EnvConfig } from '../config/env.schema';
 
 @Injectable()
 export class RedisService implements OnModuleInit {
-  private client: RedisClientType;
+  private readonly client: RedisClientType;
+  private readonly expirationdate:string;
 
   constructor(config: ConfigService<EnvConfig, true>) {
     this.client = createClient({
-      url: `redis://${config.get<EnvConfig['REDIS_HOSTNAME']>('REDIS_HOSTNAME')}:${config.get<EnvConfig["REDIS_PORT"]>("REDIS_PORT")}`,
-      password: config.get<EnvConfig['REDIS_PASSWORD']>('REDIS_PASSWORD')
+      url: `redis://${config.get<EnvConfig['REDIS_HOSTNAME']>(
+        'REDIS_HOSTNAME',
+      )}:${config.get<EnvConfig['REDIS_PORT']>('REDIS_PORT')}`,
+      password: config.get<EnvConfig['REDIS_PASSWORD']>('REDIS_PASSWORD'),
     });
   }
 

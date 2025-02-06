@@ -1,6 +1,22 @@
 import { extendApi } from '@anatine/zod-openapi';
 import { z } from 'zod';
 
+const timeFormatPattern = /^\d+[dhm]$/;
+
+export type JWTAlgorithm =
+  | "HS256"
+  | "HS384"
+  | "HS512"
+  | "RS256"
+  | "RS384"
+  | "RS512"
+  | "ES256"
+  | "ES384"
+  | "ES512"
+  | "PS256"
+  | "PS384"
+  | "PS512";
+
 export const envSchema = z.object({
   PORT: extendApi(z.coerce.number().int().positive().default(3000), {
     description: 'Port to listen on',
@@ -40,11 +56,6 @@ export const envSchema = z.object({
     description: 'Database name',
     example: 'ElMarchi',
   }),
-  JWT_SECRET: extendApi(
-    z.string({ message: 'You have to Provide JWT Secret.' }).min(12, {
-      message: 'For Security Reasons JWT_Secret must be longer than 12.',
-    }),
-  ),
 
   REDIS_HOSTNAME: extendApi(z.string().default('localhost'), {
     description: 'REDIS host',
@@ -58,6 +69,36 @@ export const envSchema = z.object({
     description: 'REDIS password',
     example: 'password',
   }),
+  ACCESS_TOKEN_EXPIRATION: extendApi(
+    z.string().regex(timeFormatPattern, {
+      message: 'Must be a number followed by d (days), h (hours), or m (minutes). Example: 15m, 24h, 7d',
+    }).default('15m'),
+    {
+      description: 'Access token expiration time',
+      example: '15m',
+    },
+  ),
+  REFRESH_TOKEN_EXPIRATION: extendApi(
+    z.string().regex(timeFormatPattern, {
+      message: 'Must be a number followed by d (days), h (hours), or m (minutes). Example: 7d, 168h, 10080m',
+    }).default('7d'),
+    {
+      description: 'Refresh token expiration time',
+      example: '7d',
+    },
+  ),
+  JWT_ALGORITHM: extendApi(
+    z.enum([
+      "HS256", "HS384", "HS512",
+      "RS256", "RS384", "RS512",
+      "ES256", "ES384", "ES512",
+      "PS256", "PS384", "PS512"
+    ] as const).default("ES256"),
+    {
+      description: 'JWT signing algorithm',
+      example: 'ES256',
+    },
+  ),
 });
 
 export type EnvConfig = z.infer<typeof envSchema>;
