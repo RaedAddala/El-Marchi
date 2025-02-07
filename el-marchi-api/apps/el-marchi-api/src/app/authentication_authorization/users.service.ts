@@ -9,6 +9,8 @@ import {
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { Response } from 'express';
+
 import { BaseService } from '../common/database/base.service';
 import { JwtconfigService } from '../common/jwtconfig/jwtconfig.service';
 import { RedisService } from '../common/redis/redis.service';
@@ -18,6 +20,7 @@ import { CreateUserDto } from './dtos/create.user.dto';
 import { loginDto } from './dtos/login.dto';
 import { UpdateUserDto } from './dtos/update.user.dto';
 import { User } from './entities/user.entity';
+import { CookieOperationError, CookieUtils } from '../common/cookies/cookie.utils';
 
 @Injectable()
 export class UsersService extends BaseService<User> {
@@ -46,9 +49,16 @@ export class UsersService extends BaseService<User> {
     this.config = jwtConfig.getJwtConfig();
   }
 
-  async localLogin(dto: loginDto) {
+  async localLogin(dto: loginDto, response: Response) {
     const existingUser = await this.findByEmailWithPassword(dto.email);
     if (!existingUser) {
+      // Use constant time comparison to prevent timing attacks
+      await this.cryptoService.verifyPassword(
+        dto.password,
+        'dummy-hash',
+        'dummy-salt'
+      );
+
       throw new UnauthorizedException('Email or Password is wrong!');
     }
 
@@ -62,11 +72,11 @@ export class UsersService extends BaseService<User> {
       throw new UnauthorizedException('Email or Password is wrong!');
     }
 
-    const tokens = await this.getTokens(existingUser.id, existingUser.email);
+    const tokens = await this.getTokens(existingUser.id, existingUser.email, response);
     return tokens;
   }
 
-  async localSignup(dto: CreateUserDto) {
+  async localSignup(dto: CreateUserDto, response: Response) {
     const existingUser = await this.findByEmail(dto.email);
     if (existingUser) {
       throw new ConflictException('Email already exists!');
@@ -84,23 +94,50 @@ export class UsersService extends BaseService<User> {
       throw new InternalServerErrorException('User Creation Failed!');
     }
 
-    const tokens = await this.getTokens(user.id, user.email);
+    const tokens = await this.getTokens(user.id, user.email, response);
     return tokens;
   }
 
-  async logout(userId: string) {
-    await this.redisService.deleteRefreshToken(userId);
+  async logout(userId: string, response: Response) {
+    try {
+      await this.redisService.deleteRefreshToken(userId);
+      CookieUtils.clearAccessTokenCookie(response);
+    } catch (error) {
+      if (error instanceof CookieOperationError) {
+        throw new InternalServerErrorException(
+          'Failed to complete logout process',
+        );
+      }
+      throw error;
+    }
   }
 
   async changePassword(
     userId: string | undefined,
     changePasswordDto: ChangePasswordDto,
+    response: Response
   ) {
     if (!userId) {
+
+      // Use constant time comparison to prevent timing attacks
+      await this.cryptoService.verifyPassword(
+        changePasswordDto.oldPassword,
+        'dummy-hash',
+        'dummy-salt'
+      );
+
       throw new UnauthorizedException();
     }
     const user = await this.findOne(userId);
     if (!user) {
+
+      // Use constant time comparison to prevent timing attacks
+      await this.cryptoService.verifyPassword(
+        changePasswordDto.oldPassword,
+        'dummy-hash',
+        'dummy-salt'
+      );
+
       throw new UnauthorizedException();
     }
 
@@ -124,40 +161,57 @@ export class UsersService extends BaseService<User> {
       passwordSalt: salt,
     };
 
+    // Delete old refresh token
+    await this.redisService.deleteRefreshToken(userId);
+    const tokens = await this.getTokens(userId, user.email, response);
+
     const updatedUser = await super.update(userId, {
       ...user,
       ...passwordUpdate,
     });
 
-    return updatedUser;
+    return { user: updatedUser, tokens };
   }
 
-  async getTokens(userId: string, email: string) {
-    const [at, rt] = await Promise.all([
-      this.jwtService.signAsync(
-        { sub: userId, email },
-        {
-          privateKey: this.config.access.privateKey,
-          expiresIn: this.config.access.expiresIn,
-        },
-      ),
-      this.jwtService.signAsync(
-        { sub: userId },
-        {
-          privateKey: this.config.refresh.privateKey,
-          expiresIn: this.config.refresh.expiresIn,
-        },
-      ),
-    ]);
+  async getTokens(userId: string, email: string, response: Response) {
+    try {
+      const [accessToken, refreshToken] = await Promise.all([
+        this.jwtService.signAsync(
+          { sub: userId, email },
+          {
+            privateKey: this.config.access.privateKey,
+            expiresIn: this.config.access.expiresIn,
+          },
+        ),
+        this.jwtService.signAsync(
+          { sub: userId },
+          {
+            privateKey: this.config.refresh.privateKey,
+            expiresIn: this.config.refresh.expiresIn,
+          },
+        ),
+      ]);
 
-    await this.redisService.storeRefreshToken(userId, rt);
-    return {
-      access_token: at,
-      refresh_token: rt,
-    };
+      const maxAge = parseInt(this.config.access.expiresIn) * 60 * 1000;
+      CookieUtils.setAccessTokenCookie(response, accessToken, maxAge);
+
+
+      await this.redisService.storeRefreshToken(userId, refreshToken);
+
+      return {
+        refresh_token: refreshToken,
+      };
+    } catch (error) {
+      if (error instanceof CookieOperationError) {
+        throw new InternalServerErrorException(
+          'Failed to complete authentication process',
+        );
+      }
+      throw error;
+    }
   }
 
-  async refreshTokens(id: string, refreshToken: string) {
+  async refreshTokens(id: string, refreshToken: string, response: Response) {
     const existingUser = await this.findOne(id);
     if (!existingUser) throw new ForbiddenException('Access Denied');
 
@@ -170,7 +224,7 @@ export class UsersService extends BaseService<User> {
     // Delete old refresh token
     await this.redisService.deleteRefreshToken(id);
 
-    const tokens = await this.getTokens(id, existingUser.email);
+    const tokens = await this.getTokens(id, existingUser.email, response);
     return tokens;
   }
 

@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { Request } from 'express';
 import { ExtractJwt, Strategy } from 'passport-jwt';
@@ -18,6 +18,7 @@ export class RefreshTokenStrategy extends PassportStrategy(
   constructor(
     jwtConfig: JwtconfigService,
     private readonly redisService: RedisService,
+    private readonly logger: Logger
   ) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
@@ -28,13 +29,31 @@ export class RefreshTokenStrategy extends PassportStrategy(
   }
 
   async validate(req: Request, payload: JWTPayload) {
-    const refreshToken = req.get('Authorization')?.replace('Bearer', '').trim();
-    if (!refreshToken) throw new UnauthorizedException('Invalid refresh token');
-    const isValid = await this.redisService.validateRefreshToken(
-      payload.sub,
-      refreshToken,
-    );
-    if (!isValid) throw new UnauthorizedException('Invalid refresh token');
-    return { ...payload, refreshToken } as RefreshTokenJWTPayload;
+    if (!payload || !payload.sub) {
+      this.logger.warn(`Invalid refresh token payload: ${JSON.stringify(payload)}`);
+      throw new UnauthorizedException('Invalid token');
+    }
+
+    const refreshToken = req.get('Authorization')?.split(' ')[1];
+    if (!refreshToken) {
+      throw new UnauthorizedException('Refresh token not found');
+    }
+
+    try {
+      const isValid = await this.redisService.validateRefreshToken(
+        payload.sub,
+        refreshToken
+      );
+
+      if (!isValid) {
+        this.logger.warn(`Invalid refresh token for user ${payload.sub}`);
+        throw new UnauthorizedException('Invalid refresh token');
+      }
+
+      return { ...payload, refreshToken } as RefreshTokenJWTPayload;
+    } catch (error) {
+      this.logger.error(`Refresh token validation error for user ${payload.sub}:`, error);
+      throw new UnauthorizedException('Token validation failed');
+    }
   }
 }

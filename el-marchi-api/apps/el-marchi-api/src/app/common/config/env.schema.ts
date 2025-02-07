@@ -1,19 +1,7 @@
 import { extendApi } from '@anatine/zod-openapi';
 import { z } from 'zod';
 
-export type JWTAlgorithm =
-  | "HS256"
-  | "HS384"
-  | "HS512"
-  | "RS256"
-  | "RS384"
-  | "RS512"
-  | "ES256"
-  | "ES384"
-  | "ES512"
-  | "PS256"
-  | "PS384"
-  | "PS512";
+export type JWT_ALGORITHM = "ES256";
 
 export const envSchema = z.object({
   PORT: extendApi(z.coerce.number().int().positive().default(3000), {
@@ -82,15 +70,9 @@ export const envSchema = z.object({
     },
   ),
   JWT_ALGORITHM: extendApi(
-    z.enum([
-      "HS256", "HS384", "HS512",
-      "RS256", "RS384", "RS512",
-      "ES256", "ES384", "ES512",
-      "PS256", "PS384", "PS512"
-    ] as const).default("ES256"),
+    z.literal("ES256"),
     {
-      description: 'JWT signing algorithm',
-      example: 'ES256',
+      description: 'JWT signing algorithm (fixed to ES256)',
     },
   ),
 });

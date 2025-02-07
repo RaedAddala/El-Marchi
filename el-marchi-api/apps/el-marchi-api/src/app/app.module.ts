@@ -9,7 +9,7 @@ import { UsersModule } from './authentication_authorization/users.module';
 import { CategoriesModule } from './categories/categories.module';
 import { EnvConfig, envSchema } from './common/config/env.schema';
 import { entitiesList } from './common/entities/entities';
-import { JwtconfigService, jwtFactory } from './common/jwtconfig/jwtconfig.service';
+import { JwtconfigService } from './common/jwtconfig/jwtconfig.service';
 import { RedisService } from './common/redis/redis.service';
 import { CouponsModule } from './coupons/coupons.module';
 import { CustomersModule } from './customers/customers.module';
@@ -68,12 +68,14 @@ import { TradersModule } from './traders/traders.module';
         };
       },
     }),
-    JwtModule.registerAsync({
-      imports: [ConfigModule],
-      extraProviders: [JwtconfigService],
-      inject: [ConfigService, JwtconfigService],
-      useFactory: jwtFactory,
-      global: true
+    JwtModule.register({
+      global: true,
+      verifyOptions: {
+        algorithms: ['ES256']
+      },
+      signOptions: {
+        algorithm: 'ES256'
+      }
     }),
     UsersModule,
     ProductsModule,

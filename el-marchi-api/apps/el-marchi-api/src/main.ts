@@ -30,10 +30,14 @@ async function bootstrap() {
 
   app.enableCors({
     origin: '*',
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-    preflightContinue: false,
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    exposedHeaders: ['Content-Range', 'X-Content-Range'],
     credentials: true,
+    maxAge: 3600,
+    preflightContinue: false,
   });
+
 
   app.use(compression());
   app.use(helmet());
