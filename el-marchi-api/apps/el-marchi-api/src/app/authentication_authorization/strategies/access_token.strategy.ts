@@ -13,7 +13,6 @@ export class AccessTokenStrategy extends PassportStrategy(
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       secretOrKey: jwtConfig.getJwtConfig().access.publicKey,
-      algorithms: ['ES512'],
       ignoreExpiration: false,
     });
   }

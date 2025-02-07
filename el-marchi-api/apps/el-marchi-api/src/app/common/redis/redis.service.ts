@@ -7,7 +7,7 @@ import { EnvConfig } from '../config/env.schema';
 @Injectable()
 export class RedisService implements OnModuleInit {
   private readonly client: RedisClientType;
-  private readonly expirationdate:string;
+  private readonly expirationDateInDays: number;
 
   constructor(config: ConfigService<EnvConfig, true>) {
     this.client = createClient({
@@ -16,6 +16,8 @@ export class RedisService implements OnModuleInit {
       )}:${config.get<EnvConfig['REDIS_PORT']>('REDIS_PORT')}`,
       password: config.get<EnvConfig['REDIS_PASSWORD']>('REDIS_PASSWORD'),
     });
+
+    this.expirationDateInDays = config.get<EnvConfig['REFRESH_TOKEN_EXPIRATION_IN_DAYS']>('REFRESH_TOKEN_EXPIRATION_IN_DAYS');
   }
 
   async onModuleInit() {
@@ -24,7 +26,7 @@ export class RedisService implements OnModuleInit {
 
   async storeRefreshToken(userId: string, token: string): Promise<void> {
     await this.client.set(`refresh:${userId}`, token, {
-      EX: 60 * 60 * 24 * 7,
+      EX: 60 * 60 * 24 * this.expirationDateInDays,
     });
   }
 

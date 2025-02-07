@@ -21,15 +21,29 @@ import { User } from './entities/user.entity';
 
 @Injectable()
 export class UsersService extends BaseService<User> {
+  private readonly config: {
+    algorithm: string;
+    access: {
+      privateKey: string;
+      publicKey: string;
+      expiresIn: string;
+    };
+    refresh: {
+      privateKey: string;
+      publicKey: string;
+      expiresIn: string;
+    };
+  };
   constructor(
     @InjectRepository(User)
     repository: Repository<User>,
+    jwtConfig: JwtconfigService,
     private readonly cryptoService: CryptoService,
     private readonly jwtService: JwtService,
-    private readonly jwtConfig: JwtconfigService,
     private readonly redisService: RedisService,
   ) {
     super(repository);
+    this.config = jwtConfig.getJwtConfig();
   }
 
   async localLogin(dto: loginDto) {
@@ -123,17 +137,15 @@ export class UsersService extends BaseService<User> {
       this.jwtService.signAsync(
         { sub: userId, email },
         {
-          privateKey: this.jwtConfig.getJwtConfig().access.privateKey,
-          algorithm: 'ES512',
-          expiresIn: '15m',
+          privateKey: this.config.access.privateKey,
+          expiresIn: this.config.access.expiresIn,
         },
       ),
       this.jwtService.signAsync(
         { sub: userId },
         {
-          privateKey: this.jwtConfig.getJwtConfig().refresh.privateKey,
-          algorithm: 'ES512',
-          expiresIn: '7d',
+          privateKey: this.config.refresh.privateKey,
+          expiresIn: this.config.refresh.expiresIn,
         },
       ),
     ]);

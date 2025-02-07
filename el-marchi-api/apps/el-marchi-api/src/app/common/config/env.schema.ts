@@ -1,8 +1,6 @@
 import { extendApi } from '@anatine/zod-openapi';
 import { z } from 'zod';
 
-const timeFormatPattern = /^\d+[dhm]$/;
-
 export type JWTAlgorithm =
   | "HS256"
   | "HS384"
@@ -65,26 +63,22 @@ export const envSchema = z.object({
     description: 'REDIS port',
     example: 6379,
   }),
-  REDIS_PASSWORD: extendApi(z.string().default('password'), {
+  REDIS_PASSWORD: extendApi(z.string().default('p@ssw0rd_r3kwired'), {
     description: 'REDIS password',
-    example: 'password',
+    example: 'p@ssw0rd_r3kwired',
   }),
-  ACCESS_TOKEN_EXPIRATION: extendApi(
-    z.string().regex(timeFormatPattern, {
-      message: 'Must be a number followed by d (days), h (hours), or m (minutes). Example: 15m, 24h, 7d',
-    }).default('15m'),
+  ACCESS_TOKEN_EXPIRATION_IN_MINUTES: extendApi(
+    z.coerce.number().int().positive().default(15),
     {
-      description: 'Access token expiration time',
-      example: '15m',
+      description: 'Access token expiration time in minutes',
+      example: 15,
     },
   ),
-  REFRESH_TOKEN_EXPIRATION: extendApi(
-    z.string().regex(timeFormatPattern, {
-      message: 'Must be a number followed by d (days), h (hours), or m (minutes). Example: 7d, 168h, 10080m',
-    }).default('7d'),
+  REFRESH_TOKEN_EXPIRATION_IN_DAYS: extendApi(
+    z.coerce.number().int().positive().default(7),
     {
-      description: 'Refresh token expiration time',
-      example: '7d',
+      description: 'Refresh token expiration time in days',
+      example: 7,
     },
   ),
   JWT_ALGORITHM: extendApi(

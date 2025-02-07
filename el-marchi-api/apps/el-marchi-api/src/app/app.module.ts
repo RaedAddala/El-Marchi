@@ -70,8 +70,10 @@ import { TradersModule } from './traders/traders.module';
     }),
     JwtModule.registerAsync({
       imports: [ConfigModule],
+      extraProviders: [JwtconfigService],
       inject: [ConfigService, JwtconfigService],
       useFactory: jwtFactory,
+      global: true
     }),
     UsersModule,
     ProductsModule,

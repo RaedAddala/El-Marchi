@@ -14,6 +14,7 @@ export class RefreshTokenStrategy extends PassportStrategy(
   Strategy,
   'jwt-refresh',
 ) {
+
   constructor(
     jwtConfig: JwtconfigService,
     private readonly redisService: RedisService,
@@ -21,7 +22,6 @@ export class RefreshTokenStrategy extends PassportStrategy(
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       secretOrKey: jwtConfig.getJwtConfig().refresh.publicKey,
-      algorithms: ['ES512'],
       passReqToCallback: true,
       ignoreExpiration: false,
     });
@@ -29,6 +29,7 @@ export class RefreshTokenStrategy extends PassportStrategy(
 
   async validate(req: Request, payload: JWTPayload) {
     const refreshToken = req.get('Authorization')?.replace('Bearer', '').trim();
+    if (!refreshToken) throw new UnauthorizedException('Invalid refresh token');
     const isValid = await this.redisService.validateRefreshToken(
       payload.sub,
       refreshToken,
