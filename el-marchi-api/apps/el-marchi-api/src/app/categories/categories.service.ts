@@ -1,26 +1,68 @@
-import { Injectable } from '@nestjs/common';
-import { CreateCategoryDto } from './dto/create-category.dto';
-import { UpdateCategoryDto } from './dto/update-category.dto';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { Category } from './entities/category.entity';
+import {SubCategory} from "./entities/subCategory.entity";
+import {CreateCategoryDto} from "./dtos/create-category.dto";
+import {CreateSubCategoryDto} from "./dtos/create-sub-category.dto";
 
 @Injectable()
 export class CategoriesService {
-  create(createCategoryDto: CreateCategoryDto) {
-    return 'This action adds a new category';
+  constructor(
+    @InjectRepository(Category)
+    private readonly categoryRepository: Repository<Category>,
+    @InjectRepository(SubCategory)
+    private readonly subCategoryRepository: Repository<SubCategory>,
+  ) {}
+
+  async createCategory(createCategoryDto: CreateCategoryDto): Promise<Category> {
+    const category = this.categoryRepository.create(createCategoryDto);
+    await this.categoryRepository.save(category);
+
+    // Create the default subcategory "Others"
+    const subCategory = this.subCategoryRepository.create({
+      name: 'Others',
+      category,
+    });
+    await this.subCategoryRepository.save(subCategory);
+
+    return category;
   }
 
-  findAll() {
-    return `This action returns all categories`;
+  async createSubCategory(
+    createSubCategoryDto: CreateSubCategoryDto,
+  ): Promise<SubCategory> {
+    const category = await this.categoryRepository.findOne({
+      where: { id: createSubCategoryDto.categoryId },
+    });
+
+    if (!category) {
+      throw new NotFoundException(
+        `Category with ID ${createSubCategoryDto.categoryId} not found`,
+      );
+    }
+
+    const subCategory = this.subCategoryRepository.create({
+      name: createSubCategoryDto.name,
+      category,
+    });
+    return this.subCategoryRepository.save(subCategory);
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} category`;
+  async findAllCategories(): Promise<Category[]> {
+    return this.categoryRepository.find({ relations: ['subCategories'] });
   }
 
-  update(id: number, updateCategoryDto: UpdateCategoryDto) {
-    return `This action updates a #${id} category`;
-  }
+  async findCategoryById(id: string): Promise<Category> {
+    const category = await this.categoryRepository.findOne({
+      where: { id },
+      relations: ['subCategories'],
+    });
 
-  remove(id: number) {
-    return `This action removes a #${id} category`;
+    if (!category) {
+      throw new NotFoundException(`Category with ID ${id} not found`);
+    }
+
+    return category;
   }
 }
