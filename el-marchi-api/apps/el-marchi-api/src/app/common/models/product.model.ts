@@ -1,4 +1,3 @@
-import { FormControl, FormRecord } from '@angular/forms';
 
 export type ProductSizes =
   | 'XS'
@@ -14,9 +13,6 @@ export const sizes: ProductSizes[] = ['XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL'];
 export interface ProductCategory {
   publicId?: string;
   name?: string;
-}
-export  interface CategoryWithSubcategories extends ProductCategory {
-  subcategories?: ProductCategory[];
 }
 
 export interface ProductPicture {
@@ -53,22 +49,9 @@ export interface Product extends BaseProduct {
   publicId: string;
 }
 
-export type CreateCategoryFormContent = {
-  name: FormControl<string>;
-};
 
-export type CreateProductFormContent = {
-  brand: FormControl<string>;
-  color: FormControl<string>;
-  description: FormControl<string>;
-  name: FormControl<string>;
-  price: FormControl<number>;
-  size: FormControl<ProductSizes>;
-  category: FormControl<string>;
-  featured: FormControl<boolean>;
-  pictures: FormControl<ProductPicture[]>;
-  stock: FormControl<number>;
-};
+
+
 
 export interface ProductFilter {
   size?: string;
@@ -76,10 +59,9 @@ export interface ProductFilter {
   sort: string[];
 }
 
-export type FilterProductsFormContent = {
-  sort: FormControl<string>;
-  size: FormRecord<FormControl<boolean>>;
-};
+export  interface CategoryWithSubcategories extends ProductCategory {
+  subcategories?: ProductCategory[];
+}
 
 export interface ProductFilterForm {
   size?:

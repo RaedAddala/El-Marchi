@@ -106,4 +106,18 @@ export class AdminProductService {
     };
     return of(page);
   }
+
+  createSubCategory(categoryId: string, subCategoryToCreate: { name: string }): Observable<ProductCategory> {
+    return of({
+      publicId: '1',
+      name: subCategoryToCreate.name,
+      category: {
+        publicId: categoryId,
+        name: 'Category',
+      },
+    });
+
+  }
+
+
 }
