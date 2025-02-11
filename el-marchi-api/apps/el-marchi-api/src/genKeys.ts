@@ -66,8 +66,14 @@ export function generateHttpsCredentials() {
       modulusLength: 4096,
     });
 
-    writeFileSync('./cert.pem', publicKey.export({ type: 'spki', format: 'pem' }));
-    writeFileSync('./key.pem', privateKey.export({ type: 'pkcs8', format: 'pem' }));
+    writeFileSync(
+      './cert.pem',
+      publicKey.export({ type: 'spki', format: 'pem' }),
+    );
+    writeFileSync(
+      './key.pem',
+      privateKey.export({ type: 'pkcs8', format: 'pem' }),
+    );
   }
 
   return {

@@ -71,11 +71,11 @@ import { TradersModule } from './traders/traders.module';
     JwtModule.register({
       global: true,
       verifyOptions: {
-        algorithms: ['ES256']
+        algorithms: ['ES256'],
       },
       signOptions: {
-        algorithm: 'ES256'
-      }
+        algorithm: 'ES256',
+      },
     }),
     UsersModule,
     ProductsModule,
@@ -98,4 +98,4 @@ import { TradersModule } from './traders/traders.module';
   controllers: [AppController],
   providers: [AppService, JwtconfigService, RedisService],
 })
-export class AppModule { }
+export class AppModule {}

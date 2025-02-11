@@ -38,13 +38,15 @@ In order to set the backend, you have to follow these steps:
     cp .env.prod.example .env
     ```
 
-3. Open a separate terminal, go to the `./docker` directory, and then run the command:
+3. For Secrets, like Cookie Secret you can use this command: `node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"` which will generate a random string. Copy the result and put it into your `.env` file.
+
+4. Open a separate terminal, go to the `./docker` directory, and then run the command:
 
     ```bash
     docker compose up
     ```
 
-4. Run the server using one of these two commands:
+5. Run the server using one of these two commands:
 
 - For Dev Mode:
 

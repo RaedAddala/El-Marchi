@@ -1,7 +1,7 @@
 import { extendApi } from '@anatine/zod-openapi';
 import { z } from 'zod';
 
-export type JWT_ALGORITHM = "ES256";
+export type JWT_ALGORITHM = 'ES256';
 
 export const envSchema = z.object({
   PORT: extendApi(z.coerce.number().int().positive().default(3000), {
@@ -69,12 +69,14 @@ export const envSchema = z.object({
       example: 7,
     },
   ),
-  JWT_ALGORITHM: extendApi(
-    z.literal("ES256"),
-    {
-      description: 'JWT signing algorithm (fixed to ES256)',
-    },
-  ),
+  JWT_ALGORITHM: extendApi(z.literal('ES256'), {
+    description: 'JWT signing algorithm (fixed to ES256)',
+  }),
+
+  COOKIE_SECRET: extendApi(z.string().default('9bd03fc21c94777db49900c8121218ece0cf4b679cf80c3888eb7857429e4987'), {
+    description: 'Cookie Secret used for signing cookies. String that will be passed to cookie-parser',
+    example: '9bd03fc21c94777db49900c8121218ece0cf4b679cf80c3888eb7857429e4987'
+  }),
 });
 
 export type EnvConfig = z.infer<typeof envSchema>;

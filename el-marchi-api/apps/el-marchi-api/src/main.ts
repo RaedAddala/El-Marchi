@@ -9,6 +9,7 @@ import { AppModule } from './app/app.module';
 import '@total-typescript/ts-reset';
 import compression from 'compression';
 import helmet from 'helmet';
+import cookieParser from "cookie-parser";
 
 import { ConfigService } from '@nestjs/config';
 import type { EnvConfig } from './app/common/config/env.schema';
@@ -23,7 +24,9 @@ async function bootstrap() {
   // Generate HTTPS credentials
   const httpsOptions = generateHttpsCredentials();
 
-  const app: NestExpressApplication = await NestFactory.create(AppModule, { httpsOptions });
+  const app: NestExpressApplication = await NestFactory.create(AppModule, {
+    httpsOptions,
+  });
   const configService = app.get(ConfigService<EnvConfig, true>);
 
   app.useGlobalPipes(new ZodValidationPipe());
@@ -38,12 +41,12 @@ async function bootstrap() {
     preflightContinue: false,
   });
 
-
   app.use(compression());
   app.use(helmet());
   app.useLogger(
     new Logger(configService.get('MODE') === 'production' ? 'log' : 'verbose'),
   );
+  app.use(cookieParser(configService.get('COOKIE_SECRET')));
 
   const globalPrefix = 'api';
   app.setGlobalPrefix(globalPrefix);

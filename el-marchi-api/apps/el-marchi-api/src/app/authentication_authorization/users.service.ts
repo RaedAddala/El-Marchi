@@ -8,9 +8,13 @@ import {
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
 import { Response } from 'express';
+import { Repository } from 'typeorm';
 
+import {
+  CookieOperationError,
+  CookieUtils,
+} from '../common/cookies/cookie.utils';
 import { BaseService } from '../common/database/base.service';
 import { JwtconfigService } from '../common/jwtconfig/jwtconfig.service';
 import { RedisService } from '../common/redis/redis.service';
@@ -20,7 +24,6 @@ import { CreateUserDto } from './dtos/create.user.dto';
 import { loginDto } from './dtos/login.dto';
 import { UpdateUserDto } from './dtos/update.user.dto';
 import { User } from './entities/user.entity';
-import { CookieOperationError, CookieUtils } from '../common/cookies/cookie.utils';
 
 @Injectable()
 export class UsersService extends BaseService<User> {
@@ -56,7 +59,7 @@ export class UsersService extends BaseService<User> {
       await this.cryptoService.verifyPassword(
         dto.password,
         'dummy-hash',
-        'dummy-salt'
+        'dummy-salt',
       );
 
       throw new UnauthorizedException('Email or Password is wrong!');
@@ -72,7 +75,11 @@ export class UsersService extends BaseService<User> {
       throw new UnauthorizedException('Email or Password is wrong!');
     }
 
-    const tokens = await this.getTokens(existingUser.id, existingUser.email, response);
+    const tokens = await this.getTokens(
+      existingUser.id,
+      existingUser.email,
+      response,
+    );
     return tokens;
   }
 
@@ -115,27 +122,25 @@ export class UsersService extends BaseService<User> {
   async changePassword(
     userId: string | undefined,
     changePasswordDto: ChangePasswordDto,
-    response: Response
+    response: Response,
   ) {
     if (!userId) {
-
       // Use constant time comparison to prevent timing attacks
       await this.cryptoService.verifyPassword(
         changePasswordDto.oldPassword,
         'dummy-hash',
-        'dummy-salt'
+        'dummy-salt',
       );
 
       throw new UnauthorizedException();
     }
     const user = await this.findOne(userId);
     if (!user) {
-
       // Use constant time comparison to prevent timing attacks
       await this.cryptoService.verifyPassword(
         changePasswordDto.oldPassword,
         'dummy-hash',
-        'dummy-salt'
+        'dummy-salt',
       );
 
       throw new UnauthorizedException();
@@ -194,7 +199,6 @@ export class UsersService extends BaseService<User> {
 
       const maxAge = parseInt(this.config.access.expiresIn) * 60 * 1000;
       CookieUtils.setAccessTokenCookie(response, accessToken, maxAge);
-
 
       await this.redisService.storeRefreshToken(userId, refreshToken);
 

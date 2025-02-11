@@ -29,14 +29,18 @@ export class UsersController {
 
   @Post('local/signup')
   @HttpCode(HttpStatus.CREATED)
-  localSignup(@Body() createUserDto: CreateUserDto, @Res({ passthrough: true }) response: Response,
+  localSignup(
+    @Body() createUserDto: CreateUserDto,
+    @Res({ passthrough: true }) response: Response,
   ) {
     return this.userService.localSignup(createUserDto, response);
   }
 
   @Post('local/login')
   @HttpCode(HttpStatus.OK)
-  localLogin(@Body() loginDto: loginDto, @Res({ passthrough: true }) response: Response,
+  localLogin(
+    @Body() loginDto: loginDto,
+    @Res({ passthrough: true }) response: Response,
   ) {
     return this.userService.localLogin(loginDto, response);
   }
@@ -44,7 +48,9 @@ export class UsersController {
   @Post('logout')
   @UseGuards(AccessTokenGuard)
   @HttpCode(HttpStatus.OK)
-  logout(@GetCurrentUserId() userId: string, @Res({ passthrough: true }) response: Response,
+  logout(
+    @GetCurrentUserId() userId: string,
+    @Res({ passthrough: true }) response: Response,
   ) {
     return this.userService.logout(userId, response);
   }
@@ -54,8 +60,8 @@ export class UsersController {
   @HttpCode(HttpStatus.OK)
   refreshTokens(
     @GetCurrentUserId() userId: string,
-    @GetCurrentUser('refreshToken') refreshToken: string, @Res({ passthrough: true }) response: Response,
-
+    @GetCurrentUser('refreshToken') refreshToken: string,
+    @Res({ passthrough: true }) response: Response,
   ) {
     return this.userService.refreshTokens(userId, refreshToken, response);
   }
@@ -65,8 +71,8 @@ export class UsersController {
   @UseGuards(AccessTokenGuard)
   changePassword(
     @Body() changePasswordDto: ChangePasswordDto,
-    @GetCurrentUserId() userId: string, @Res({ passthrough: true }) response: Response,
-
+    @GetCurrentUserId() userId: string,
+    @Res({ passthrough: true }) response: Response,
   ) {
     return this.userService.changePassword(userId, changePasswordDto, response);
   }
@@ -77,7 +83,6 @@ export class UsersController {
   updateUser(
     @Body() update: UpdateUserDto,
     @GetCurrentUserId() userId: string,
-
   ) {
     return this.userService.update(userId, update);
   }

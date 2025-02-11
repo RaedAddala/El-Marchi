@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { JwtModuleOptions } from '@nestjs/jwt';
 import { readFileSync } from 'fs';
 import { join } from 'path';
 import { EnvConfig, JWT_ALGORITHM } from '../config/env.schema';
@@ -34,14 +33,19 @@ export class JwtconfigService {
         join(__dirname, '../../keys/refresh_private.pem'),
         'utf8',
       );
-    }
-    catch (error) {
+    } catch (error) {
       throw new Error(`Failed to load JWT keys: ${error}`);
     }
 
     this.algorithm = config.get<EnvConfig['JWT_ALGORITHM']>('JWT_ALGORITHM');
-    this.expiresInAccessToken = config.get<EnvConfig['ACCESS_TOKEN_EXPIRATION_IN_MINUTES']>('ACCESS_TOKEN_EXPIRATION_IN_MINUTES') + 'm';
-    this.expiresInRefreshToken = config.get<EnvConfig['REFRESH_TOKEN_EXPIRATION_IN_DAYS']>('REFRESH_TOKEN_EXPIRATION_IN_DAYS') + 'd';
+    this.expiresInAccessToken =
+      config.get<EnvConfig['ACCESS_TOKEN_EXPIRATION_IN_MINUTES']>(
+        'ACCESS_TOKEN_EXPIRATION_IN_MINUTES',
+      ) + 'm';
+    this.expiresInRefreshToken =
+      config.get<EnvConfig['REFRESH_TOKEN_EXPIRATION_IN_DAYS']>(
+        'REFRESH_TOKEN_EXPIRATION_IN_DAYS',
+      ) + 'd';
   }
 
   getJwtConfig() {
@@ -59,20 +63,4 @@ export class JwtconfigService {
       },
     };
   }
-}
-
-export function jwtFactory(
-  configService: ConfigService<EnvConfig, true>,
-  jwtconfig: JwtconfigService
-): JwtModuleOptions {
-  const config = jwtconfig.getJwtConfig();
-  return {
-    publicKey: config.access.publicKey,
-    privateKey: config.access.privateKey,
-    signOptions: {
-      algorithm: config.algorithm,
-      expiresIn: config.access.expiresIn,
-    },
-    verifyOptions: { algorithms: [config.algorithm] },
-  };
 }

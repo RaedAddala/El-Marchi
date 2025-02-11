@@ -2,15 +2,15 @@ export class CookieOperationError extends Error {
   constructor(
     message: string,
     public readonly operation: 'set' | 'clear',
-    public override readonly cause?: Error
+    public override readonly cause?: Error,
   ) {
     super(message);
     this.name = 'CookieOperationError';
   }
 }
 
-import { Response } from 'express';
 import { Logger } from '@nestjs/common';
+import { Response } from 'express';
 
 export class CookieUtils {
   private static readonly logger = new Logger('CookieUtils');
@@ -30,8 +30,9 @@ export class CookieUtils {
         signed: true,
       });
     } catch (error) {
-
-      this.logger.error(`Failed to set access token cookie: ${(error as Error).message}`);
+      this.logger.error(
+        `Failed to set access token cookie: ${(error as Error).message}`,
+      );
       throw new CookieOperationError(
         'Failed to set access token cookie',
         'set',
@@ -50,7 +51,9 @@ export class CookieUtils {
         signed: true,
       });
     } catch (error) {
-      this.logger.error(`Failed to clear access token cookie: ${(error as Error).message}`);
+      this.logger.error(
+        `Failed to clear access token cookie: ${(error as Error).message}`,
+      );
       throw new CookieOperationError(
         'Failed to clear access token cookie',
         'clear',

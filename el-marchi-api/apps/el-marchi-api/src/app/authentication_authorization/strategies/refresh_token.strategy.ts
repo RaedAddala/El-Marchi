@@ -14,11 +14,10 @@ export class RefreshTokenStrategy extends PassportStrategy(
   Strategy,
   'jwt-refresh',
 ) {
-
   constructor(
     jwtConfig: JwtconfigService,
     private readonly redisService: RedisService,
-    private readonly logger: Logger
+    private readonly logger: Logger,
   ) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
@@ -30,7 +29,9 @@ export class RefreshTokenStrategy extends PassportStrategy(
 
   async validate(req: Request, payload: JWTPayload) {
     if (!payload || !payload.sub) {
-      this.logger.warn(`Invalid refresh token payload: ${JSON.stringify(payload)}`);
+      this.logger.warn(
+        `Invalid refresh token payload: ${JSON.stringify(payload)}`,
+      );
       throw new UnauthorizedException('Invalid token');
     }
 
@@ -42,7 +43,7 @@ export class RefreshTokenStrategy extends PassportStrategy(
     try {
       const isValid = await this.redisService.validateRefreshToken(
         payload.sub,
-        refreshToken
+        refreshToken,
       );
 
       if (!isValid) {
@@ -52,7 +53,10 @@ export class RefreshTokenStrategy extends PassportStrategy(
 
       return { ...payload, refreshToken } as RefreshTokenJWTPayload;
     } catch (error) {
-      this.logger.error(`Refresh token validation error for user ${payload.sub}:`, error);
+      this.logger.error(
+        `Refresh token validation error for user ${payload.sub}:`,
+        error,
+      );
       throw new UnauthorizedException('Token validation failed');
     }
   }
