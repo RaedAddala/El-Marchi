@@ -1,7 +1,7 @@
 <div class="grid grid-cols-3">
   <div></div>
   <form id="createForm" (ngSubmit)="create()" [formGroup]="createForm">
-    <h1 class="text-lg font-bold">Create new category</h1>
+    <h1 class="text-lg font-bold">Create new subcategory</h1>
     <label class="form-control w-full">
       <div class="label">
         <span class="label-text">Name</span>
@@ -29,7 +29,7 @@
     >
       @if(loading) {
         <span class="loading loading-spinner"></span>
-      } Create category
+      } Create subcategory
     </button>
   </form>
   <div></div>

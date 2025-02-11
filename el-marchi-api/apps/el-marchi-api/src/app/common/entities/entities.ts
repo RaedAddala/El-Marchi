@@ -1,7 +1,7 @@
-import { User } from '../../authentication_authorization/entities/user.entity';
-import { Customer } from '../../customers/entities/customer.entity';
-import { Product } from '../../products/entities/product.entity';
-import { Trader } from '../../traders/entities/trader.entity';
+import { RefreshToken } from '../../users/entities/refreshToken.entity';
+import { User } from '../../users/entities/user.entity';
+import {Category} from "../../categories/entities/category.entity";
+import {SubCategory} from "../../categories/entities/subCategory.entity";
 
-const entitiesList = [User, Trader, Customer, Product];
+const entitiesList = [User, RefreshToken,Category,SubCategory];
 export { entitiesList };
