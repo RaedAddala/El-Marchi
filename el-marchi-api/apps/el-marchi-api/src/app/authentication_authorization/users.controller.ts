@@ -5,12 +5,13 @@ import {
   HttpStatus,
   Post,
   Put,
+  Req,
   Res,
   UseGuards,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 
-import { Response } from 'express';
+import type { Request, Response } from 'express';
 
 import { CreateUserDto } from './dtos/create.user.dto';
 import { loginDto } from './dtos/login.dto';
@@ -19,71 +20,105 @@ import { ChangePasswordDto } from './dtos/change.password.dto';
 import { UpdateUserDto } from './dtos/update.user.dto';
 import { UsersService } from './users.service';
 
-import { GetCurrentUser, GetCurrentUserId } from '../common/decorators';
+import { AuthCookieUtils, COOKIE_NAME } from '../common/cookies/cookie.utils';
 import { AccessTokenGuard, RefreshTokenGuard } from '../common/guards';
+import { JwtconfigService } from '../common/jwtconfig/jwtconfig.service';
+import { SecretData } from '../common/types/jwt.payload';
+import { User } from './entities/user.entity';
 
 @Controller('users')
 @ApiTags('users')
 export class UsersController {
-  constructor(private readonly userService: UsersService) { }
+  private readonly maxAge: number;
+
+  constructor(
+    private readonly userService: UsersService,
+    config: JwtconfigService,
+  ) {
+    this.maxAge = parseInt(config.getJwtConfig().access.expiresIn) * 60 * 1000;
+  }
 
   @Post('local/signup')
   @HttpCode(HttpStatus.CREATED)
-  localSignup(
+  async localSignup(
     @Body() createUserDto: CreateUserDto,
     @Res({ passthrough: true }) response: Response,
   ) {
-    return this.userService.localSignup(createUserDto, response);
+    const data = await this.userService.localSignup(createUserDto);
+    AuthCookieUtils.setAuthTokenCookie(response, data.tokens, this.maxAge);
+    return { msg: 'success', data: { email: data.email, id: data.id } };
   }
 
   @Post('local/login')
   @HttpCode(HttpStatus.OK)
-  localLogin(
+  async localLogin(
     @Body() loginDto: loginDto,
     @Res({ passthrough: true }) response: Response,
   ) {
-    return this.userService.localLogin(loginDto, response);
+    const data = await this.userService.localLogin(loginDto);
+    AuthCookieUtils.setAuthTokenCookie(response, data.tokens, this.maxAge);
+    return { msg: 'success', data: { email: data.email, id: data.id } };
   }
 
   @Post('logout')
   @UseGuards(AccessTokenGuard)
   @HttpCode(HttpStatus.OK)
-  logout(
-    @GetCurrentUserId() userId: string,
+  async logout(
+    @Req() req: Request,
     @Res({ passthrough: true }) response: Response,
   ) {
-    return this.userService.logout(userId, response);
+    const user = req.user as User;
+    const tokenData: SecretData = req.signedCookies[COOKIE_NAME];
+    AuthCookieUtils.clearAuthTokenCookie(response);
+    await this.userService.logout(user.id, tokenData.refreshTokenId);
+    response.send({ msg: 'success' }).end();
   }
 
   @Post('refresh')
   @UseGuards(RefreshTokenGuard)
   @HttpCode(HttpStatus.OK)
-  refreshTokens(
-    @GetCurrentUserId() userId: string,
-    @GetCurrentUser('refreshToken') refreshToken: string,
+  async refreshTokens(
+    @Req() req: Request,
     @Res({ passthrough: true }) response: Response,
   ) {
-    return this.userService.refreshTokens(userId, refreshToken, response);
+    const user = req.user as User;
+    const tokenData: SecretData = req.signedCookies[COOKIE_NAME];
+    const data = await this.userService.refreshTokens(
+      user.id,
+      tokenData.jwtRefreshToken,
+      tokenData.refreshTokenId,
+    );
+    AuthCookieUtils.setAuthTokenCookie(response, data, this.maxAge);
+    return { msg: 'success', data: { email: user.email, id: user.id } };
   }
 
   @Put('change-password')
   @HttpCode(HttpStatus.OK)
   @UseGuards(AccessTokenGuard)
-  changePassword(
+  async changePassword(
     @Body() changePasswordDto: ChangePasswordDto,
-    @GetCurrentUserId() userId: string,
+    @Req() req: Request,
     @Res({ passthrough: true }) response: Response,
   ) {
-    return this.userService.changePassword(userId, changePasswordDto, response);
+    const user = req.user as User;
+    const tokenData: SecretData = req.signedCookies[COOKIE_NAME];
+    const data = await this.userService.changePassword(
+      user.id,
+      changePasswordDto,
+      tokenData.refreshTokenId,
+    );
+    AuthCookieUtils.setAuthTokenCookie(response, data.tokens, this.maxAge);
+    return {
+      msg: 'success',
+      data: { email: data.user.email, id: data.user.id },
+    };
   }
 
   @Put('update-profile')
   @HttpCode(HttpStatus.OK)
   @UseGuards(AccessTokenGuard)
-  updateUser(
-    @Body() update: UpdateUserDto,
-    @GetCurrentUserId() userId: string,
-  ) {
-    return this.userService.update(userId, update);
+  updateUser(@Body() update: UpdateUserDto, @Req() req: Request) {
+    const user = req.user as User;
+    return this.userService.update(user.id, update);
   }
 }

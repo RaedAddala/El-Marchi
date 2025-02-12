@@ -147,11 +147,15 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
     }
   }
 
-  async storeRefreshToken(userId: string, token: string): Promise<void> {
+  async storeRefreshToken(
+    userId: string,
+    token: string,
+    refreshTokenId: string,
+  ): Promise<void> {
     await this.ensureConnection();
     try {
       const hashed = await this.cryptoService.hashToken(token);
-      await this.client.set(`refresh:${userId}`, hashed, {
+      await this.client.set(`refresh:${userId}:${refreshTokenId}`, hashed, {
         EX: 60 * 60 * 24 * this.expirationDateInDays,
       });
     } catch (error) {
@@ -163,10 +167,16 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
     }
   }
 
-  async validateRefreshToken(userId: string, token: string): Promise<boolean> {
+  async validateRefreshToken(
+    userId: string,
+    token: string,
+    refreshTokenId: string,
+  ): Promise<boolean> {
     await this.ensureConnection();
     try {
-      const storedToken = await this.client.get(`refresh:${userId}`);
+      const storedToken = await this.client.get(
+        `refresh:${userId}:${refreshTokenId}`,
+      );
       if (!storedToken) {
         return false;
       }
@@ -180,10 +190,13 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
     }
   }
 
-  async deleteRefreshToken(userId: string): Promise<void> {
+  async deleteRefreshToken(
+    userId: string,
+    refreshTokenId: string,
+  ): Promise<void> {
     await this.ensureConnection();
     try {
-      await this.client.del(`refresh:${userId}`);
+      await this.client.del(`refresh:${userId}:${refreshTokenId}`);
     } catch (error) {
       this.logger.error(
         `Error deleting refresh token for user ${userId}:`,

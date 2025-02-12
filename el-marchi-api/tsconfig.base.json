@@ -13,7 +13,7 @@
     "noUnusedLocals": true,
     "noImplicitReturns": true,
     "noImplicitOverride": true,
-    // "noUnusedParameters": true,
+    "noUnusedParameters": false,
     "allowUnusedLabels": false,
     "allowUnreachableCode": false,
     "noUncheckedIndexedAccess": true,
@@ -25,6 +25,7 @@
     "declarationMap": true,
     "incremental": true,
     "composite": true,
+
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "experimentalDecorators": true,

@@ -1,29 +1,21 @@
-export class CookieOperationError extends Error {
-  constructor(
-    message: string,
-    public readonly operation: 'set' | 'clear',
-    public override readonly cause?: Error,
-  ) {
-    super(message);
-    this.name = 'CookieOperationError';
-  }
-}
-
 import { Logger } from '@nestjs/common';
 import { Response } from 'express';
+import { inspect } from 'util';
+import { SecretData } from '../types/jwt.payload';
 
-export class CookieUtils {
-  private static readonly logger = new Logger('CookieUtils');
+export const COOKIE_NAME = 'auth_tokens';
+export class AuthCookieUtils {
+  private static readonly logger = new Logger('AuthCookieUtils');
 
-  static setAccessTokenCookie(
+  static setAuthTokenCookie(
     response: Response,
-    token: string,
+    token: SecretData,
     maxAge: number,
   ): void {
     try {
-      response.cookie('access_token', token, {
+      response.cookie(COOKIE_NAME, token, {
         httpOnly: true,
-        secure: true,
+        // secure: true,
         sameSite: 'strict',
         maxAge,
         path: '/',
@@ -31,34 +23,31 @@ export class CookieUtils {
       });
     } catch (error) {
       this.logger.error(
-        `Failed to set access token cookie: ${(error as Error).message}`,
+        `Failed to clear Auth token cookie: ${
+          (error as Error).message
+        }.\n${inspect(error)}`,
       );
-      throw new CookieOperationError(
-        'Failed to set access token cookie',
-        'set',
-        error as Error,
-      );
+      throw error;
     }
   }
 
-  static clearAccessTokenCookie(response: Response): void {
+  static clearAuthTokenCookie(response: Response): void {
     try {
-      response.clearCookie('access_token', {
+      response.clearCookie(COOKIE_NAME, {
         httpOnly: true,
-        secure: true,
+        // secure: true,
         sameSite: 'strict',
         path: '/',
         signed: true,
       });
     } catch (error) {
       this.logger.error(
-        `Failed to clear access token cookie: ${(error as Error).message}`,
+        `Failed to clear Auth token cookie: ${
+          (error as Error).message
+        }.\n${inspect(error)}`,
       );
-      throw new CookieOperationError(
-        'Failed to clear access token cookie',
-        'clear',
-        error as Error,
-      );
+
+      throw error;
     }
   }
 }

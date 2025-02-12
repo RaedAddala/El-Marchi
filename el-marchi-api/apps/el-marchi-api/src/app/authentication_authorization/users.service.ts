@@ -3,21 +3,21 @@ import {
   ForbiddenException,
   Injectable,
   InternalServerErrorException,
+  Logger,
   NotFoundException,
   UnauthorizedException,
+  UnprocessableEntityException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Response } from 'express';
 import { Repository } from 'typeorm';
 
-import {
-  CookieOperationError,
-  CookieUtils,
-} from '../common/cookies/cookie.utils';
+import { randomUUID } from 'crypto';
+import { inspect } from 'util';
 import { BaseService } from '../common/database/base.service';
 import { JwtconfigService } from '../common/jwtconfig/jwtconfig.service';
 import { RedisService } from '../common/redis/redis.service';
+import { SecretData } from '../common/types/jwt.payload';
 import { CryptoService } from '../crypto/crypto.service';
 import { ChangePasswordDto } from './dtos/change.password.dto';
 import { CreateUserDto } from './dtos/create.user.dto';
@@ -52,7 +52,7 @@ export class UsersService extends BaseService<User> {
     this.config = jwtConfig.getJwtConfig();
   }
 
-  async localLogin(dto: loginDto, response: Response) {
+  async localLogin(dto: loginDto) {
     const existingUser = await this.findByEmailWithPassword(dto.email);
     if (!existingUser) {
       // Use constant time comparison to prevent timing attacks
@@ -75,24 +75,29 @@ export class UsersService extends BaseService<User> {
       throw new UnauthorizedException('Email or Password is wrong!');
     }
 
-    const tokens = await this.getTokens(
-      existingUser.id,
-      existingUser.email,
-      response,
-    );
-    return tokens;
+    const tokens = await this.getTokens(existingUser.id, existingUser.email);
+    return { tokens, email: existingUser.email, id: existingUser.id };
   }
 
-  async localSignup(dto: CreateUserDto, response: Response) {
-    const existingUser = await this.findByEmail(dto.email);
+  async localSignup(dto: CreateUserDto) {
+    const { confirmPassword, ...savedData } = dto;
+
+    if (savedData.password !== confirmPassword) {
+      throw new UnprocessableEntityException('Passwords are not matching.');
+    }
+
+    const existingUser = await this.findByEmail(savedData.email);
+
     if (existingUser) {
       throw new ConflictException('Email already exists!');
     }
 
-    const { hash, salt } = await this.cryptoService.hashPassword(dto.password);
+    const { hash, salt } = await this.cryptoService.hashPassword(
+      savedData.password,
+    );
 
     const user = await this.create({
-      ...dto,
+      ...savedData,
       passwordHash: hash,
       passwordSalt: salt,
     });
@@ -101,28 +106,18 @@ export class UsersService extends BaseService<User> {
       throw new InternalServerErrorException('User Creation Failed!');
     }
 
-    const tokens = await this.getTokens(user.id, user.email, response);
-    return tokens;
+    const tokens = await this.getTokens(user.id, user.email);
+    return { tokens, email: user.email, id: user.id };
   }
 
-  async logout(userId: string, response: Response) {
-    try {
-      await this.redisService.deleteRefreshToken(userId);
-      CookieUtils.clearAccessTokenCookie(response);
-    } catch (error) {
-      if (error instanceof CookieOperationError) {
-        throw new InternalServerErrorException(
-          'Failed to complete logout process',
-        );
-      }
-      throw error;
-    }
+  async logout(userId: string, refreshTokenId: string) {
+    await this.redisService.deleteRefreshToken(userId, refreshTokenId);
   }
 
   async changePassword(
     userId: string | undefined,
     changePasswordDto: ChangePasswordDto,
-    response: Response,
+    refreshTokenId: string,
   ) {
     if (!userId) {
       // Use constant time comparison to prevent timing attacks
@@ -167,8 +162,8 @@ export class UsersService extends BaseService<User> {
     };
 
     // Delete old refresh token
-    await this.redisService.deleteRefreshToken(userId);
-    const tokens = await this.getTokens(userId, user.email, response);
+    await this.redisService.deleteRefreshToken(userId, refreshTokenId);
+    const tokens = await this.getTokens(userId, user.email);
 
     const updatedUser = await super.update(userId, {
       ...user,
@@ -178,7 +173,7 @@ export class UsersService extends BaseService<User> {
     return { user: updatedUser, tokens };
   }
 
-  async getTokens(userId: string, email: string, response: Response) {
+  async getTokens(userId: string, email: string) {
     try {
       const [accessToken, refreshToken] = await Promise.all([
         this.jwtService.signAsync(
@@ -196,39 +191,47 @@ export class UsersService extends BaseService<User> {
           },
         ),
       ]);
-
-      const maxAge = parseInt(this.config.access.expiresIn) * 60 * 1000;
-      CookieUtils.setAccessTokenCookie(response, accessToken, maxAge);
-
-      await this.redisService.storeRefreshToken(userId, refreshToken);
+      const refreshTokenId = randomUUID();
+      await this.redisService.storeRefreshToken(
+        userId,
+        refreshToken,
+        refreshTokenId,
+      );
 
       return {
-        refresh_token: refreshToken,
-      };
+        jwtAccessToken: accessToken,
+        jwtRefreshToken: refreshToken,
+        refreshTokenId: refreshTokenId,
+      } as SecretData;
     } catch (error) {
-      if (error instanceof CookieOperationError) {
-        throw new InternalServerErrorException(
-          'Failed to complete authentication process',
-        );
-      }
+      Logger.error(
+        `Failed to generate tokens: ${(error as Error).message}.\n${inspect(
+          error,
+        )}`,
+      );
       throw error;
     }
   }
 
-  async refreshTokens(id: string, refreshToken: string, response: Response) {
+  async refreshTokens(
+    id: string,
+    refreshToken: string,
+    refreshTokenId: string,
+  ) {
     const existingUser = await this.findOne(id);
     if (!existingUser) throw new ForbiddenException('Access Denied');
 
     const isValid = await this.redisService.validateRefreshToken(
       id,
       refreshToken,
+      refreshTokenId,
     );
     if (!isValid) throw new ForbiddenException('Access Denied');
 
     // Delete old refresh token
-    await this.redisService.deleteRefreshToken(id);
+    await this.redisService.deleteRefreshToken(id, refreshTokenId);
 
-    const tokens = await this.getTokens(id, existingUser.email, response);
+    const tokens = await this.getTokens(id, existingUser.email);
     return tokens;
   }
 
@@ -243,6 +246,20 @@ export class UsersService extends BaseService<User> {
     });
 
     return updatedUser;
+  }
+
+  async validateJwtRefreshToken(
+    sub: string,
+    jwtRefreshToken: string,
+    refreshTokenId: string,
+  ) {
+    const isValid = await this.redisService.validateRefreshToken(
+      sub,
+      jwtRefreshToken,
+      refreshTokenId,
+    );
+    if (isValid) return await this.findOne(sub);
+    else return undefined;
   }
 
   async findByEmail(email: string): Promise<User | null> {
@@ -260,6 +277,7 @@ export class UsersService extends BaseService<User> {
         firstName: true,
         lastName: true,
         birthDate: true,
+        phoneNumber: true,
         passwordHash: true,
         passwordSalt: true,
         createdAt: true,

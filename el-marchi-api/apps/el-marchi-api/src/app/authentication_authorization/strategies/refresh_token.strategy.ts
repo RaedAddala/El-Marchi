@@ -1,13 +1,15 @@
-import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { Request } from 'express';
 import { ExtractJwt, Strategy } from 'passport-jwt';
+import { COOKIE_NAME } from '../../common/cookies/cookie.utils';
 import { JwtconfigService } from '../../common/jwtconfig/jwtconfig.service';
-import { RedisService } from '../../common/redis/redis.service';
 import type {
-  JWTPayload,
-  RefreshTokenJWTPayload,
+  JwtTokenPayload,
+  SecretData,
 } from '../../common/types/jwt.payload';
+import { User } from '../entities/user.entity';
+import { UsersService } from '../users.service';
 
 @Injectable()
 export class RefreshTokenStrategy extends PassportStrategy(
@@ -16,48 +18,41 @@ export class RefreshTokenStrategy extends PassportStrategy(
 ) {
   constructor(
     jwtConfig: JwtconfigService,
-    private readonly redisService: RedisService,
-    private readonly logger: Logger,
+    private readonly usersService: UsersService,
   ) {
     super({
-      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+      jwtFromRequest: ExtractJwt.fromExtractors([
+        (request: Request) => {
+          const data: SecretData = request?.signedCookies[COOKIE_NAME];
+          if (!data) {
+            return null;
+          }
+          return data.jwtRefreshToken;
+        },
+      ]),
       secretOrKey: jwtConfig.getJwtConfig().refresh.publicKey,
       passReqToCallback: true,
       ignoreExpiration: false,
     });
   }
 
-  async validate(req: Request, payload: JWTPayload) {
-    if (!payload || !payload.sub) {
-      this.logger.warn(
-        `Invalid refresh token payload: ${JSON.stringify(payload)}`,
-      );
-      throw new UnauthorizedException('Invalid token');
+  async validate(req: Request, payload: JwtTokenPayload): Promise<User> {
+    if (!payload) {
+      throw new BadRequestException('no token payload');
     }
+    const data: SecretData = req?.signedCookies[COOKIE_NAME];
 
-    const refreshToken = req.get('Authorization')?.split(' ')[1];
-    if (!refreshToken) {
-      throw new UnauthorizedException('Refresh token not found');
+    if (!data.jwtRefreshToken) {
+      throw new BadRequestException('invalid refresh token');
     }
-
-    try {
-      const isValid = await this.redisService.validateRefreshToken(
-        payload.sub,
-        refreshToken,
-      );
-
-      if (!isValid) {
-        this.logger.warn(`Invalid refresh token for user ${payload.sub}`);
-        throw new UnauthorizedException('Invalid refresh token');
-      }
-
-      return { ...payload, refreshToken } as RefreshTokenJWTPayload;
-    } catch (error) {
-      this.logger.error(
-        `Refresh token validation error for user ${payload.sub}:`,
-        error,
-      );
-      throw new UnauthorizedException('Token validation failed');
+    const customer = await this.usersService.validateJwtRefreshToken(
+      payload.sub,
+      data.jwtRefreshToken,
+      data.refreshTokenId,
+    );
+    if (!customer) {
+      throw new BadRequestException('token expired');
     }
+    return customer;
   }
 }

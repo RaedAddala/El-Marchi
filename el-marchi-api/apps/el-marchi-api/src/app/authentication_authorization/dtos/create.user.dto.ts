@@ -10,6 +10,10 @@ const CreateUserSchema = z.object({
     .string()
     .min(8, { message: 'Password must be at least 8 characters long' })
     .max(60, { message: 'Password must be at most 60 characters long' }),
+  confirmPassword: z
+    .string()
+    .min(8, { message: 'confirmPassword must be at least 8 characters long' })
+    .max(60, { message: 'confirmPassword must be at most 60 characters long' }),
   phoneNumber: z
     .string()
     .min(8, { message: 'Phone Number must be at least 8 characters long' })

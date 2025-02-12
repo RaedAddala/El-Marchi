@@ -12,6 +12,7 @@ import { entitiesList } from './common/entities/entities';
 import { JwtconfigService } from './common/jwtconfig/jwtconfig.service';
 import { RedisService } from './common/redis/redis.service';
 import { CouponsModule } from './coupons/coupons.module';
+import { CryptoService } from './crypto/crypto.service';
 import { CustomersModule } from './customers/customers.module';
 import { DiscountsModule } from './discounts/discounts.module';
 import { InvoicesModule } from './invoices/invoices.module';
@@ -96,6 +97,6 @@ import { TradersModule } from './traders/traders.module';
     CouponsModule,
   ],
   controllers: [AppController],
-  providers: [AppService, JwtconfigService, RedisService],
+  providers: [AppService, CryptoService, JwtconfigService, RedisService],
 })
 export class AppModule {}

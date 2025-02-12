@@ -1,9 +1,10 @@
+import { Logger } from '@nestjs/common';
 import { generateKeyPairSync } from 'crypto';
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'fs';
+import { existsSync, mkdirSync, writeFileSync } from 'fs';
 import { join } from 'path';
 
-const KEY_PATH = join(__dirname, 'keys');
-
+export const KEY_PATH = join(__dirname, 'keys');
+Logger.log(KEY_PATH);
 /**
  * Generates an ECDSA key pair using the 'prime256v1' curve (suitable for ES256) and saves
  * them as PEM encoded files in the specified keys directory.
@@ -48,36 +49,4 @@ export function generateKeys() {
   if (!existsSync(join(KEY_PATH, 'refresh_public.pem'))) {
     generateECDSAKeys('refresh');
   }
-}
-
-/**
- * Generates and/or retrieves HTTPS credentials.
- *
- * This function checks if the certificate ('cert.pem') and key ('key.pem') files exist.
- * If either file is missing, it generates a new RSA key pair with a 4096-bit modulus,
- * writes the public key (in SPKI PEM format) to 'cert.pem' and the private key (in PKCS8 PEM format)
- * to 'key.pem'. Finally, it reads and returns the contents of these files as buffers.
- *
- * @returns {{ cert: Buffer, key: Buffer }} An object containing the HTTPS certificate and key.
- */
-export function generateHttpsCredentials() {
-  if (!existsSync('./cert.pem') || !existsSync('./key.pem')) {
-    const { privateKey, publicKey } = generateKeyPairSync('rsa', {
-      modulusLength: 4096,
-    });
-
-    writeFileSync(
-      './cert.pem',
-      publicKey.export({ type: 'spki', format: 'pem' }),
-    );
-    writeFileSync(
-      './key.pem',
-      privateKey.export({ type: 'pkcs8', format: 'pem' }),
-    );
-  }
-
-  return {
-    cert: readFileSync('./cert.pem'),
-    key: readFileSync('./key.pem'),
-  };
 }

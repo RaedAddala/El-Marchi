@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { readFileSync } from 'fs';
 import { join } from 'path';
+import { KEY_PATH } from '../../../genKeys';
 import { EnvConfig, JWT_ALGORITHM } from '../config/env.schema';
 
 @Injectable()
@@ -18,19 +19,19 @@ export class JwtconfigService {
   constructor(config: ConfigService<EnvConfig, true>) {
     try {
       this.accessPublicKey = readFileSync(
-        join(__dirname, '../../keys/access_public.pem'),
+        join(KEY_PATH, 'access_public.pem'),
         'utf8',
       );
       this.accessPrivateKey = readFileSync(
-        join(__dirname, '../../keys/access_private.pem'),
+        join(KEY_PATH, 'access_private.pem'),
         'utf8',
       );
       this.refreshPublicKey = readFileSync(
-        join(__dirname, '../../keys/refresh_public.pem'),
+        join(KEY_PATH, 'refresh_public.pem'),
         'utf8',
       );
       this.refreshPrivateKey = readFileSync(
-        join(__dirname, '../../keys/refresh_private.pem'),
+        join(KEY_PATH, 'refresh_private.pem'),
         'utf8',
       );
     } catch (error) {

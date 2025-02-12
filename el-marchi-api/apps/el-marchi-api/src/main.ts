@@ -8,25 +8,20 @@ import { AppModule } from './app/app.module';
 // Used to improve type safety in Nestjs
 import '@total-typescript/ts-reset';
 import compression from 'compression';
+import cookieParser from 'cookie-parser';
 import helmet from 'helmet';
-import cookieParser from "cookie-parser";
 
 import { ConfigService } from '@nestjs/config';
 import type { EnvConfig } from './app/common/config/env.schema';
 import { ZodValidationPipe } from './app/common/pipes/zod-validation.pipe';
 
-import { generateHttpsCredentials, generateKeys } from './genKeys';
+import { generateKeys } from './genKeys';
 
 async function bootstrap() {
   // generate the keys that will be used in the auth system later!
   generateKeys();
 
-  // Generate HTTPS credentials
-  const httpsOptions = generateHttpsCredentials();
-
-  const app: NestExpressApplication = await NestFactory.create(AppModule, {
-    httpsOptions,
-  });
+  const app: NestExpressApplication = await NestFactory.create(AppModule);
   const configService = app.get(ConfigService<EnvConfig, true>);
 
   app.useGlobalPipes(new ZodValidationPipe());
@@ -68,8 +63,8 @@ async function bootstrap() {
 
   Logger.log(
     `🚀 Application is running in ${configService.get('NODE_ENV')} mode on:\n` +
-    `- http://${hostname}:${port}/${globalPrefix}\n` +
-    `- ${await app.getUrl()}`,
+      `- http://${hostname}:${port}/${globalPrefix}\n` +
+      `- ${await app.getUrl()}`,
   );
 }
 

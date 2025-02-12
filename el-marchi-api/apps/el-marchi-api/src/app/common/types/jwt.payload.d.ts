@@ -1,6 +1,9 @@
-export type JWTPayload = {
+export interface JwtTokenPayload {
   sub: string;
-  email: string;
-};
+}
 
-export type RefreshTokenJWTPayload = JWTPayload & { refreshToken: string };
+export interface SecretData {
+  jwtAccessToken: string;
+  jwtRefreshToken: string;
+  refreshTokenId: string;
+}
