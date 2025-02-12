@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  ForbiddenException,
   HttpCode,
   HttpStatus,
   Post,
@@ -23,8 +24,8 @@ import { UsersService } from './users.service';
 import { AuthCookieUtils, COOKIE_NAME } from '../common/cookies/cookie.utils';
 import { AccessTokenGuard, RefreshTokenGuard } from '../common/guards';
 import { JwtconfigService } from '../common/jwtconfig/jwtconfig.service';
-import { SecretData } from '../common/types/jwt.payload';
 import { User } from './entities/user.entity';
+import { AccessTokenData } from '../common/types/jwt.payload';
 
 @Controller('users')
 @ApiTags('users')
@@ -45,8 +46,8 @@ export class UsersController {
     @Res({ passthrough: true }) response: Response,
   ) {
     const data = await this.userService.localSignup(createUserDto);
-    AuthCookieUtils.setAuthTokenCookie(response, data.tokens, this.maxAge);
-    return { msg: 'success', data: { email: data.email, id: data.id } };
+    AuthCookieUtils.setAuthTokenCookie(response, { accessToken: data.tokens.jwtAccessToken, refreshTokenId: data.tokens.refreshTokenId }, this.maxAge);
+    return { msg: 'success', data: { email: data.email, id: data.id, refreshToken: data.tokens.jwtRefreshToken } };
   }
 
   @Post('local/login')
@@ -56,8 +57,8 @@ export class UsersController {
     @Res({ passthrough: true }) response: Response,
   ) {
     const data = await this.userService.localLogin(loginDto);
-    AuthCookieUtils.setAuthTokenCookie(response, data.tokens, this.maxAge);
-    return { msg: 'success', data: { email: data.email, id: data.id } };
+    AuthCookieUtils.setAuthTokenCookie(response, { accessToken: data.tokens.jwtAccessToken, refreshTokenId: data.tokens.refreshTokenId }, this.maxAge);
+    return { msg: 'success', data: { email: data.email, id: data.id, refreshToken: data.tokens.jwtRefreshToken } };
   }
 
   @Post('logout')
@@ -68,9 +69,22 @@ export class UsersController {
     @Res({ passthrough: true }) response: Response,
   ) {
     const user = req.user as User;
-    const tokenData: SecretData = req.signedCookies[COOKIE_NAME];
+    const tokenData: AccessTokenData = req.signedCookies[COOKIE_NAME];
     AuthCookieUtils.clearAuthTokenCookie(response);
     await this.userService.logout(user.id, tokenData.refreshTokenId);
+    response.send({ msg: 'success' }).end();
+  }
+
+  @Post('logout-all')
+  @UseGuards(AccessTokenGuard)
+  @HttpCode(HttpStatus.OK)
+  async logoutAllDevices(
+    @Req() req: Request,
+    @Res({ passthrough: true }) response: Response,
+  ) {
+    const user = req.user as User;
+    AuthCookieUtils.clearAuthTokenCookie(response);
+    await this.userService.logoutAll(user.id);
     response.send({ msg: 'success' }).end();
   }
 
@@ -82,13 +96,15 @@ export class UsersController {
     @Res({ passthrough: true }) response: Response,
   ) {
     const user = req.user as User;
-    const tokenData: SecretData = req.signedCookies[COOKIE_NAME];
+    const tokenData: AccessTokenData = req.signedCookies[COOKIE_NAME];
+    const jwtRefreshToken = req.headers.authorization?.split(' ')[1];
+    if (!jwtRefreshToken) throw new ForbiddenException("");
     const data = await this.userService.refreshTokens(
       user.id,
-      tokenData.jwtRefreshToken,
+      jwtRefreshToken,
       tokenData.refreshTokenId,
     );
-    AuthCookieUtils.setAuthTokenCookie(response, data, this.maxAge);
+    AuthCookieUtils.setAuthTokenCookie(response, { accessToken: data.jwtAccessToken, refreshTokenId: data.refreshTokenId }, this.maxAge);
     return { msg: 'success', data: { email: user.email, id: user.id } };
   }
 
@@ -101,13 +117,13 @@ export class UsersController {
     @Res({ passthrough: true }) response: Response,
   ) {
     const user = req.user as User;
-    const tokenData: SecretData = req.signedCookies[COOKIE_NAME];
+    const tokenData: AccessTokenData = req.signedCookies[COOKIE_NAME];
     const data = await this.userService.changePassword(
       user.id,
       changePasswordDto,
       tokenData.refreshTokenId,
     );
-    AuthCookieUtils.setAuthTokenCookie(response, data.tokens, this.maxAge);
+    AuthCookieUtils.setAuthTokenCookie(response, { accessToken: data.tokens.jwtAccessToken, refreshTokenId: data.tokens.refreshTokenId }, this.maxAge);
     return {
       msg: 'success',
       data: { email: data.user.email, id: data.user.id },

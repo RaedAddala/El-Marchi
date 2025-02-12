@@ -1,12 +1,10 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
-import { Request } from 'express';
+import type { Request } from 'express';
 import { ExtractJwt, Strategy } from 'passport-jwt';
-import { COOKIE_NAME } from '../../common/cookies/cookie.utils';
 import { JwtconfigService } from '../../common/jwtconfig/jwtconfig.service';
 import type {
-  JwtTokenPayload,
-  SecretData,
+  RefreshJwtTokenPayload,
 } from '../../common/types/jwt.payload';
 import { User } from '../entities/user.entity';
 import { UsersService } from '../users.service';
@@ -21,38 +19,32 @@ export class RefreshTokenStrategy extends PassportStrategy(
     private readonly usersService: UsersService,
   ) {
     super({
-      jwtFromRequest: ExtractJwt.fromExtractors([
-        (request: Request) => {
-          const data: SecretData = request?.signedCookies[COOKIE_NAME];
-          if (!data) {
-            return null;
-          }
-          return data.jwtRefreshToken;
-        },
-      ]),
+      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       secretOrKey: jwtConfig.getJwtConfig().refresh.publicKey,
       passReqToCallback: true,
       ignoreExpiration: false,
     });
   }
 
-  async validate(req: Request, payload: JwtTokenPayload): Promise<User> {
+  async validate(req: Request, payload: RefreshJwtTokenPayload): Promise<User> {
     if (!payload) {
       throw new BadRequestException('no token payload');
     }
-    const data: SecretData = req?.signedCookies[COOKIE_NAME];
+    const data = req.headers.authorization?.split(' ')[1];
 
-    if (!data.jwtRefreshToken) {
+    if (!data) {
       throw new BadRequestException('invalid refresh token');
     }
-    const customer = await this.usersService.validateJwtRefreshToken(
+
+    const user = await this.usersService.validateJwtRefreshToken(
       payload.sub,
-      data.jwtRefreshToken,
-      data.refreshTokenId,
+      data,
+      payload.refreshTokenId,
     );
-    if (!customer) {
+
+    if (!user) {
       throw new BadRequestException('token expired');
     }
-    return customer;
+    return user;
   }
 }

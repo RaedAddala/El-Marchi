@@ -1,7 +1,7 @@
 import { Logger } from '@nestjs/common';
 import { Response } from 'express';
 import { inspect } from 'util';
-import { SecretData } from '../types/jwt.payload';
+import { AccessTokenData } from '../types/jwt.payload';
 
 export const COOKIE_NAME = 'auth_tokens';
 export class AuthCookieUtils {
@@ -9,7 +9,7 @@ export class AuthCookieUtils {
 
   static setAuthTokenCookie(
     response: Response,
-    token: SecretData,
+    token: AccessTokenData,
     maxAge: number,
   ): void {
     try {
@@ -23,8 +23,7 @@ export class AuthCookieUtils {
       });
     } catch (error) {
       this.logger.error(
-        `Failed to clear Auth token cookie: ${
-          (error as Error).message
+        `Failed to clear Auth token cookie: ${(error as Error).message
         }.\n${inspect(error)}`,
       );
       throw error;
@@ -42,8 +41,7 @@ export class AuthCookieUtils {
       });
     } catch (error) {
       this.logger.error(
-        `Failed to clear Auth token cookie: ${
-          (error as Error).message
+        `Failed to clear Auth token cookie: ${(error as Error).message
         }.\n${inspect(error)}`,
       );
 

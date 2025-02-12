@@ -5,7 +5,7 @@ import { ExtractJwt, Strategy } from 'passport-jwt';
 
 import { COOKIE_NAME } from '../../common/cookies/cookie.utils';
 import { JwtconfigService } from '../../common/jwtconfig/jwtconfig.service';
-import { JwtTokenPayload, SecretData } from '../../common/types/jwt.payload';
+import { AccessJwtTokenPayload, AccessTokenData } from '../../common/types/jwt.payload';
 import { User } from '../entities/user.entity';
 import { UsersService } from '../users.service';
 
@@ -22,11 +22,11 @@ export class AccessTokenStrategy extends PassportStrategy(
       jwtFromRequest: ExtractJwt.fromExtractors([
         (request: Request) => {
           try {
-            const data: SecretData = request?.signedCookies[COOKIE_NAME];
+            const data: AccessTokenData = request?.signedCookies[COOKIE_NAME];
             if (!data) {
               return null;
             }
-            return data.jwtAccessToken;
+            return data.accessToken;
           } catch {
             return null;
           }
@@ -37,7 +37,7 @@ export class AccessTokenStrategy extends PassportStrategy(
     });
   }
 
-  async validate(payload: JwtTokenPayload): Promise<User> {
+  async validate(payload: AccessJwtTokenPayload): Promise<User> {
     if (payload === null) {
       throw new UnauthorizedException();
     }

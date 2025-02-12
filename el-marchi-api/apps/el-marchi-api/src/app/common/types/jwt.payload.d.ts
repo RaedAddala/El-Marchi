@@ -1,9 +1,13 @@
-export interface JwtTokenPayload {
+export interface AccessJwtTokenPayload {
   sub: string;
 }
 
-export interface SecretData {
-  jwtAccessToken: string;
-  jwtRefreshToken: string;
+export interface RefreshJwtTokenPayload {
+  sub: string;
+  refreshTokenId: string;
+}
+
+export interface AccessTokenData {
+  accessToken: string;
   refreshTokenId: string;
 }

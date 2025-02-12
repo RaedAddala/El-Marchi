@@ -17,16 +17,17 @@ import { inspect } from 'util';
 import { BaseService } from '../common/database/base.service';
 import { JwtconfigService } from '../common/jwtconfig/jwtconfig.service';
 import { RedisService } from '../common/redis/redis.service';
-import { SecretData } from '../common/types/jwt.payload';
 import { CryptoService } from '../crypto/crypto.service';
 import { ChangePasswordDto } from './dtos/change.password.dto';
 import { CreateUserDto } from './dtos/create.user.dto';
 import { loginDto } from './dtos/login.dto';
 import { UpdateUserDto } from './dtos/update.user.dto';
 import { User } from './entities/user.entity';
+import { AccessJwtTokenPayload, RefreshJwtTokenPayload } from '../common/types/jwt.payload';
 
 @Injectable()
 export class UsersService extends BaseService<User> {
+
   private readonly config: {
     algorithm: string;
     access: {
@@ -75,7 +76,7 @@ export class UsersService extends BaseService<User> {
       throw new UnauthorizedException('Email or Password is wrong!');
     }
 
-    const tokens = await this.getTokens(existingUser.id, existingUser.email);
+    const tokens = await this.getTokens(existingUser.id);
     return { tokens, email: existingUser.email, id: existingUser.id };
   }
 
@@ -106,12 +107,16 @@ export class UsersService extends BaseService<User> {
       throw new InternalServerErrorException('User Creation Failed!');
     }
 
-    const tokens = await this.getTokens(user.id, user.email);
+    const tokens = await this.getTokens(user.id);
     return { tokens, email: user.email, id: user.id };
   }
 
   async logout(userId: string, refreshTokenId: string) {
     await this.redisService.deleteRefreshToken(userId, refreshTokenId);
+  }
+
+  async logoutAll(userId: string) {
+    await this.redisService.deleteAllRefreshToken(userId);
   }
 
   async changePassword(
@@ -163,7 +168,7 @@ export class UsersService extends BaseService<User> {
 
     // Delete old refresh token
     await this.redisService.deleteRefreshToken(userId, refreshTokenId);
-    const tokens = await this.getTokens(userId, user.email);
+    const tokens = await this.getTokens(userId);
 
     const updatedUser = await super.update(userId, {
       ...user,
@@ -173,25 +178,30 @@ export class UsersService extends BaseService<User> {
     return { user: updatedUser, tokens };
   }
 
-  async getTokens(userId: string, email: string) {
+  async getTokens(userId: string) {
+
+    const refreshTokenId = randomUUID();
+
+    const accessTokenPayload: AccessJwtTokenPayload = { sub: userId };
+    const refreshTokenPayload: RefreshJwtTokenPayload = { sub: userId, refreshTokenId: refreshTokenId };
+
     try {
       const [accessToken, refreshToken] = await Promise.all([
         this.jwtService.signAsync(
-          { sub: userId, email },
+          accessTokenPayload,
           {
             privateKey: this.config.access.privateKey,
             expiresIn: this.config.access.expiresIn,
           },
         ),
         this.jwtService.signAsync(
-          { sub: userId },
+          refreshTokenPayload,
           {
             privateKey: this.config.refresh.privateKey,
             expiresIn: this.config.refresh.expiresIn,
           },
         ),
       ]);
-      const refreshTokenId = randomUUID();
       await this.redisService.storeRefreshToken(
         userId,
         refreshToken,
@@ -202,7 +212,7 @@ export class UsersService extends BaseService<User> {
         jwtAccessToken: accessToken,
         jwtRefreshToken: refreshToken,
         refreshTokenId: refreshTokenId,
-      } as SecretData;
+      };
     } catch (error) {
       Logger.error(
         `Failed to generate tokens: ${(error as Error).message}.\n${inspect(
@@ -231,7 +241,7 @@ export class UsersService extends BaseService<User> {
     // Delete old refresh token
     await this.redisService.deleteRefreshToken(id, refreshTokenId);
 
-    const tokens = await this.getTokens(id, existingUser.email);
+    const tokens = await this.getTokens(id);
     return tokens;
   }
 

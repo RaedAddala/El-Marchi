@@ -12,6 +12,7 @@ import { EnvConfig } from '../config/env.schema';
 
 @Injectable()
 export class RedisService implements OnModuleInit, OnModuleDestroy {
+
   private readonly logger = new Logger(RedisService.name);
 
   private readonly client: RedisClientType;
@@ -197,6 +198,32 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
     await this.ensureConnection();
     try {
       await this.client.del(`refresh:${userId}:${refreshTokenId}`);
+    } catch (error) {
+      this.logger.error(
+        `Error deleting refresh token for user ${userId}:`,
+        error,
+      );
+      throw error;
+    }
+  }
+
+  async deleteAllRefreshToken(userId: string): Promise<void> {
+    await this.ensureConnection();
+    const pattern = `refresh:${userId}:*`;
+    let cursor = 0;
+
+    try {
+      do {
+        const { cursor: nextCursor, keys } = await this.client.scan(cursor, {
+          MATCH: pattern,
+          COUNT: 100,
+        });
+        if (keys.length > 0) {
+          await this.client.del(keys);
+        }
+        cursor = nextCursor;
+
+      } while (cursor !== 0);
     } catch (error) {
       this.logger.error(
         `Error deleting refresh token for user ${userId}:`,
