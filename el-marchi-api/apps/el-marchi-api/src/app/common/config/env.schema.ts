@@ -1,6 +1,8 @@
 import { extendApi } from '@anatine/zod-openapi';
 import { z } from 'zod';
 
+export type JWT_ALGORITHM = 'ES256';
+
 export const envSchema = z.object({
   PORT: extendApi(z.coerce.number().int().positive().default(3000), {
     description: 'Port to listen on',
@@ -40,10 +42,49 @@ export const envSchema = z.object({
     description: 'Database name',
     example: 'ElMarchi',
   }),
-  JWT_SECRET: extendApi(
-    z.string({ message: 'You have to Provide JWT Secret.' }).min(12, {
-      message: 'For Security Reasons JWT_Secret must be longer than 12.',
-    }),
+
+  REDIS_HOSTNAME: extendApi(z.string().default('localhost'), {
+    description: 'REDIS host',
+    example: 'localhost',
+  }),
+  REDIS_PORT: extendApi(z.coerce.number().int().positive().default(6379), {
+    description: 'REDIS port',
+    example: 6379,
+  }),
+  REDIS_PASSWORD: extendApi(z.string().default('p@ssw0rd_r3kwired'), {
+    description: 'REDIS password',
+    example: 'p@ssw0rd_r3kwired',
+  }),
+  ACCESS_TOKEN_EXPIRATION_IN_MINUTES: extendApi(
+    z.coerce.number().int().positive().default(15),
+    {
+      description: 'Access token expiration time in minutes',
+      example: 15,
+    },
+  ),
+  REFRESH_TOKEN_EXPIRATION_IN_DAYS: extendApi(
+    z.coerce.number().int().positive().default(7),
+    {
+      description: 'Refresh token expiration time in days',
+      example: 7,
+    },
+  ),
+  JWT_ALGORITHM: extendApi(z.literal('ES256'), {
+    description: 'JWT signing algorithm (fixed to ES256)',
+  }),
+
+  COOKIE_SECRET: extendApi(
+    z
+      .string()
+      .default(
+        '9bd03fc21c94777db49900c8121218ece0cf4b679cf80c3888eb7857429e4987',
+      ),
+    {
+      description:
+        'Cookie Secret used for signing cookies. String that will be passed to cookie-parser',
+      example:
+        '9bd03fc21c94777db49900c8121218ece0cf4b679cf80c3888eb7857429e4987',
+    },
   ),
 });
 

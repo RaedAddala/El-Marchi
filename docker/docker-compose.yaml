@@ -22,5 +22,14 @@ services:
     depends_on:
       - database
 
+  redis:
+    image: redis:7.4.2-alpine
+    ports:
+      - "6379:6379"
+    command: redis-server --save 60 1 --loglevel warning --requirepass p@ssw0rd_r3kwired
+    volumes:
+      - ./data:/data
+
 volumes:
   postgres_data:
+  data:

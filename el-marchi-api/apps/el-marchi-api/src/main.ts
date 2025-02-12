@@ -8,13 +8,19 @@ import { AppModule } from './app/app.module';
 // Used to improve type safety in Nestjs
 import '@total-typescript/ts-reset';
 import compression from 'compression';
+import cookieParser from 'cookie-parser';
 import helmet from 'helmet';
 
 import { ConfigService } from '@nestjs/config';
 import type { EnvConfig } from './app/common/config/env.schema';
 import { ZodValidationPipe } from './app/common/pipes/zod-validation.pipe';
 
+import { generateKeys } from './genKeys';
+
 async function bootstrap() {
+  // generate the keys that will be used in the auth system later!
+  generateKeys();
+
   const app: NestExpressApplication = await NestFactory.create(AppModule);
   const configService = app.get(ConfigService<EnvConfig, true>);
 
@@ -22,7 +28,11 @@ async function bootstrap() {
 
   app.enableCors({
     origin: '*',
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    exposedHeaders: ['Content-Range', 'X-Content-Range'],
+    credentials: true,
+    maxAge: 3600,
     preflightContinue: false,
   });
 
@@ -31,6 +41,7 @@ async function bootstrap() {
   app.useLogger(
     new Logger(configService.get('MODE') === 'production' ? 'log' : 'verbose'),
   );
+  app.use(cookieParser(configService.get('COOKIE_SECRET')));
 
   const globalPrefix = 'api';
   app.setGlobalPrefix(globalPrefix);

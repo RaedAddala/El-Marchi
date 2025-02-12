@@ -1,5 +1,4 @@
 const nx = require('@nx/eslint-plugin');
-const nestJSPlugin = require('@darraghor/eslint-plugin-nestjs-typed');
 
 module.exports = [
   ...nx.configs['flat/base'],
@@ -16,9 +15,6 @@ module.exports = [
   },
   {
     files: ['**/*.ts'],
-    plugins: {
-      '@darraghor/nestjs-typed': nestJSPlugin,
-    },
     rules: {
       '@nx/enforce-module-boundaries': [
         'error',
@@ -41,12 +37,6 @@ module.exports = [
           ],
         },
       ],
-
-      '@darraghor/nestjs-typed/controllers-should-supply-api-tags': 'off',
-      '@darraghor/nestjs-typed/api-method-should-specify-api-response': 'off', // Disable this rule
-      '@darraghor/nestjs-typed/provided-injected-should-match-factory-parameters':
-        'error',
-
       '@typescript-eslint/no-explicit-any': 'warn',
       '@typescript-eslint/no-unused-vars': [
         'warn',
@@ -54,6 +44,4 @@ module.exports = [
       ],
     },
   },
-
-  ...(nestJSPlugin.configs?.recommended.flat || []),
 ];
