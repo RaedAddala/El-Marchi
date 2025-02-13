@@ -10,6 +10,7 @@ import { entitiesList } from './common/entities/entities';
 import { jwtFactory } from './common/jwt/jwt.def';
 import { UsersModule } from './users/users.module';
 import {CategoriesModule} from "./categories/categories.module";
+import {ProductModule} from "./products/products.module";
 
 @Module({
   imports: [
@@ -58,6 +59,7 @@ import {CategoriesModule} from "./categories/categories.module";
     }),
     UsersModule,
     CategoriesModule,
+    ProductModule,
   ],
   controllers: [AppController],
   providers: [AppService],

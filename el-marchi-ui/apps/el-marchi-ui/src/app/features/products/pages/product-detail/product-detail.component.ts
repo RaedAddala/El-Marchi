@@ -6,7 +6,7 @@ import { interval, take } from 'rxjs';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import { CartService } from '../../cart.mock.service';
 import { ToastService } from '@shared/toast/toast.service';
-import { UserProductService } from '@features/products/user-product.mock.service';
+import { UserProductService } from '@features/products/user-product.service';
 import { ProductCardComponent } from '@features/products/pages/product-card/product-card.component';
 import { Pagination } from '@shared/models/request.model';
 import { Product } from '@shared/models/product.model';

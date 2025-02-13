@@ -8,7 +8,7 @@ import { CommonModule } from '@angular/common';
 import { ProductsFilterComponent } from './products-filter/products-filter.component';
 import { injectQueryParams } from 'ngxtension/inject-query-params';
 import { Router } from '@angular/router';
-import { UserProductService } from '@features/products/user-product.mock.service';
+import { UserProductService } from '@features/products/user-product.service';
 import { ToastService } from '@shared/toast/toast.service';
 import { Pagination } from '@shared/models/request.model';
 import { ProductFilter } from '@shared/models/product.model';

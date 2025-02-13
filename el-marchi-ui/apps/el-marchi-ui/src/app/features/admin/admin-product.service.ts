@@ -1,9 +1,9 @@
 import { inject, Injectable } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import {HttpClient, HttpParams} from '@angular/common/http';
 import { environment } from '../../../../environments/environment.development';
 import {catchError, Observable, throwError} from 'rxjs';
-import { Page } from '@shared/models/request.model'; // Ensure that the Page type is correctly defined
-import { ProductCategory } from '../../shared/models/product.model'; // Ensure ProductCategory model is correct
+import {Page, Pagination} from '@shared/models/request.model'; // Ensure that the Page type is correctly defined
+import {BaseProduct, Product, ProductCategory} from '../../shared/models/product.model'; // Ensure ProductCategory model is correct
 
 @Injectable({
   providedIn: 'root',
@@ -57,6 +57,41 @@ export class AdminProductService {
         return throwError(error);  // You can handle it better by providing more user-friendly feedback here.
       })
     );
+  }
+
+  createProduct(product: BaseProduct, images: File[]): Observable<Product> {
+    const formData = new FormData();
+
+    // Append product data as individual fields
+    formData.append('name', product.name);
+    formData.append('brand', product.brand);
+    formData.append('color', product.color);
+    formData.append('description', product.description);
+    formData.append('price', product.price.toString());
+    formData.append('size', product.size);
+    formData.append('category', JSON.stringify(product.category)); // Append category as JSON
+    formData.append('featured', product.featured.toString());
+    formData.append('nbInStock', product.nbInStock.toString());
+
+    // Append each image file
+    images.forEach((image) => {
+      formData.append('images', image, image.name); // Use 'images' as the field name
+    });
+
+    // Send the request
+    return this.http.post<Product>(`${environment.apiUrl}/products`, formData);
+  }
+
+  deleteProduct(publicId: string): Observable<string> {
+    return this.http.delete<string>(`${environment.apiUrl}/products/${publicId}`);
+  }
+
+  findAllProducts(pageRequest: Pagination): Observable<Page<Product>> {
+    const params = {
+      page: pageRequest.page.toString(),
+      size: pageRequest.size.toString(),
+    };
+    return this.http.get<Page<Product>>(`${environment.apiUrl}/products`, { params });
   }
 
 }

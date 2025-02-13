@@ -42,8 +42,8 @@ export class CategoriesController {
 
 
   // Delete a category by ID
-  @Delete(':id')
-  async deleteCategory(@Param('id') categoryId: string) {
+  @Delete('')
+  async deleteCategory(@Query('publicId') categoryId: string) {
     const result = await this.categoriesService.deleteCategory(categoryId);
     if (result.affected === 0) {
       throw new NotFoundException(`Category with ID ${categoryId} not found`);

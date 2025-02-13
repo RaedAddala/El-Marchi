@@ -8,24 +8,29 @@ import {
   Validators,
 } from '@angular/forms';
 import { Router } from '@angular/router';
-import { HttpClient } from '@angular/common/http';
 import { NgxControlError } from 'ngxtension/control-error';
-import { AdminProductService } from '@features/admin/admin-product.mock.service';
+import { AdminProductService } from '@features/admin/admin-product.service';
 import { ToastService } from '@shared/toast/toast.service';
 import {
   BaseProduct,
-  CreateProductFormContent,
-  ProductCategory,
-  ProductPicture,
-  ProductSizes,
+  CategoryWithSubcategories,
+  ProductPicture, ProductSizes,
   sizes,
 } from '@shared/models/product.model';
 import { v4 as uuidv4 } from 'uuid';
+import { FaIconComponent } from '@fortawesome/angular-fontawesome';
+import {debounceTime, distinctUntilChanged} from "rxjs";
 
 @Component({
   selector: 'app-create-product',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, NgxControlError],
+  imports: [
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    NgxControlError,
+    FaIconComponent,
+  ],
   templateUrl: './create-product.component.html',
   styleUrl: './create-product.component.css',
 })
@@ -34,202 +39,234 @@ export class CreateProductComponent implements OnInit {
   private productService = inject(AdminProductService);
   private toastService = inject(ToastService);
   private router = inject(Router);
-  private http = inject(HttpClient);
 
-  public productPictures: ProductPicture[] = [];
+  public productFiles: File[] = []; // Store the actual File objects
+  public productPictures: ProductPicture[] = []; // Store the metadata
+  public availableSubcategories: CategoryWithSubcategories[] = [];
+  public categories: CategoryWithSubcategories[] = [];
+  public loading = false;
 
+  // Define the subcategory control explicitly
   name = new FormControl<string>('', {
     nonNullable: true,
-    validators: [
-      Validators.required,
-      Validators.minLength(3), // Minimum length of 3 characters
-      Validators.maxLength(100), // Maximum length of 100 characters
-    ],
+    validators: [Validators.required, Validators.minLength(3), Validators.maxLength(100)],
   });
-  description = new FormControl<string>('', {
-    nonNullable: true,
-    validators: [
-      Validators.required,
-      Validators.minLength(10), // Description should be at least 10 characters
-      Validators.maxLength(500), // Description should be at most 500 characters
-    ],
-  });
-  price = new FormControl<number>(0, {
-    nonNullable: true,
-    validators: [
-      Validators.required,
-      Validators.min(1), // Price should be greater than or equal to 1
-    ],
-  });
-  size = new FormControl<ProductSizes>('XS', {
-    nonNullable: true,
-    validators: [Validators.required],
-  });
-  category = new FormControl<string>('', {
-    nonNullable: true,
-    validators: [Validators.required],
-  });
+
   brand = new FormControl<string>('', {
     nonNullable: true,
     validators: [Validators.required],
   });
+
   color = new FormControl<string>('', {
     nonNullable: true,
     validators: [Validators.required],
   });
+
+  description = new FormControl<string>('', {
+    nonNullable: true,
+    validators: [Validators.required, Validators.minLength(10), Validators.maxLength(500)],
+  });
+
+  price = new FormControl<number>(0, {
+    nonNullable: true,
+    validators: [Validators.required, Validators.min(1)],
+  });
+
+  stock = new FormControl<number>(0, {
+    nonNullable: true,
+    validators: [Validators.required, Validators.min(1), Validators.max(1000)],
+  });
+
+  size = new FormControl<ProductSizes>('XS', {
+    nonNullable: true,
+    validators: [Validators.required],
+  });
+
+  parentCategory = new FormControl<string>('', {
+    nonNullable: true,
+    validators: [Validators.required],
+  });
+
+  subcategory = new FormControl<string>('', {
+    nonNullable: true,
+    validators: [Validators.required],
+  });
+
   featured = new FormControl<boolean>(false, {
     nonNullable: true,
     validators: [Validators.required],
   });
-  pictures = new FormControl<Array<ProductPicture>>([], {
+
+  pictures = new FormControl<ProductPicture[]>([], {
     nonNullable: true,
-    validators: [
-      Validators.required,
-      control => {
-        if (!control.value || control.value.length === 0) {
-          return { picturesRequired: true };
-        }
-        return null;
-      },
-    ],
-  });
-  stock = new FormControl<number>(0, {
-    nonNullable: true,
-    validators: [
-      Validators.required,
-      Validators.min(1), // Stock should be at least 1
-      Validators.max(1000), // Stock should not exceed 1000
-    ],
+    validators: [Validators.required, control => control.value.length > 0 ? null : { picturesRequired: true }],
   });
 
-  public createForm =
-    this.formBuilder.nonNullable.group<CreateProductFormContent>({
-      brand: this.brand,
-      color: this.color,
-      description: this.description,
-      name: this.name,
-      price: this.price,
-      size: this.size,
-      category: this.category,
-      featured: this.featured,
-      pictures: this.pictures,
-      stock: this.stock,
-    });
-
-  loading = false;
-  categories: ProductCategory[] = [];
+  // Define the form group
+  createForm = this.formBuilder.nonNullable.group({
+    name: this.name,
+    brand: this.brand,
+    color: this.color,
+    description: this.description,
+    price: this.price,
+    stock: this.stock,
+    size: this.size,
+    parentCategory: this.parentCategory,
+    subcategory: this.subcategory,
+    featured: this.featured,
+    pictures: this.pictures,
+  });
 
   ngOnInit() {
     this.loadCategories();
+    //trgir chnage and console log the invalid form fields make  apipe that just take chage after 1 second and last value
+    this.createForm.valueChanges.pipe(debounceTime(1000), distinctUntilChanged()).subscribe((value) => {
+      console.log('Form value changes', value);
+      //pritn fields that are invalid
+      Object.keys(this.createForm.controls).forEach((field) => {
+        const control = this.createForm.get(field);
+        if (control?.invalid) {
+          console.log('Invalid field:', field);
+        }
+      });
+    });
   }
 
   loadCategories() {
-    this.productService.findAllCategories().subscribe({
-      next: data => {
+    this.productService.findAllCategories(0, 100).subscribe({
+      next: (data) => {
         this.categories = data.content;
+        this.loadSubcategoriesForAll();
       },
-      error: err => {
+      error: (err) => {
         console.error('Failed to load categories', err);
+        this.toastService.show('Failed to load categories', 'ERROR');
       },
     });
+  }
+
+  onParentCategoryChange(event: Event) {
+    const select = event.target as HTMLSelectElement;
+    const selectedCategoryId = select.value;
+
+    this.subcategory.setValue(''); // Reset the subcategory value
+    if (!selectedCategoryId) {
+      this.availableSubcategories = [];
+      this.subcategory.disable(); // Disable the subcategory control
+      return;
+    }
+
+    const selectedCategory = this.categories.find(cat => cat.publicId === selectedCategoryId);
+    if (selectedCategory) {
+      this.productService.findSubcategoriesByCategoryId(selectedCategoryId).subscribe({
+        next: (subcategories) => {
+          this.availableSubcategories = subcategories;
+          this.subcategory.enable(); // Enable the subcategory control
+        },
+        error: (error) => {
+          console.error('Failed to load subcategories', error);
+          this.toastService.show('Failed to load subcategories', 'ERROR');
+          this.availableSubcategories = [];
+          this.subcategory.disable(); // Disable the subcategory control on error
+        },
+      });
+    }
   }
 
   create(): void {
+    if (this.createForm.invalid) {
+      this.toastService.show('Please fill out the form correctly', 'ERROR');
+      return;
+    }
+
+    const formValues = this.createForm.getRawValue();
+    const subcategoryValues = formValues.subcategory.split('+');
+
     const productToCreate: BaseProduct = {
-      brand: this.createForm.getRawValue().brand,
-      color: this.createForm.getRawValue().color,
-      description: this.createForm.getRawValue().description,
-      name: this.createForm.getRawValue().name,
-      price: this.createForm.getRawValue().price,
-      size: this.createForm.getRawValue().size,
+      brand: formValues.brand,
+      color: formValues.color,
+      description: formValues.description,
+      name: formValues.name,
+      price: formValues.price,
+      size: formValues.size,
       category: {
-        publicId: this.createForm.getRawValue().category.split('+')[0],
-        name: this.createForm.getRawValue().category.split('+')[1],
+        publicId: subcategoryValues[0],
+        name: subcategoryValues[1],
       },
-      featured: this.createForm.getRawValue().featured,
-      pictures: this.productPictures,
-      nbInStock: this.createForm.getRawValue().stock,
+      featured: formValues.featured,
+      pictures: this.productPictures, // Pass the metadata
+      nbInStock: formValues.stock,
     };
 
     this.loading = true;
-    this.productService.createProduct(productToCreate).subscribe({
-      next: () => this.onCreationSuccess(),
-      error: () => this.onCreationError(),
-      complete: () => this.onCreationSettled(),
+    this.productService.createProduct(productToCreate, this.productFiles).subscribe({
+      next: () => {
+        this.router.navigate(['/admin/products/list']);
+        this.toastService.show('Product created', 'SUCCESS');
+      },
+      error: () => {
+        this.toastService.show('Issue when creating product', 'ERROR');
+      },
+      complete: () => {
+        this.loading = false;
+      },
     });
   }
 
-  private async saveFileToAssets(file: File, publicId: string): Promise<void> {
-    const arrayBuffer = await file.arrayBuffer();
-    const uint8Array = new Uint8Array(arrayBuffer);
+  loadSubcategoriesForAll() {
+    this.categories.forEach(category => {
+      if (category.publicId) {
+        this.loadSubcategoriesForCategory(category);
+      }
+    });
+  }
 
-    // Use HttpClient to save the file
-    return new Promise((resolve, reject) => {
-      this.http
-        .post('/api/upload-product-image', {
-          publicId,
-          file: Array.from(uint8Array),
-          mimeType: file.type,
-        })
-        .subscribe({
-          next: () => resolve(),
-          error: err => {
-            console.error('File upload failed', err);
-            reject(err);
-          },
-        });
+  loadSubcategoriesForCategory(category: CategoryWithSubcategories) {
+    if (!category.publicId) return;
+    this.productService.findSubcategoriesByCategoryId(category.publicId).subscribe({
+      next: (subcategories) => {
+        category.subcategories = subcategories;
+      },
+      error: () => {
+        this.toastService.show(`Failed to load subcategories for ${category.name || 'category'}`, 'ERROR');
+      },
     });
   }
 
   async onUploadNewPicture(target: EventTarget | null) {
-    this.productPictures = [];
+    this.productFiles = []; // Clear previous files
+    this.productPictures = []; // Clear previous metadata
+
     const picturesFileList = this.extractFileFromTarget(target);
 
-    if (picturesFileList !== null) {
+    if (picturesFileList) {
       for (let i = 0; i < picturesFileList.length; i++) {
         const file = picturesFileList.item(i);
-        if (file !== null) {
-          // Generate a unique publicId for the product picture
+        if (file) {
           const publicId = uuidv4();
-
           const productPicture: ProductPicture = {
             publicId,
             mimeType: file.type,
           };
 
           try {
-            // Save the file to assets
-            await this.saveFileToAssets(file, publicId);
-
-            // Add to product pictures
-            this.productPictures.push(productPicture);
+            this.productFiles.push(file); // Store the File object
+            this.productPictures.push(productPicture); // Store the metadata
           } catch (error) {
             this.toastService.show('Failed to upload image', 'ERROR');
           }
         }
       }
     }
+    //ypdate the form control
+    this.pictures.setValue(this.productPictures);
   }
+
+
 
   private extractFileFromTarget(target: EventTarget | null): FileList | null {
     const htmlInputTarget = target as HTMLInputElement;
-    if (target === null || htmlInputTarget.files === null) {
-      return null;
-    }
-    return htmlInputTarget.files;
-  }
-
-  private onCreationSettled() {
-    this.loading = false;
-  }
-
-  private onCreationSuccess() {
-    this.router.navigate(['/admin/products/list']);
-    this.toastService.show('Product created', 'SUCCESS');
-  }
-
-  private onCreationError() {
-    this.toastService.show('Issue when creating product', 'ERROR');
+    return htmlInputTarget?.files;
   }
 
   protected readonly sizes = sizes;

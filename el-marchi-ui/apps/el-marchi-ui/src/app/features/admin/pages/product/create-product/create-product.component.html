@@ -1,209 +1,260 @@
-<div class="grid grid-cols-3">
-  <form id="createForm" (ngSubmit)="create()" [formGroup]="createForm">
-    <h1 class="text-lg font-bold">Create a new Product</h1>
+<div class="min-h-screen flex items-center justify-center bg-gray-100 p-4">
+  <div class="w-full max-w-4xl bg-white rounded-lg shadow-lg p-6">
+    <form id="createForm" (ngSubmit)="create()" [formGroup]="createForm" class="space-y-6">
+      <h1 class="text-2xl font-bold text-center mb-6">Create a New Product</h1>
 
-    <label class="form-control w-full" for="name">
-      <div class="label">
-        <span class="label-text">Name</span>
+      <!-- Grid Layout for Form Fields -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Name -->
+        <div class="form-control">
+          <label for="name" class="label">
+            <span class="label-text">Name</span>
+          </label>
+          <input
+            id="name"
+            type="text"
+            placeholder="Type name here"
+            class="input input-bordered w-full"
+            formControlName="name"
+          />
+          <div class="label">
+            <span class="label-text-alt text-red-600" *ngxControlError="name; track: 'required'">
+              Name is required
+            </span>
+            <span class="label-text-alt text-red-600" *ngxControlError="name; track: 'minlength'">
+              Name must be at least 3 characters
+            </span>
+          </div>
+        </div>
+
+        <!-- Brand -->
+        <div class="form-control">
+          <label for="brand" class="label">
+            <span class="label-text">Brand</span>
+          </label>
+          <input
+            id="brand"
+            type="text"
+            placeholder="Type brand here"
+            class="input input-bordered w-full"
+            formControlName="brand"
+          />
+          <div class="label">
+            <span class="label-text-alt text-red-600" *ngxControlError="brand; track: 'required'">
+              Brand is required
+            </span>
+          </div>
+        </div>
+
+        <!-- Color -->
+        <div class="form-control">
+          <label for="color" class="label">
+            <span class="label-text">Color</span>
+          </label>
+          <input
+            id="color"
+            type="color"
+            class="input input-bordered w-full h-12"
+            formControlName="color"
+          />
+          <div class="label">
+            <span class="label-text-alt text-red-600" *ngxControlError="color; track: 'required'">
+              Color is required
+            </span>
+          </div>
+        </div>
+
+        <!-- Description -->
+        <div class="form-control col-span-2">
+          <label for="description" class="label">
+            <span class="label-text">Description</span>
+          </label>
+          <textarea
+            id="description"
+            placeholder="Type description here"
+            class="textarea textarea-bordered w-full"
+            formControlName="description"
+          ></textarea>
+          <div class="label">
+            <span class="label-text-alt text-red-600" *ngxControlError="description; track: 'required'">
+              Description is required
+            </span>
+            <span class="label-text-alt text-red-600" *ngxControlError="description; track: 'minlength'">
+              Description must be at least 10 characters
+            </span>
+          </div>
+        </div>
+
+        <!-- Price -->
+        <div class="form-control">
+          <label for="price" class="label">
+            <span class="label-text">Price</span>
+          </label>
+          <input
+            id="price"
+            type="number"
+            placeholder="Type price here"
+            class="input input-bordered w-full"
+            formControlName="price"
+          />
+          <div class="label">
+            <span class="label-text-alt text-red-600" *ngxControlError="price; track: 'required'">
+              Price is required
+            </span>
+            <span class="label-text-alt text-red-600" *ngxControlError="price; track: 'min'">
+              Price must be greater than 0
+            </span>
+          </div>
+        </div>
+
+        <!-- Stock -->
+        <div class="form-control">
+          <label for="stock" class="label">
+            <span class="label-text">Number of Stock</span>
+          </label>
+          <input
+            id="stock"
+            type="number"
+            placeholder="Enter the stock here"
+            class="input input-bordered w-full"
+            formControlName="stock"
+          />
+          <div class="label">
+            <span class="label-text-alt text-red-600" *ngxControlError="stock; track: 'required'">
+              Stock is required
+            </span>
+            <span class="label-text-alt text-red-600" *ngxControlError="stock; track: 'min'">
+              Stock must be at least 1
+            </span>
+            <span class="label-text-alt text-red-600" *ngxControlError="stock; track: 'max'">
+              Stock cannot exceed 1000
+            </span>
+          </div>
+        </div>
+
+        <!-- Size -->
+        <div class="form-control">
+          <label for="size" class="label">
+            <span class="label-text">Size</span>
+          </label>
+          <select
+            id="size"
+            class="select select-bordered w-full"
+            formControlName="size"
+          >
+            <option disabled selected>Select size</option>
+            @for (size of sizes; track size) {
+              <option [value]="size">{{ size }}</option>
+            }
+          </select>
+          <div class="label">
+            <span class="label-text-alt text-red-600" *ngxControlError="size; track: 'required'">
+              Size is required
+            </span>
+          </div>
+        </div>
+
+        <!-- Parent Category -->
+        <div class="form-control">
+          <label for="parentCategory" class="label">
+            <span class="label-text">Category</span>
+          </label>
+          <select
+            id="parentCategory"
+            class="select select-bordered w-full"
+            formControlName="parentCategory"
+            (change)="onParentCategoryChange($event)"
+          >
+            <option disabled selected>Select category</option>
+            @for (category of categories; track category.publicId) {
+              <option [value]="category.publicId">
+                {{ category.name }}
+              </option>
+            }
+          </select>
+          <div class="label">
+            <span class="label-text-alt text-red-600" *ngxControlError="parentCategory; track: 'required'">
+              Please select a category to view available subcategories
+            </span>
+          </div>
+        </div>
+
+        <!-- Subcategory -->
+        <div class="form-control">
+          <label for="subcategory" class="label">
+            <span class="label-text">Subcategory</span>
+          </label>
+          <select
+            id="subcategory"
+            class="select select-bordered w-full"
+            formControlName="subcategory"
+            [disabled]="!availableSubcategories.length"
+          >
+            @if (availableSubcategories.length) {
+              <option disabled selected>Select subcategory</option>
+              @for (subcategory of availableSubcategories; track subcategory.publicId) {
+                <option [value]="subcategory.publicId + '+' + subcategory.name">
+                  {{ subcategory.name }}
+                </option>
+              }
+            }
+            @else {
+              <option disabled selected>
+                Please select a category to view available subcategories
+              </option>
+            }
+          </select>
+          <div class="label">
+            <span class="label-text-alt text-red-600" *ngxControlError="subcategory; track: 'required'">
+              Subcategory is required
+            </span>
+          </div>
+        </div>
+
+        <!-- Image Upload -->
+        <div class="form-control col-span-2">
+          <label for="productImages" class="label">
+            <span class="label-text">Product Images</span>
+          </label>
+          <input
+            id="productImages"
+            type="file"
+            class="file-input file-input-bordered w-full"
+            (change)="onUploadNewPicture($event.target)"
+            multiple
+          />
+          <div class="label">
+            <span class="label-text-alt text-red-600" *ngxControlError="pictures; track: 'required'">
+              At least one image is required
+            </span>
+          </div>
+        </div>
+
+        <!-- Featured -->
+        <div class="form-control col-span-2">
+          <label for="featured" class="label">
+            <span class="label-text">Featured</span>
+          </label>
+          <input
+            id="featured"
+            type="checkbox"
+            class="toggle toggle-primary"
+            formControlName="featured"
+          />
+        </div>
       </div>
-      <input
-        id="name"
-        type="text"
-        placeholder="Type name here"
-        class="input input-bordered w-full"
-        formControlName="name"
-      />
-      <div class="label">
-        <span
-          class="label-text-alt text-red-600"
-          *ngxControlError="name; track: 'required'"
+
+      <!-- Submit Button -->
+      <div class="text-center">
+        <button
+          type="submit"
+          class="btn btn-primary w-full md:w-1/2"
+          [disabled]="createForm.invalid"
         >
-          Name is required
-        </span>
+          Create
+          <fa-icon class="ms-1" [icon]="['fas', 'plus']"></fa-icon>
+        </button>
       </div>
-    </label>
-
-    <label class="form-control w-full" for="brand">
-      <div class="label">
-        <span class="label-text">Brand</span>
-      </div>
-      <input
-        id="brand"
-        type="text"
-        placeholder="Type brand here"
-        class="input input-bordered w-full"
-        formControlName="brand"
-      />
-      <div class="label">
-        <span
-          class="label-text-alt text-red-600"
-          *ngxControlError="brand; track: 'required'"
-        >
-          Brand is required
-        </span>
-      </div>
-    </label>
-
-    <label class="form-control w-full" for="color">
-      <div class="label">
-        <span class="label-text">Color</span>
-      </div>
-      <input
-        id="color"
-        type="color"
-        class="input input-bordered w-full"
-        formControlName="color"
-      />
-      <div class="label">
-        <span
-          class="label-text-alt text-red-600"
-          *ngxControlError="color; track: 'required'"
-        >
-          Color is required
-        </span>
-      </div>
-    </label>
-
-    <label class="form-control w-full" for="description">
-      <div class="label">
-        <span class="label-text">Description</span>
-      </div>
-      <textarea
-        id="description"
-        placeholder="Type description here"
-        class="textarea textarea-bordered w-full"
-        formControlName="description"
-      ></textarea>
-      <div class="label">
-        <span
-          class="label-text-alt text-red-600"
-          *ngxControlError="description; track: 'required'"
-        >
-          Description is required
-        </span>
-      </div>
-    </label>
-
-    <label class="form-control w-full" for="price">
-      <div class="label">
-        <span class="label-text">Price</span>
-      </div>
-      <input
-        id="price"
-        type="number"
-        placeholder="Type price here"
-        class="input input-bordered w-full"
-        formControlName="price"
-      />
-      <div class="label">
-        <span
-          class="label-text-alt text-red-600"
-          *ngxControlError="price; track: 'required'"
-        >
-          Price is required
-        </span>
-      </div>
-    </label>
-
-    <label class="form-control w-full" for="stock">
-      <div class="label">
-        <span class="label-text">Number of stock</span>
-      </div>
-      <input
-        id="stock"
-        type="number"
-        placeholder="Enter the stock here"
-        class="input input-bordered w-full"
-        formControlName="stock"
-      />
-      <div class="label">
-        <span
-          class="label-text-alt text-red-600"
-          *ngxControlError="stock; track: 'required'"
-        >
-          Stock is required
-        </span>
-      </div>
-    </label>
-
-    <label class="form-control w-full" for="size">
-      <div class="label">
-        <span class="label-text">Size</span>
-      </div>
-      <select
-        id="size"
-        class="select select-bordered w-full"
-        formControlName="size"
-      >
-        <option disabled selected>Select size</option>
-        @for (size of sizes; track size) {
-        <option value="{{ size }}">{{ size }}</option>
-        }
-      </select>
-    </label>
-
-    <label class="form-control w-full" for="category">
-      <div class="label">
-        <span class="label-text">Category</span>
-      </div>
-      <select
-        id="category"
-        class="select select-bordered w-full"
-        formControlName="category"
-      >
-        <option disabled selected>Select category</option>
-        @for (category of categories; track category.publicId) {
-        <option value="{{ category.publicId }}+{{ category.name }}">
-          {{ category.name }}
-        </option>
-        }
-      </select>
-    </label>
-
-    <label class="form-control w-full" for="pictures">
-      <div class="label">
-        <span class="label-text">Pictures</span>
-      </div>
-      <input
-        id="pictures"
-        type="file"
-        class="file-input w-full"
-        multiple
-        (change)="onUploadNewPicture($event.target)"
-        formControlName="pictures"
-      />
-      <div class="label">
-        @if (productPictures.length === 0 && pictures.invalid &&
-        !pictures.untouched) {
-        <span class="label-text-alt text-red-600"
-          >At least one picture is required</span
-        >
-        }
-      </div>
-    </label>
-
-    <div class="form-control w-full">
-      <label class="label cursor-pointer" for="featured">
-        <span class="label-text">Featured</span>
-      </label>
-      <div class="flex justify-center">
-        <input
-          id="featured"
-          type="checkbox"
-          class="checkbox checkbox-primary"
-          formControlName="featured"
-        />
-      </div>
-    </div>
-
-    <button
-      type="submit"
-      class="btn btn-primary btn-wide w-full"
-      [disabled]="createForm.invalid"
-    >
-      @if(loading) {
-      <span class="loading-spinner loading"></span>
-      } Create product
-    </button>
-  </form>
+    </form>
+  </div>
 </div>
