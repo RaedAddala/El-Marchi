@@ -1,55 +1,60 @@
-<div class="w-full flex justify-between items-center">
-  <div>
-    <h1 class="text-2xl font-bold">Categories</h1>
-    <div>Add and delete categories</div>
-  </div>
-  <button class="btn btn-primary" routerLink="/admin/categories/create">
-    Create categories
-  </button>
-</div>
-<div class="border-t w-full border-solid border-gray-300 mt-3 mb-5"></div>
-
-@if (loading) {
-<div class="flex w-full justify-center">
-  <span class="loading loading-spinner loading-lg"></span>
-</div>
-} @else if (error) {
-<div class="alert alert-error">
-  <span>Error! Failed to load categories.</span>
-</div>
-} @else if (categories.length === 0) {
-<div role="alert" class="alert alert-info">
-  <fa-icon [icon]="['fas', 'circle-exclamation']" size="2x"></fa-icon>
-  <span>No category created yet.</span>
-</div>
-} @else {
-<div class="overflow-x-auto border border-gray-300 rounded-md">
-  <table class="table table-lg table-zebra">
-    <thead class="border-gray-300">
-      <tr class="border-gray-300">
-        <th></th>
-        <th>Public Id</th>
-        <th>Name</th>
-        <th>Actions</th>
-      </tr>
-    </thead>
-    <tbody class="border-0">
-      @for (category of categories; track category.publicId; let i = $index) {
-      <tr class="border-gray-300">
-        <th>{{ i + 1 }}</th>
+<!-- Categories Table -->
+<table class="table table-lg">
+  <thead>
+  <tr>
+    <th>No.</th>
+    <th>Public Id</th>
+    <th>Name</th>
+    <th>Subcategories</th>
+    <th>Actions</th>
+  </tr>
+  </thead>
+  <tbody>
+    @for (category of categories; track category.publicId) {
+      <tr>
+        <td>{{ pageData.number * pageData.size + $index + 1 }}</td>
         <td>{{ category.publicId }}</td>
         <td>{{ category.name }}</td>
         <td>
-          <div
-            (click)="deleteCategory(category.publicId!)"
-            class="btn btn-secondary btn-sm"
-          >
-            Delete
+          <!-- Dropdown for Subcategories -->
+          <div class="dropdown dropdown-end">
+            <div tabindex="0" role="button" class="btn btn-sm btn-outline">
+              View Subcategories
+            </div>
+            <ul
+              tabindex="0"
+              class="dropdown-content z-[1000] menu p-2 shadow bg-base-100 rounded-box w-52"
+            >
+              @if (category.subcategories) {
+                @for (subCategory of category.subcategories; track subCategory.publicId) {
+                  <li><a>{{ subCategory.name }}</a></li>
+                }
+              } @else {
+                <li><a>Loading subcategories...</a></li>
+              }
+              @if (category.subcategories?.length === 0) {
+                <li><a>No subcategories</a></li>
+              }
+              <li>
+                <a routerLink="/admin/subcategories/{{ category.publicId }}/create" class="text-primary">
+                  <fa-icon [icon]="['fas', 'plus']"></fa-icon>
+                  Add Subcategory
+                </a>
+              </li>
+            </ul>
           </div>
         </td>
+        <td>
+          <button
+            (click)="deleteCategory(category.publicId!)"
+            class="btn btn-sm btn-error"
+            [disabled]="!category.publicId"
+          >
+            <fa-icon [icon]="['fas', 'trash']"></fa-icon>
+            Delete
+          </button>
+        </td>
       </tr>
-      }
-    </tbody>
-  </table>
-</div>
-}
+    }
+  </tbody>
+</table>

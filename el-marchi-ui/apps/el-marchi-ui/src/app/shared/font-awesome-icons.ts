@@ -4,7 +4,7 @@ import {
   faArrowLeft,
   faCartShopping,
   faCheck,
-  faHome,
+  faHome, faPlus, faTrash,
   faTruckFast,
   faUser as faSUser,
   faXmark,
@@ -31,4 +31,7 @@ export const fontAwesomeIcons: IconDefinition[] = [
   faCheck,
   faHome,
   faArrowLeft,
+  faTrash,
+  faPlus
+
 ];

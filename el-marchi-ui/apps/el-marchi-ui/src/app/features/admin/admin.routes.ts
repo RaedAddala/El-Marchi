@@ -51,4 +51,16 @@ export const ADMIN_ROUTES: Routes = [
       authorities: ['ROLE_ADMIN'],
     }*/
   },
+  //subcategoriescreate
+  {
+    path: 'subcategories/:id/create',
+    loadComponent: () =>
+      import(
+        './pages/category/create-subcategory/create-subcategory.component'
+      ).then(m => m.CreateSubCategoryComponent),
+    /*canActivate: [roleCheckGuard],
+    data: {
+      authorities: ['ROLE_ADMIN'],
+    }*/
+  },
 ];
