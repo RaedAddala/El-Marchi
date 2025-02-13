@@ -45,9 +45,11 @@ export class AdminProductService {
 
   // Create a new subcategory under a specific category
   createSubCategory(categoryId: string, subCategory: { name: string }): Observable<ProductCategory> {
+    //verify that the categoryId is correctly added to the subCategory object before passing to the service
     return this.http.post<ProductCategory>(
       `${environment.apiUrl}/categories/${categoryId}/subcategories`,
-      subCategory
+
+      subCategory//subCategory here is the body ? answer is yes it is
     ).pipe(
       catchError((error) => {
         // Handle specific error types, or show a general error message.

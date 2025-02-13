@@ -10,7 +10,7 @@ import {
 } from '@nestjs/common';
 import { CategoriesService } from './categories.service';
 import { CreateCategoryDto } from './dtos/create-category.dto';
-import { CreateSubCategoryDto } from './dtos/create-sub-category.dto';
+//import { CreateSubCategoryDto } from './dtos/create-sub-category.dto';
 import { Pageable } from '../common/models/request.model';
 import { CategoryWithSubcategories } from '../common/models/product.model';
 import * as console from "node:console";
@@ -29,7 +29,7 @@ export class CategoriesController {
   @Post(':id/subcategories')
   createSubCategory(
     @Param('id') categoryId: string,  // Extract categoryId from the URL parameter.
-    @Body() createSubCategoryDto: CreateSubCategoryDto,  // DTO containing subcategory details.
+    @Body() createSubCategoryDto: any//CreateSubCategoryDto,  // DTO containing subcategory details.
   ) {
     console.log('###############################################################');
     console.log('createSubCategoryDto', createSubCategoryDto);
