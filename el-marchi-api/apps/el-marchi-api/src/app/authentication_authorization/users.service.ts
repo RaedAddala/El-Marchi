@@ -1,6 +1,5 @@
 import {
   ConflictException,
-  ForbiddenException,
   Injectable,
   InternalServerErrorException,
   Logger,
@@ -12,22 +11,23 @@ import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
-import { randomUUID } from 'crypto';
 import { inspect } from 'util';
 import { BaseService } from '../common/database/base.service';
 import { JwtconfigService } from '../common/jwtconfig/jwtconfig.service';
 import { RedisService } from '../common/redis/redis.service';
+import {
+  AccessJwtTokenPayload,
+  RefreshJwtTokenPayload,
+} from '../common/types/jwt.payload';
 import { CryptoService } from '../crypto/crypto.service';
 import { ChangePasswordDto } from './dtos/change.password.dto';
 import { CreateUserDto } from './dtos/create.user.dto';
 import { loginDto } from './dtos/login.dto';
 import { UpdateUserDto } from './dtos/update.user.dto';
 import { User } from './entities/user.entity';
-import { AccessJwtTokenPayload, RefreshJwtTokenPayload } from '../common/types/jwt.payload';
 
 @Injectable()
 export class UsersService extends BaseService<User> {
-
   private readonly config: {
     algorithm: string;
     access: {
@@ -53,7 +53,7 @@ export class UsersService extends BaseService<User> {
     this.config = jwtConfig.getJwtConfig();
   }
 
-  async localLogin(dto: loginDto) {
+  async localLogin(dto: loginDto, refreshTokenId: string) {
     const existingUser = await this.findByEmailWithPassword(dto.email);
     if (!existingUser) {
       // Use constant time comparison to prevent timing attacks
@@ -76,11 +76,11 @@ export class UsersService extends BaseService<User> {
       throw new UnauthorizedException('Email or Password is wrong!');
     }
 
-    const tokens = await this.getTokens(existingUser.id);
+    const tokens = await this.getTokens(existingUser.id, refreshTokenId);
     return { tokens, email: existingUser.email, id: existingUser.id };
   }
 
-  async localSignup(dto: CreateUserDto) {
+  async localSignup(dto: CreateUserDto, refreshTokenId: string) {
     const { confirmPassword, ...savedData } = dto;
 
     if (savedData.password !== confirmPassword) {
@@ -107,7 +107,7 @@ export class UsersService extends BaseService<User> {
       throw new InternalServerErrorException('User Creation Failed!');
     }
 
-    const tokens = await this.getTokens(user.id);
+    const tokens = await this.getTokens(user.id, refreshTokenId);
     return { tokens, email: user.email, id: user.id };
   }
 
@@ -119,89 +119,22 @@ export class UsersService extends BaseService<User> {
     await this.redisService.deleteAllRefreshToken(userId);
   }
 
-  async changePassword(
-    userId: string | undefined,
-    changePasswordDto: ChangePasswordDto,
-    refreshTokenId: string,
-  ) {
-    if (!userId) {
-      // Use constant time comparison to prevent timing attacks
-      await this.cryptoService.verifyPassword(
-        changePasswordDto.oldPassword,
-        'dummy-hash',
-        'dummy-salt',
-      );
-
-      throw new UnauthorizedException();
-    }
-    const user = await this.findOne(userId);
-    if (!user) {
-      // Use constant time comparison to prevent timing attacks
-      await this.cryptoService.verifyPassword(
-        changePasswordDto.oldPassword,
-        'dummy-hash',
-        'dummy-salt',
-      );
-
-      throw new UnauthorizedException();
-    }
-
-    const isValid = await this.cryptoService.verifyPassword(
-      changePasswordDto.oldPassword,
-      user.passwordHash,
-      user.passwordSalt,
-    );
-
-    if (!isValid) {
-      throw new UnauthorizedException();
-    }
-
-    let passwordUpdate = {};
-
-    const { hash, salt } = await this.cryptoService.hashPassword(
-      changePasswordDto.newPassword,
-    );
-    passwordUpdate = {
-      passwordHash: hash,
-      passwordSalt: salt,
-    };
-
-    // Delete old refresh token
-    await this.redisService.deleteRefreshToken(userId, refreshTokenId);
-    const tokens = await this.getTokens(userId);
-
-    const updatedUser = await super.update(userId, {
-      ...user,
-      ...passwordUpdate,
-    });
-
-    return { user: updatedUser, tokens };
-  }
-
-  async getTokens(userId: string) {
-
-    const refreshTokenId = randomUUID();
-
+  async getTokens(userId: string, refreshTokenId: string) {
     const accessTokenPayload: AccessJwtTokenPayload = { sub: userId };
-    const refreshTokenPayload: RefreshJwtTokenPayload = { sub: userId, refreshTokenId: refreshTokenId };
+    const refreshTokenPayload: RefreshJwtTokenPayload = { sub: userId };
 
     try {
       const [accessToken, refreshToken] = await Promise.all([
-        this.jwtService.signAsync(
-          accessTokenPayload,
-          {
-            privateKey: this.config.access.privateKey,
-            expiresIn: this.config.access.expiresIn,
-          },
-        ),
-        this.jwtService.signAsync(
-          refreshTokenPayload,
-          {
-            privateKey: this.config.refresh.privateKey,
-            expiresIn: this.config.refresh.expiresIn,
-          },
-        ),
+        this.jwtService.signAsync(accessTokenPayload, {
+          privateKey: this.config.access.privateKey,
+          expiresIn: this.config.access.expiresIn,
+        }),
+        this.jwtService.signAsync(refreshTokenPayload, {
+          privateKey: this.config.refresh.privateKey,
+          expiresIn: this.config.refresh.expiresIn,
+        }),
       ]);
+
       await this.redisService.storeRefreshToken(
         userId,
         refreshToken,
@@ -211,7 +144,6 @@ export class UsersService extends BaseService<User> {
       return {
         jwtAccessToken: accessToken,
         jwtRefreshToken: refreshToken,
-        refreshTokenId: refreshTokenId,
       };
     } catch (error) {
       Logger.error(
@@ -223,26 +155,8 @@ export class UsersService extends BaseService<User> {
     }
   }
 
-  async refreshTokens(
-    id: string,
-    refreshToken: string,
-    refreshTokenId: string,
-  ) {
-    const existingUser = await this.findOne(id);
-    if (!existingUser) throw new ForbiddenException('Access Denied');
-
-    const isValid = await this.redisService.validateRefreshToken(
-      id,
-      refreshToken,
-      refreshTokenId,
-    );
-    if (!isValid) throw new ForbiddenException('Access Denied');
-
-    // Delete old refresh token
-    await this.redisService.deleteRefreshToken(id, refreshTokenId);
-
-    const tokens = await this.getTokens(id);
-    return tokens;
+  async revokeJwtRefreshToken(sub: string, refreshTokenId: string) {
+    await this.redisService.deleteRefreshToken(sub, refreshTokenId);
   }
 
   override async update(id: string, dto: UpdateUserDto) {
@@ -295,5 +209,43 @@ export class UsersService extends BaseService<User> {
         deletedAt: true,
       },
     });
+  }
+
+  async changePassword(
+    user: User,
+    changePasswordDto: ChangePasswordDto,
+    refreshTokenId: string,
+  ) {
+    const isValid = await this.cryptoService.verifyPassword(
+      changePasswordDto.oldPassword,
+      user.passwordHash,
+      user.passwordSalt,
+    );
+
+    if (!isValid) {
+      throw new UnauthorizedException();
+    }
+
+    let passwordUpdate = {};
+
+    const { hash, salt } = await this.cryptoService.hashPassword(
+      changePasswordDto.newPassword,
+    );
+    passwordUpdate = {
+      passwordHash: hash,
+      passwordSalt: salt,
+    };
+
+    // Delete all refresh tokens related to this user
+    await this.redisService.deleteAllRefreshToken(user.id);
+    const [tokens, updatedUser] = await Promise.all([
+      this.getTokens(user.id, refreshTokenId),
+      super.update(user.id, {
+        ...user,
+        ...passwordUpdate,
+      }),
+    ]);
+
+    return { user: updatedUser, tokens };
   }
 }

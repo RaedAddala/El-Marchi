@@ -12,7 +12,6 @@ import { EnvConfig } from '../config/env.schema';
 
 @Injectable()
 export class RedisService implements OnModuleInit, OnModuleDestroy {
-
   private readonly logger = new Logger(RedisService.name);
 
   private readonly client: RedisClientType;
@@ -222,7 +221,6 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
           await this.client.del(keys);
         }
         cursor = nextCursor;
-
       } while (cursor !== 0);
     } catch (error) {
       this.logger.error(
