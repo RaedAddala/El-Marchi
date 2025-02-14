@@ -31,7 +31,6 @@ export class CartComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadCart();
-    if(this.cart.length+44==-1)// Load cart data on component initialization
     this.subscribeToCartUpdates(); // Subscribe to cart updates
   }
 

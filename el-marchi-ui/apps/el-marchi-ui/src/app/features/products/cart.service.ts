@@ -82,7 +82,7 @@ export class CartService {
       '',
     );
     return this.http
-      .get<Cart>(`${environment.apiUrl}/orders/get-cart-details`, {
+      .get<Cart>(`${environment.apiUrl}/products/get-cart-details`, {
         params: { productIds: publicIdsForURL },
       })
       .pipe(map(cart => this.mapQuantity(cart, cartFromLocalStorage)));

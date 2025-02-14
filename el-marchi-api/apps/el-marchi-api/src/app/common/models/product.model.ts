@@ -62,7 +62,18 @@ export interface ProductFilter {
 export  interface CategoryWithSubcategories extends ProductCategory {
   subcategories?: ProductCategory[];
 }
+export interface Cart {
+  products: CartItem[];
+}
 
+export interface CartItem {
+  name: string;
+  price: number;
+  brand: string;
+  picture: ProductPicture;
+  quantity: number;
+  publicId: string;
+}
 export interface ProductFilterForm {
   size?:
     | {

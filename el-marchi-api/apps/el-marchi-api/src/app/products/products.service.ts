@@ -10,7 +10,7 @@ import { UpdateProductDto } from './dtos/update-product.dto';
 import { SubCategory } from '../categories/entities/subCategory.entity';
 import { Product } from './entities/products.entitiy';
 import { Page, Pagination } from '../common/models/request.model';
-import { ProductFilter } from '../common/models/product.model';
+import {Cart, CartItem, ProductFilter, ProductPicture} from '../common/models/product.model';
 import {join} from "path";
 import {unlinkSync} from "fs";
 import * as console from "node:console";
@@ -187,8 +187,39 @@ export class ProductService {
     return this.productRepository.save(product);
   }
 
-  findRelatedProducts(id: string, pagination: Pagination) {
 
-    return {id: id, pagination: pagination};
+
+  async getCartDetails(publicIds: string): Promise<Cart> {
+
+    console.log('publicIds', publicIds);
+    console.log("#######################################################");
+    if(!publicIds || publicIds === '') return { products: [] };
+    const cart: string[] = publicIds.split(',');
+    const cartItems: CartItem[] = [];
+
+    for (const publicId of cart) {
+      const product = await this.findOne(publicId);
+      cartItems.push({
+        publicId: product.id,
+        name: product.name,
+        price: product.price,
+        brand: product.brand,
+        picture: product.pictures && product.pictures.length > 0
+          ? (product.pictures[0] as ProductPicture)
+          : ({ publicId: '', mimeType: '' }as ProductPicture),
+        quantity: product.nbInStock,
+      });
+    }
+
+    return { products: cartItems };
+  }
+
+  findRelatedProducts(id: string, pagination: Pagination): Promise<Product[]> {
+    return this.productRepository.find({
+      where: { subCategory: { id } },
+      relations: ['subCategory', 'subCategory.category'],
+      take: pagination.size,
+      skip: pagination.page * pagination.size,
+    });
   }
 }

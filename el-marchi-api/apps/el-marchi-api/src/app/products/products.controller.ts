@@ -19,7 +19,7 @@ import { UpdateProductDto } from './dtos/update-product.dto';
 import { Product } from './entities/products.entitiy';
 import { unlinkSync } from 'fs';
 import {Page, Pagination} from "../common/models/request.model";
-import {ProductFilter} from "../common/models/product.model";
+import {Cart, ProductFilter} from "../common/models/product.model";
 
 @Controller('products')
 export class ProductController {
@@ -135,7 +135,10 @@ export class ProductController {
   ): Promise<Page<Product>> {
     return this.productService.filterProducts(filter, pagination);
   }
-
+  @Get('get-cart-details')
+  async getCartDetails(@Query('productIds') publicIds: string): Promise<Cart> {
+    return this.productService.getCartDetails(publicIds);
+  }
   @Get(':id')
   async findOne(@Param('id') id: string): Promise<Product> {
     console.log('id', id);
