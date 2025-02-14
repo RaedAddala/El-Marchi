@@ -43,14 +43,14 @@ export interface BaseProduct {
   tags?: string[];
   isOnSale?: boolean;
   size: ProductSizes;
-  category: ProductCategory;
+  subCategory: ProductCategory;
   featured: boolean;
   pictures: ProductPicture[];
   nbInStock: number;
 }
 
 export interface Product extends BaseProduct {
-  publicId: string;
+  id: string;
 }
 
 export type CreateCategoryFormContent = {
@@ -71,9 +71,9 @@ export type CreateProductFormContent = {
 };
 
 export interface ProductFilter {
-  size?: string;
-  category?: string | null;
-  sort: string[];
+  filtersize?: string;
+  filtercategory?: string | null;
+  filtersort: string[];
 }
 
 export type FilterProductsFormContent = {

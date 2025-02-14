@@ -13,6 +13,7 @@ import { Page, Pagination } from '../common/models/request.model';
 import { ProductFilter } from '../common/models/product.model';
 import {join} from "path";
 import {unlinkSync} from "fs";
+import * as console from "node:console";
 
 @Injectable()
 export class ProductService {
@@ -105,12 +106,12 @@ export class ProductService {
       .leftJoinAndSelect('product.subCategory', 'subCategory')
       .leftJoinAndSelect('subCategory.category', 'category');
 
-    if (filter.category) {
-      query.andWhere('category.id = :categoryId', { categoryId: filter.category });
+    if (filter.filtercategory) {
+      query.andWhere('category.id = :categoryId', { categoryId: filter.filtercategory });
     }
 
-    if (filter.size) {
-      const sizes = filter.size.split(',');
+    if (filter.filtersize) {
+      const sizes = filter.filtersize.split(',');
       query.andWhere('product.size IN (:...sizes)', { sizes });
     }
 
@@ -118,6 +119,15 @@ export class ProductService {
       .take(pagination.size)
       .skip(pagination.page * pagination.size)
       .getManyAndCount();
+
+    console.log('####################################################');
+    console.log('filter', filter);
+    console.log('pagination', pagination);
+    console.log('query', query);
+    console.log('total', total);
+    console.log('results', results);
+    console.log('####################################################');
+
 
     return this.createPageResponse(results, total, pagination);
   }
@@ -175,5 +185,10 @@ export class ProductService {
     // Update product's images
     product.pictures = imagePaths;
     return this.productRepository.save(product);
+  }
+
+  findRelatedProducts(id: string, pagination: Pagination) {
+
+    return {id: id, pagination: pagination};
   }
 }

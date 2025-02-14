@@ -25,7 +25,7 @@ export const dummyCategories: ProductCategory[] = [
 
 export const dummyProducts: Product[] = [
   {
-    publicId: 'premium-cotton-tee',
+    id: 'premium-cotton-tee',
     brand: 'Everlane',
     color: '#FFFFFF',
     material: '100% Organic Cotton',
@@ -36,7 +36,7 @@ export const dummyProducts: Product[] = [
     size: 'M',
     sku: 'EV-COT-M',
     careInstructions: 'Machine wash cold, tumble dry low',
-    category: { publicId: 'mens-tops', name: "Men's Tops" },
+    subCategory: { publicId: 'mens-tops', name: "Men's Tops" },
     featured: true,
     rating: { average: 4.8, count: 142 },
     tags: ['basics', 'sustainable'],
@@ -50,7 +50,7 @@ export const dummyProducts: Product[] = [
 
   // Women's Dresses
   {
-    publicId: 'midi-silk-dress',
+    id: 'midi-silk-dress',
     brand: 'Reformation',
     color: '#FF69B4',
     material: '100% Silk',
@@ -61,7 +61,7 @@ export const dummyProducts: Product[] = [
     size: 'S',
     sku: 'RF-SILK-S',
     careInstructions: 'Dry clean only',
-    category: { publicId: 'womens-dresses', name: "Women's Dresses" },
+    subCategory: { publicId: 'womens-dresses', name: "Women's Dresses" },
     featured: true,
     rating: { average: 4.9, count: 89 },
     tags: ['occasion', 'luxury'],
@@ -75,7 +75,7 @@ export const dummyProducts: Product[] = [
   },
   // Footwear
   {
-    publicId: 'classic-sneakers',
+    id: 'classic-sneakers',
     brand: 'Common Projects',
     color: '#FFFFFF',
     material: 'Italian Leather',
@@ -85,7 +85,7 @@ export const dummyProducts: Product[] = [
     size: '42',
     sku: 'CP-ACH-42',
     careInstructions: 'Wipe with damp cloth',
-    category: { publicId: 'footwear', name: 'Footwear' },
+    subCategory: { publicId: 'footwear', name: 'Footwear' },
     featured: true,
     rating: { average: 4.9, count: 167 },
     tags: ['luxury', 'essentials'],
@@ -97,7 +97,7 @@ export const dummyProducts: Product[] = [
     nbInStock: 12,
   },
   {
-    publicId: 'slim-fit-blazer',
+    id: 'slim-fit-blazer',
     brand: 'Hugo Boss',
     color: '#1C1C1C', // Charcoal
     description:
@@ -105,7 +105,7 @@ export const dummyProducts: Product[] = [
     name: 'Slim-Fit Wool Blazer',
     price: 599.99,
     size: '40R',
-    category: { publicId: 'mens-clothing', name: "Men's Clothing" },
+    subCategory: { publicId: 'mens-clothing', name: "Men's Clothing" },
     featured: true,
     pictures: [
       { publicId: 'slim-fit-blazer-1', mimeType: 'image/jpg' },
@@ -114,7 +114,7 @@ export const dummyProducts: Product[] = [
     nbInStock: 25,
   },
   {
-    publicId: 'cashmere-sweater',
+    id: 'cashmere-sweater',
     brand: 'Ralph Lauren',
     color: '#8B4513', // Saddle Brown
     description:
@@ -122,7 +122,7 @@ export const dummyProducts: Product[] = [
     name: 'Pure Cashmere Crew Neck Sweater',
     price: 299.99,
     size: 'M',
-    category: { publicId: 'mens-clothing', name: "Men's Clothing" },
+    subCategory: { publicId: 'mens-clothing', name: "Men's Clothing" },
     featured: false,
     pictures: [
       { publicId: 'cashmere-sweater-1', mimeType: 'image/jpg' },
@@ -131,7 +131,7 @@ export const dummyProducts: Product[] = [
     nbInStock: 30,
   },
   {
-    publicId: 'silk-blouse',
+    id: 'silk-blouse',
     brand: 'Equipment',
     color: '#FFF5EE', // Ivory
     description:
@@ -139,7 +139,7 @@ export const dummyProducts: Product[] = [
     name: 'Silk Button-Down Blouse',
     price: 220.0,
     size: 'S',
-    category: { publicId: 'womens-clothing', name: "Women's Clothing" },
+    subCategory: { publicId: 'womens-clothing', name: "Women's Clothing" },
     featured: true,
     pictures: [
       { publicId: 'silk-blouse-1', mimeType: 'image/jpg' },
@@ -150,7 +150,7 @@ export const dummyProducts: Product[] = [
 
   // Accessories
   {
-    publicId: 'leather-wallet',
+    id: 'leather-wallet',
     brand: 'Montblanc',
     color: '#000000', // Black
     description:
@@ -158,7 +158,7 @@ export const dummyProducts: Product[] = [
     name: 'Meisterstück Wallet',
     price: 295.0,
     size: 'One Size',
-    category: { publicId: 'accessories', name: 'Accessories' },
+    subCategory: { publicId: 'accessories', name: 'Accessories' },
     featured: false,
     pictures: [
       { publicId: 'leather-wallet-1', mimeType: 'image/jpg' },
@@ -168,7 +168,7 @@ export const dummyProducts: Product[] = [
   },
   // Women's Clothing
   {
-    publicId: 'midi-wrap-dress',
+    id: 'midi-wrap-dress',
     brand: 'Reformation',
     color: '#006400', // Dark Green
     description:
@@ -176,7 +176,7 @@ export const dummyProducts: Product[] = [
     name: 'Silk Wrap Midi Dress',
     price: 278.0,
     size: 'M',
-    category: { publicId: 'womens-clothing', name: "Women's Clothing" },
+    subCategory: { publicId: 'womens-clothing', name: "Women's Clothing" },
     featured: true,
     pictures: [
       { publicId: 'midi-wrap-dress-1', mimeType: 'image/jpg' },
@@ -185,7 +185,7 @@ export const dummyProducts: Product[] = [
     nbInStock: 28,
   },
   {
-    publicId: 'cashmere-cardigan',
+    id: 'cashmere-cardigan',
     brand: 'Vince',
     color: '#F5F5DC', // Beige
     description:
@@ -193,7 +193,7 @@ export const dummyProducts: Product[] = [
     name: 'Oversized Cashmere Cardigan',
     price: 425.0,
     size: 'L',
-    category: { publicId: 'womens-clothing', name: "Women's Clothing" },
+    subCategory: { publicId: 'womens-clothing', name: "Women's Clothing" },
     featured: false,
     pictures: [
       { publicId: 'cashmere-cardigan-1', mimeType: 'image/jpg' },
@@ -204,7 +204,7 @@ export const dummyProducts: Product[] = [
 
   // Men's Outerwear
   {
-    publicId: 'quilted-jacket',
+    id: 'quilted-jacket',
     brand: 'Barbour',
     color: '#2F4F4F', // Dark Slate Gray
     description:
@@ -212,7 +212,7 @@ export const dummyProducts: Product[] = [
     name: 'Classic Quilted Jacket',
     price: 395.0,
     size: 'XL',
-    category: { publicId: 'outerwear', name: 'Outerwear' },
+    subCategory: { publicId: 'outerwear', name: 'Outerwear' },
     featured: true,
     pictures: [
       { publicId: 'quilted-jacket-1', mimeType: 'image/jpeg' },
@@ -223,7 +223,7 @@ export const dummyProducts: Product[] = [
 
   // Accessories
   {
-    publicId: 'silk-scarf',
+    id: 'silk-scarf',
     brand: 'Hermès',
     color: '#E6E6FA', // Lavender
     description:
@@ -231,7 +231,7 @@ export const dummyProducts: Product[] = [
     name: 'Carré Classic Silk Scarf',
     price: 435.0,
     size: '90cm x 90cm',
-    category: { publicId: 'accessories', name: 'Accessories' },
+    subCategory: { publicId: 'accessories', name: 'Accessories' },
     featured: true,
     pictures: [
       { publicId: 'silk-scarf-1', mimeType: 'image/jpg' },
@@ -240,7 +240,7 @@ export const dummyProducts: Product[] = [
     nbInStock: 7,
   },
   {
-    publicId: 'gold-necklace',
+    id: 'gold-necklace',
     brand: 'Mejuri',
     color: '#FFD700', // Gold
     description:
@@ -248,7 +248,7 @@ export const dummyProducts: Product[] = [
     name: 'Gold Necklace',
     price: 350.0,
     size: '16"',
-    category: { publicId: 'accessories', name: 'Accessories' },
+    subCategory: { publicId: 'accessories', name: 'Accessories' },
     featured: false,
     pictures: [
       { publicId: 'gold-necklace-1', mimeType: 'image/jpg' },

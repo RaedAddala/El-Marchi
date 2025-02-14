@@ -44,13 +44,13 @@
       </tr>
     </thead>
     <tbody class="border-0">
-      @for (product of products; track product.publicId; let i = $index) {
+      @for (product of products; track product.id; let i = $index) {
       <tr class="border-gray-300">
         <th>{{ i + 1 }}</th>
         <td
           class="max-w-20 overflow-ellipsis whitespace-nowrap overflow-hidden"
         >
-          <a class="link" [routerLink]="['/product', product.publicId]">{{
+          <a class="link" [routerLink]="['/products/', product.id]">{{
             product.name
           }}</a>
         </td>
@@ -64,10 +64,10 @@
         <td>{{ product.price }}</td>
         <td>{{ product.nbInStock }}</td>
         <td>{{ product.featured }}</td>
-        <td>{{ product.category.name }}</td>
+        <td>{{ product.subCategory.name }}</td>
         <td>
           <div
-            (click)="deleteProduct(product.publicId!)"
+            (click)="deleteProduct(product.id!)"
             class="btn btn-secondary btn-sm"
           >
             Delete

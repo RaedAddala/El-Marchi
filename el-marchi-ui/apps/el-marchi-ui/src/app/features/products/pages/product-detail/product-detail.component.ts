@@ -4,7 +4,7 @@ import { injectParams } from 'ngxtension/inject-params';
 import { Router } from '@angular/router';
 import { interval, take } from 'rxjs';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
-import { CartService } from '../../cart.mock.service';
+import { CartService } from '../../cart.service';
 import { ToastService } from '@shared/toast/toast.service';
 import { UserProductService } from '@features/products/user-product.service';
 import { ProductCardComponent } from '@features/products/pages/product-card/product-card.component';
@@ -47,6 +47,7 @@ export class ProductDetailComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    console.log('ProductDetailComponent initialized');
     this.loadProduct();
     this.loadRelatedProducts();
   }
@@ -57,9 +58,11 @@ export class ProductDetailComponent implements OnInit {
 
     this.isLoading = true;
     this.productService.findOneByPublicId(currentPublicId).subscribe({
+
       next: product => {
         this.product = product;
         this.isLoading = false;
+        console.log('Product loaded:', product);
       },
       error: () => {
         this.toastService.show(
@@ -103,9 +106,13 @@ export class ProductDetailComponent implements OnInit {
   }
 
   addToCart(productToAdd: Product) {
-    this.cartService.addToCart(productToAdd.publicId, 'add');
+
+    console.log('we are in product detail component');
+    this.cartService.addToCart(productToAdd.id, 'add');
     this.labelAddToCart = 'Added to cart';
     this.iconAddToCart = 'check';
+
+
 
     interval(3000)
       .pipe(take(1))

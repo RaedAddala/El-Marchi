@@ -18,7 +18,7 @@ import { CreateProductDto } from './dtos/create-product.dto';
 import { UpdateProductDto } from './dtos/update-product.dto';
 import { Product } from './entities/products.entitiy';
 import { unlinkSync } from 'fs';
-import {Pagination} from "../common/models/request.model";
+import {Page, Pagination} from "../common/models/request.model";
 import {ProductFilter} from "../common/models/product.model";
 
 @Controller('products')
@@ -117,69 +117,39 @@ export class ProductController {
   }
 
   @Get()
-  async findAll(@Query() pagination: Pagination) {
-    const products = await this.productService.findAll(pagination);
-
-    // Construct image URLs for each product
-    const productsWithImageUrls = products.content.map((product) => ({
-      ...product,
-      pictures: product.pictures.map((picture) => ({
-        url: `/uploads/products/${picture.publicId}`,
-        mimeType: picture.mimeType,
-      })),
-    }));
-
-    return productsWithImageUrls;
+  async findAll(@Query() pagination: Pagination):Promise<Page<Product>> {
+    return this.productService.findAll(pagination);
   }
 
   @Get('featured')
-  async findAllFeatured(@Query() pagination: Pagination) {
+  async findAllFeatured(@Query() pagination: Pagination): Promise<Page<Product>> {
     const products = await this.productService.findAllFeatured(pagination);
+    return products;
 
-    // Construct image URLs for each product
-    const productsWithImageUrls = products.content.map((product) => ({
-      ...product,
-      pictures: product.pictures.map((picture) => ({
-        url: `/uploads/products/${picture.publicId}`,
-        mimeType: picture.mimeType,
-      })),
-    }));
-
-    return productsWithImageUrls;
   }
 
   @Get('filter')
   async filterProducts(
     @Query() filter: ProductFilter,
     @Query() pagination: Pagination,
-  ) {
-    const products = await this.productService.filterProducts(filter, pagination);
-
-    // Construct image URLs for each product
-    const productsWithImageUrls = products.content.map((product) => ({
-      ...product,
-      pictures: product.pictures.map((picture) => ({
-        url: `/uploads/products/${picture.publicId}`,
-        mimeType: picture.mimeType,
-      })),
-    }));
-
-    return productsWithImageUrls;
+  ): Promise<Page<Product>> {
+    return this.productService.filterProducts(filter, pagination);
   }
 
   @Get(':id')
-  async findOne(@Param('id') id: string) {
+  async findOne(@Param('id') id: string): Promise<Product> {
+    console.log('id', id);
     const product = await this.productService.findOne(id);
-
-    // Construct image URLs
-    const images = product.pictures.map((picture) => ({
-      url: `/uploads/products/${picture.publicId}`,
-      mimeType: picture.mimeType,
-    }));
-
-    return {
-      ...product,
-      pictures: images,
-    };
+    if (!product) {
+      throw new NotFoundException('Product not found');
+    }
+    return product;
+  }
+  @Get(':id/related')
+  async getRelatedProducts(
+    @Param('id') id: string,
+    @Query() pagination: Pagination,
+  ) {
+    return this.productService.findRelatedProducts(id, pagination);
   }
 }

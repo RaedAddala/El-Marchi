@@ -35,6 +35,7 @@ export const appRoutes: Route[] = [
     component: NotFoundComponent,
     title: 'El-Marchi - Page Not Found',
   },
+
   {
     path: '**',
     redirectTo: '404',

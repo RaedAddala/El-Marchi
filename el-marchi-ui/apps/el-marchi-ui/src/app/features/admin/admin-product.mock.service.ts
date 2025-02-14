@@ -57,7 +57,7 @@ export class AdminProductService {
   // Mock method to create a product
   createProduct(product: BaseProduct): Observable<Product> {
     const newProduct: Product = {
-      publicId: (dummyProducts.length + 1).toString(),
+      id: (dummyProducts.length + 1).toString(),
       ...product,
     };
 
@@ -68,7 +68,7 @@ export class AdminProductService {
   // Mock method to delete a product
   deleteProduct(publicId: string): Observable<string> {
     const index = dummyProducts.findIndex(
-      product => product.publicId === publicId,
+      product => product.id === publicId,
     );
     if (index !== -1) {
       dummyProducts.splice(index, 1); // Simulate deleting the product

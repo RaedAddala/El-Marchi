@@ -1,70 +1,54 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient,  } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { Page, Pagination } from '@shared/models/request.model';
-import { Product, ProductCategory, ProductFilter } from '@shared/models/product.model';
+import { Page, Pagination, createPaginationOption } from '@shared/models/request.model';
+import { Product, ProductFilter } from '@shared/models/product.model';
 import {environment} from "../../../../environments/environment.development";
-
 
 @Injectable({
   providedIn: 'root',
 })
 export class UserProductService {
+  private readonly baseUrl = `${environment.apiUrl}/products`;
 
   constructor(private http: HttpClient) {}
 
+  // Find all featured products with pagination
   findAllFeaturedProducts(pageRequest: Pagination): Observable<Page<Product>> {
-    const params = this.createPaginationParams(pageRequest);
-    return this.http.get<Page<Product>>(`${environment.apiUrl}/products/featured`, { params });
+    const params = createPaginationOption(pageRequest);
+    return this.http.get<Page<Product>>(`${this.baseUrl}/featured`, { params });
   }
 
+  // Find a product by publicId
   findOneByPublicId(publicId: string): Observable<Product> {
-    return this.http.get<Product>(`${environment.apiUrl}/products/${publicId}`);
+    console.log("searching for product with publicId: ", publicId);
+    return this.http.get<Product>(`${this.baseUrl}/${publicId}`);
   }
 
+  // Find related products based on pagination and product public ID
   findRelatedProduct(
     pageRequest: Pagination,
-    productPublicId: string,
+    productPublicId: string
   ): Observable<Page<Product>> {
-    const params = this.createPaginationParams(pageRequest);
-    return this.http.get<Page<Product>>(
-      `${environment.apiUrl}/products/${productPublicId}/related`,
-      { params },
-    );
+    const params = createPaginationOption(pageRequest);
+    return this.http.get<Page<Product>>(`${this.baseUrl}/${productPublicId}/related`, { params });
   }
 
-  findAllCategories(): Observable<Page<ProductCategory>> {
-    return this.http.get<Page<ProductCategory>>(`${environment.apiUrl}/categories`);
-  }
-
+  // Filter products based on pagination and filter criteria
   filter(
     pageRequest: Pagination,
-    productFilter: ProductFilter,
+    productFilter: ProductFilter
   ): Observable<Page<Product>> {
-    let params = this.createPaginationParams(pageRequest);
-
-    if (productFilter.category) {
-      params = params.set('category', productFilter.category);
+    let params = createPaginationOption(pageRequest);
+    console.log('productFilter', productFilter);
+    if (productFilter.filtersize &&productFilter.filtersize.length>0){
+      params = params.set('filtersize', productFilter.filtersize);
     }
 
-    if (productFilter.size) {
-      params = params.set('size', productFilter.size);
+    for (const sort of productFilter.filtersort) {
+      params = params.append('filtersort', sort);
     }
-
-    return this.http.get<Page<Product>>(`${environment.apiUrl}/products`, { params });
-  }
-
-  private createPaginationParams(pagination: Pagination): HttpParams {
-    let params = new HttpParams()
-      .set('page', pagination.page.toString())
-      .set('size', pagination.size.toString());
-
-    if (pagination.sort && pagination.sort.length > 0) {
-      pagination.sort.forEach((sort) => {
-        params = params.append('sort', sort);
-      });
-    }
-
-    return params;
+    console.log('params', params);
+    return this.http.get<Page<Product>>(`${this.baseUrl}/filter`, { params });
   }
 }

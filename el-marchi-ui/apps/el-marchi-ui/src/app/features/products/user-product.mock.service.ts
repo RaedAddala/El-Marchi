@@ -38,7 +38,7 @@ export class UserProductService {
   }
 
   findOneByPublicId(publicId: string): Observable<Product> {
-    const product = dummyProducts.find(p => p.publicId === publicId);
+    const product = dummyProducts.find(p => p.id === publicId);
     return of(product || dummyProducts[0]); // Return the first product if not found
   }
 
@@ -48,7 +48,7 @@ export class UserProductService {
   ): Observable<Page<Product>> {
     // Filter related products (for example, exclude the current product)
     const relatedProducts = dummyProducts.filter(
-      p => p.publicId !== productPublicId,
+      p => p.id !== productPublicId,
     );
     const dummyPage: Page<Product> = {
       content: relatedProducts,
@@ -106,15 +106,15 @@ export class UserProductService {
     // Apply filters to dummy data
     let filteredProducts = dummyProducts;
 
-    if (productFilter.category) {
+    if (productFilter.filtercategory) {
       filteredProducts = filteredProducts.filter(
-        p => p.category.publicId === productFilter.category,
+        p => p.subCategory.publicId === productFilter.filtercategory,
       );
     }
     //exatcr size for .size spareted by comma
-    const sizes = productFilter.size?.split(',');
+    const sizes = productFilter.filtersize?.split(',');
 
-    if (productFilter.size) {
+    if (productFilter.filtersize) {
       filteredProducts = filteredProducts.filter(p => sizes?.includes(p.size));
     }
 

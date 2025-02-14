@@ -189,7 +189,7 @@ export class CreateProductComponent implements OnInit {
       name: formValues.name,
       price: formValues.price,
       size: formValues.size,
-      category: {
+      subCategory: {
         publicId: subcategoryValues[0],
         name: subcategoryValues[1],
       },

@@ -69,7 +69,7 @@ export class AdminProductService {
     formData.append('description', product.description);
     formData.append('price', product.price.toString());
     formData.append('size', product.size);
-    formData.append('category', JSON.stringify(product.category)); // Append category as JSON
+    formData.append('category', JSON.stringify(product.subCategory)); // Append category as JSON
     formData.append('featured', product.featured.toString());
     formData.append('nbInStock', product.nbInStock.toString());
 

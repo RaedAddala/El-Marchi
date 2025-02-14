@@ -1,16 +1,10 @@
 @if (product) {
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
   <div class="lg:grid lg:grid-cols-2 lg:gap-x-8 lg:items-start">
-    <!-- Image gallery -->
     <div class="flex flex-col">
       <div class="rounded-lg overflow-hidden bg-gray-100">
         <img
-          [src]="
-            '/assets/products/' +
-            product.pictures[0].publicId +
-            '.' +
-            product.pictures[0].mimeType.split('/')[1]
-          "
+          [src]="'http://localhost:3000/uploads/products/' + product.pictures[0].publicId"
           [alt]="product.name"
           class="w-full h-full object-center object-cover"
         />
@@ -92,8 +86,7 @@
     </div>
   </div>
 
-  <!-- Related products -->
-  @if (relatedProducts.length > 0) {
+  @if (relatedProducts && relatedProducts.length) {
   <div class="mt-16 lg:mt-24">
     <h2 class="text-2xl font-bold tracking-tight text-gray-900 mb-8">
       Related products
@@ -101,7 +94,7 @@
     <div
       class="grid grid-cols-1 gap-y-10 gap-x-6 sm:grid-cols-2 lg:grid-cols-4 xl:gap-x-8"
     >
-      @for (product of relatedProducts; track product.publicId) {
+      @for (product of relatedProducts; track product.id) {
       <app-product-card [product]="product"></app-product-card>
       }
     </div>

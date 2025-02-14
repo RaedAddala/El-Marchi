@@ -2,7 +2,7 @@ import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
-import { AdminProductService } from '@features/admin/admin-product.mock.service';
+import { AdminProductService } from '@features/admin/admin-product.service';
 import { ToastService } from '@shared/toast/toast.service';
 import { Pagination } from '@shared/models/request.model';
 import { HttpClient } from '@angular/common/http';
@@ -40,6 +40,7 @@ export class AdminProductsComponent implements OnInit {
     this.productService.findAllProducts(this.pageRequest).subscribe({
       next: data => {
         this.products = data.content;
+        console.log('products', this.products);
         this.loading = false;
       },
       error: () => {

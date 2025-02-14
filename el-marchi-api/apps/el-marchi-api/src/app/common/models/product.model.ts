@@ -39,7 +39,7 @@ export interface BaseProduct {
   tags?: string[];
   isOnSale?: boolean;
   size: ProductSizes;
-  category: ProductCategory;
+  subCategory: ProductCategory;
   featured: boolean;
   pictures: ProductPicture[];
   nbInStock: number;
@@ -54,9 +54,9 @@ export interface Product extends BaseProduct {
 
 
 export interface ProductFilter {
-  size?: string;
-  category?: string | null;
-  sort: string[];
+  filtersize?: string;
+  filtercategory?: string | null;
+  filtersort: string[];
 }
 
 export  interface CategoryWithSubcategories extends ProductCategory {

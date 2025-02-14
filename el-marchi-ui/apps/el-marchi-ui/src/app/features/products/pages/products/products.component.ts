@@ -14,6 +14,7 @@ import { Pagination } from '@shared/models/request.model';
 import { ProductFilter } from '@shared/models/product.model';
 import { ProductCardComponent } from '../product-card/product-card.component';
 import { BehaviorSubject, switchMap, catchError, of } from 'rxjs';
+import {map} from "rxjs/operators";
 
 @Component({
   selector: 'app-products',
@@ -38,9 +39,9 @@ export class ProductsComponent implements OnInit {
   };
 
   filterProducts: ProductFilter = {
-    category: this.category() ?? '',
-    size: this.size() ?? '',
-    sort: [this.sort() ?? 'createdDate,desc'],
+    filtercategory: this.category() ?? '',
+    filtersize: this.size() ?? '',
+    filtersort: [this.sort() ?? 'createdDate,desc'],
   };
 
   lastCategory = '';
@@ -50,6 +51,10 @@ export class ProductsComponent implements OnInit {
   );
 
   filteredProducts$ = this.filterSubject.pipe(
+    map(filter => {
+      console.log('filter', filter);
+      return filter;
+    }),
     switchMap(filter =>
       this.productService.filter(this.pageRequest, filter).pipe(
         catchError(() => {
@@ -73,9 +78,9 @@ export class ProductsComponent implements OnInit {
 
   onFilterChange(filterProducts: ProductFilter) {
     const currentCategory = this.category() ?? '';
-    filterProducts.category = currentCategory;
+    filterProducts.filtercategory = currentCategory;
     this.filterProducts = filterProducts;
-    this.pageRequest.sort = filterProducts.sort;
+    this.pageRequest.sort = filterProducts.filtersort;
     this.router.navigate(['/products'], {
       queryParams: {
         ...filterProducts,
@@ -88,9 +93,9 @@ export class ProductsComponent implements OnInit {
     const currentCategory = this.category() ?? '';
     if (currentCategory && this.lastCategory !== currentCategory) {
       this.filterProducts = {
-        category: currentCategory,
-        size: this.size() ?? '',
-        sort: [this.sort() ?? 'createdDate,desc'],
+        filtercategory: currentCategory,
+        filtersize: this.size() ?? '',
+        filtersort: [this.sort() ?? 'createdDate,desc'],
       };
       this.filterSubject.next(this.filterProducts);
     }

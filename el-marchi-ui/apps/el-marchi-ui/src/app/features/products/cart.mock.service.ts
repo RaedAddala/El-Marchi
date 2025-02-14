@@ -30,12 +30,13 @@ export class CartService {
 
   private saveCart(cart: CartItemAdd[]): void {
     sessionStorage.setItem(this.STORAGE_KEY, JSON.stringify(cart));
+    console.log('Cart updated:', cart);
     this.cartItems$.next(cart);
   }
 
   private createCartItem(product: Product, quantity: number): CartItem {
     return {
-      publicId: product.publicId,
+      publicId: product.id,
       name: product.name,
       price: product.price,
       brand: product.brand,
@@ -46,12 +47,12 @@ export class CartService {
 
   addToCart(publicId: string, command: 'add' | 'remove'): void {
     const currentCart = this.getStoredCart();
-    const product = dummyProducts.find(p => p.publicId === publicId);
+    const product = dummyProducts.find(p => p.id === publicId);
 
     if (!product) return;
 
     const existingItem = currentCart.find(item => item.publicId === publicId);
-
+    console.log('existingItem', existingItem);
     if (existingItem) {
       if (command === 'add' && existingItem.quantity < product.nbInStock) {
         existingItem.quantity++;
@@ -75,7 +76,7 @@ export class CartService {
     const currentCart = this.getStoredCart();
     const cartItems: CartItem[] = currentCart
       .map(item => {
-        const product = dummyProducts.find(p => p.publicId === item.publicId);
+        const product = dummyProducts.find(p => p.id === item.publicId);
         if (!product) return null;
         return this.createCartItem(product, item.quantity);
       })
@@ -111,12 +112,12 @@ export class CartService {
 
   // Helper methods for testing
   getMockStock(publicId: string): number {
-    const product = dummyProducts.find(p => p.publicId === publicId);
+    const product = dummyProducts.find(p => p.id === publicId);
     return product?.nbInStock ?? 0;
   }
 
   updateMockStock(publicId: string, newStock: number): void {
-    const product = dummyProducts.find(p => p.publicId === publicId);
+    const product = dummyProducts.find(p => p.id === publicId);
     if (product) {
       product.nbInStock = newStock;
     }

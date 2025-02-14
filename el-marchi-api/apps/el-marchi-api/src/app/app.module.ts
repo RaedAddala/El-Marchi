@@ -10,7 +10,9 @@ import { entitiesList } from './common/entities/entities';
 import { jwtFactory } from './common/jwt/jwt.def';
 import { UsersModule } from './users/users.module';
 import {CategoriesModule} from "./categories/categories.module";
-import {ProductModule} from "./products/products.module";
+import { ProductModule } from './products/products.module';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 
 @Module({
   imports: [
@@ -52,6 +54,10 @@ import {ProductModule} from "./products/products.module";
           logging: mode == 'development' ? 'all' : ['error', 'warn', 'info'],
         };
       },
+    }),
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname,'..', '..', '..', 'uploads'), // Path to your uploads directory
+      serveRoot: '/uploads', // Route to serve static files
     }),
     JwtModule.registerAsync({
       inject: [ConfigService],

@@ -1,6 +1,6 @@
 import { Component, inject, OnInit, PLATFORM_ID } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
-import { CartService } from '../../cart.mock.service';
+import { CartService } from '../../cart.service';
 import { AuthService } from '../../../auth/auth.service';
 import { CartItem, CartItemAdd, StripeSession } from '../../cart.model';
 import { RouterLink } from '@angular/router';
@@ -30,7 +30,8 @@ export class CartComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.loadCart(); // Load cart data on component initialization
+    this.loadCart();
+    if(this.cart.length+44==-1)// Load cart data on component initialization
     this.subscribeToCartUpdates(); // Subscribe to cart updates
   }
 

@@ -60,8 +60,8 @@ export class ProductsFilterComponent {
 
   private onFilterChange(filter: Partial<ProductFilterForm>) {
     const filterProduct: ProductFilter = {
-      size: '',
-      sort: [`createdDate,${filter.sort}`],
+      filtersize: '',
+      filtersort: [`createdDate,${filter.sort}`],
     };
 
     let sizes: [string, boolean][] = [];
@@ -71,10 +71,10 @@ export class ProductsFilterComponent {
 
     for (const [sizeKey, sizeValue] of sizes) {
       if (sizeValue) {
-        if (filterProduct.size?.length === 0) {
-          filterProduct.size = sizeKey;
+        if (filterProduct.filtersize?.length === 0) {
+          filterProduct.filtersize = sizeKey;
         } else {
-          filterProduct.size += `,${sizeKey}`;
+          filterProduct.filtersize += `,${sizeKey}`;
         }
       }
     }
