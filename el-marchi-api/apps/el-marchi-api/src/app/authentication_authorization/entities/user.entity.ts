@@ -1,7 +1,16 @@
-import { Column, Entity, Index, OneToOne } from 'typeorm';
+import {
+  ManyToMany,
+  JoinTable,
+  OneToOne,
+  Column,
+  Entity,
+  Index,
+} from 'typeorm';
 import { BaseEntity } from '../../common/database/base.entity';
 import { Customer } from '../../customers/entities/customer.entity';
 import { Trader } from '../../traders/entities/trader.entity';
+import { Permission } from './permission.entity';
+import { Role } from './role.entity';
 
 @Entity('users')
 export class User extends BaseEntity {
@@ -59,4 +68,13 @@ export class User extends BaseEntity {
 
   @OneToOne(() => Trader, trader => trader.user, { nullable: true })
   trader?: Trader;
+
+  @ManyToMany(() => Role, role => role.users)
+  @JoinTable()
+  roles?: Role[];
+
+  @ManyToMany(() => Permission)
+  @JoinTable()
+  permissions?: Permission[];
+
 }

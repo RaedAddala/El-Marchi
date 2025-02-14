@@ -1,15 +1,17 @@
 import {
-  Body,
-  Controller,
-  HttpCode,
-  HttpStatus,
-  Post,
-  Put,
+  Get,
   Req,
   Res,
+  Put,
+  Post,
+  Body,
+  Query,
+  HttpCode,
   UseGuards,
+  HttpStatus,
+  Controller,
 } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 import type { Request, Response } from 'express';
 
@@ -25,6 +27,7 @@ import { AuthCookieUtils, COOKIE_NAME } from '../common/cookies/cookie.utils';
 import { AccessTokenGuard, RefreshTokenGuard } from '../common/guards';
 import { JwtconfigService } from '../common/jwtconfig/jwtconfig.service';
 import { JsonWebTokenCookieData } from '../common/types/jwt.payload';
+import { PaginationQueryDto } from './dtos/pagination.dto';
 import { User } from './entities/user.entity';
 
 @Controller('users')
@@ -41,6 +44,12 @@ export class UsersController {
 
   @Post('local/signup')
   @HttpCode(HttpStatus.CREATED)
+  @ApiOperation({ summary: 'Signup using a local strategy' })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description:
+      'Returns the refresh token as a HTTP-Only Cookie and the access token in the Response JSON Body',
+  })
   async localSignup(
     @Body() createUserDto: CreateUserDto,
     @Res({ passthrough: true }) response: Response,
@@ -72,6 +81,12 @@ export class UsersController {
 
   @Post('local/login')
   @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Login using a local strategy' })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description:
+      'Returns the refresh token as a HTTP-Only Cookie and the access token in the Response JSON Body',
+  })
   async localLogin(
     @Body() loginDto: loginDto,
     @Res({ passthrough: true }) response: Response,
@@ -101,6 +116,13 @@ export class UsersController {
   @Post('logout')
   @UseGuards(AccessTokenGuard, RefreshTokenGuard)
   @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: 'Invalidates the refresh token related to this session',
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Returns success',
+  })
   async logout(
     @Req() req: Request,
     @Res({ passthrough: true }) response: Response,
@@ -117,6 +139,13 @@ export class UsersController {
   @Post('logout-all')
   @UseGuards(AccessTokenGuard, RefreshTokenGuard)
   @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: 'Invalidates all refresh tokens related to this user',
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Returns success',
+  })
   async logoutAllDevices(
     @Req() req: Request,
     @Res({ passthrough: true }) response: Response,
@@ -132,6 +161,12 @@ export class UsersController {
   @Post('refresh')
   @UseGuards(RefreshTokenGuard)
   @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Refresh the tokens' })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description:
+      'Returns the refresh token as a HTTP-Only Cookie and the access token in the Response JSON Body',
+  })
   async refreshTokens(
     @Req() req: Request,
     @Res({ passthrough: true }) response: Response,
@@ -169,6 +204,11 @@ export class UsersController {
 
   @Put('change-password')
   @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: "update a user's password" })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Returns the updated user',
+  })
   @UseGuards(AccessTokenGuard, RefreshTokenGuard)
   async changePassword(
     @Body() changePasswordDto: ChangePasswordDto,
@@ -207,8 +247,49 @@ export class UsersController {
   @Put('update-profile')
   @HttpCode(HttpStatus.OK)
   @UseGuards(AccessTokenGuard)
+  @ApiOperation({ summary: "update a user's profile" })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Returns the updated user',
+  })
   updateUser(@Body() update: UpdateUserDto, @Req() req: Request) {
     const user = req.user as User;
     return this.userService.update(user.id, update);
+  }
+
+  @Get('/profile')
+  @HttpCode(HttpStatus.OK)
+  @UseGuards(AccessTokenGuard)
+  @ApiOperation({ summary: "Gets a user's profile" })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: "a user's profile",
+  })
+  getProfile(@Req() req: Request) {
+    return this.userService.findOne((req.user as User).id);
+  }
+
+  @Get('/profile/all')
+  @HttpCode(HttpStatus.OK)
+  @UseGuards(AccessTokenGuard)
+  @ApiOperation({ summary: 'Get all users with pagination and search' })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Returns paginated list of users',
+  })
+  async getAllUsers(@Query() query: PaginationQueryDto) {
+    const defaultSearchFields: Array<keyof User> = [
+      'firstName',
+      'lastName',
+      'email',
+      'phoneNumber',
+    ];
+
+    return this.userService.findWithPagination(
+      query.page,
+      query.limit,
+      query.search,
+      query.searchFields || defaultSearchFields,
+    );
   }
 }

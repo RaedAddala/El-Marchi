@@ -19,10 +19,8 @@ import { InvoicesModule } from './invoices/invoices.module';
 import { OrdersModule } from './orders/orders.module';
 import { OrderitemsModule } from './ordersitems/orderitems.module';
 import { PaymentsModule } from './payments/payments.module';
-import { PermissionsModule } from './permissions/permissions.module';
 import { ProductsModule } from './products/products.module';
 import { RatesModule } from './rates/rates.module';
-import { RolesModule } from './roles/roles.module';
 import { SellingPointsModule } from './sellingPoints/selling-points.module';
 import { StockHistoryModule } from './stockHistory/stock-history.module';
 import { SubCategoriesModule } from './subCategories/sub-categories.module';
@@ -83,8 +81,6 @@ import { TradersModule } from './traders/traders.module';
     OrdersModule,
     CategoriesModule,
     SubCategoriesModule,
-    RolesModule,
-    PermissionsModule,
     StockHistoryModule,
     OrderitemsModule,
     RatesModule,
