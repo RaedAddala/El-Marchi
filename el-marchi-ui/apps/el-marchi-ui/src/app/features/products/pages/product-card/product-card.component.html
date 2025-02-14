@@ -9,9 +9,7 @@
       <img
         [src]="
           '/assets/products/' +
-          product().pictures[0].publicId +
-          '.' +
-          product().pictures[0].mimeType.split('/')[1]
+          product().pictures[0].publicId
         "
         [alt]="product().name"
         class="h-full w-full object-cover object-center group-hover:scale-105 transition-transform duration-300"
