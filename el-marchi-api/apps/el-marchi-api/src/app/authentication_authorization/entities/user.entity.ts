@@ -1,10 +1,10 @@
 import {
-  ManyToMany,
-  JoinTable,
-  OneToOne,
   Column,
   Entity,
   Index,
+  JoinTable,
+  ManyToMany,
+  OneToOne,
 } from 'typeorm';
 import { BaseEntity } from '../../common/database/base.entity';
 import { Customer } from '../../customers/entities/customer.entity';
@@ -69,12 +69,19 @@ export class User extends BaseEntity {
   @OneToOne(() => Trader, trader => trader.user, { nullable: true })
   trader?: Trader;
 
-  @ManyToMany(() => Role, role => role.users)
-  @JoinTable()
+  @ManyToMany(() => Role, role => role.users, { eager: true })
+  @JoinTable({
+    name: 'user_roles',
+    joinColumn: { name: 'user_id' },
+    inverseJoinColumn: { name: 'role_id' },
+  })
   roles?: Role[];
 
-  @ManyToMany(() => Permission)
-  @JoinTable()
+  @ManyToMany(() => Permission, permission => permission.users, { eager: true })
+  @JoinTable({
+    name: 'user_permissions',
+    joinColumn: { name: 'user_id' },
+    inverseJoinColumn: { name: 'permission_id' },
+  })
   permissions?: Permission[];
-
 }

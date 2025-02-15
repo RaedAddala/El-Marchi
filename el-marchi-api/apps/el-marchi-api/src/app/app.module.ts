@@ -3,9 +3,9 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { fromZodError } from 'zod-validation-error';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
+
 import { UsersModule } from './authentication_authorization/users.module';
+import { CaslModule } from './casl/casl.module';
 import { CategoriesModule } from './categories/categories.module';
 import { EnvConfig, envSchema } from './common/config/env.schema';
 import { entitiesList } from './common/entities/entities';
@@ -17,7 +17,6 @@ import { CustomersModule } from './customers/customers.module';
 import { DiscountsModule } from './discounts/discounts.module';
 import { InvoicesModule } from './invoices/invoices.module';
 import { OrdersModule } from './orders/orders.module';
-import { OrderitemsModule } from './ordersitems/orderitems.module';
 import { PaymentsModule } from './payments/payments.module';
 import { ProductsModule } from './products/products.module';
 import { RatesModule } from './rates/rates.module';
@@ -82,7 +81,6 @@ import { TradersModule } from './traders/traders.module';
     CategoriesModule,
     SubCategoriesModule,
     StockHistoryModule,
-    OrderitemsModule,
     RatesModule,
     PaymentsModule,
     DiscountsModule,
@@ -91,8 +89,9 @@ import { TradersModule } from './traders/traders.module';
     CustomersModule,
     TradersModule,
     CouponsModule,
+    CaslModule,
   ],
-  controllers: [AppController],
-  providers: [AppService, CryptoService, JwtconfigService, RedisService],
+  controllers: [],
+  providers: [CryptoService, JwtconfigService, RedisService],
 })
-export class AppModule {}
+export class AppModule { }

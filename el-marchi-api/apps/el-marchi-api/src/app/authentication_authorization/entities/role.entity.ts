@@ -1,11 +1,13 @@
 import {
   Column,
+  CreateDateColumn,
+  DeleteDateColumn,
   Entity,
   JoinTable,
   ManyToMany,
   PrimaryGeneratedColumn,
+  UpdateDateColumn,
 } from 'typeorm';
-import { ClientRole } from '../../common/enums/roles.enum';
 import { Permission } from './permission.entity';
 import { User } from './user.entity';
 
@@ -15,15 +17,44 @@ export class Role {
   id!: number;
 
   @Column({ unique: true, nullable: false })
-  name!: ClientRole;
+  name!: string;
 
-  @Column({ type: 'integer', default: 999, nullable: false })
-  rank!: number;
+  @Column({
+    name: 'is_custom',
+    default: false,
+  })
+  isCustom!: boolean;
+
+  @ManyToMany(() => Permission, permission => permission.roles, { eager: true })
+  @JoinTable({
+    name: 'role_permissions',
+    joinColumn: { name: 'role_id' },
+    inverseJoinColumn: { name: 'permission_id' },
+  })
+  permissions?: Permission[];
 
   @ManyToMany(() => User, user => user.roles)
   users?: User[];
 
-  @ManyToMany(() => Permission)
-  @JoinTable()
-  permissions?: Permission[];
+  @CreateDateColumn({
+    name: 'created_at',
+    type: 'timestamp with time zone',
+    default: 'now()',
+    readonly: true,
+  })
+  createdAt!: Date;
+
+  @UpdateDateColumn({
+    name: 'updated_at',
+    type: 'timestamp with time zone',
+    default: 'now()',
+  })
+  updatedAt!: Date;
+
+  @DeleteDateColumn({
+    name: 'deleted_at',
+    type: 'timestamp with time zone',
+    nullable: true,
+  })
+  deletedAt?: Date;
 }

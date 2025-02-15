@@ -1,17 +1,24 @@
 import {
+  Body,
+  Controller,
   Get,
+  HttpCode,
+  HttpStatus,
+  Param,
+  Post,
+  Put,
+  Query,
   Req,
   Res,
-  Put,
-  Post,
-  Body,
-  Query,
-  HttpCode,
   UseGuards,
-  HttpStatus,
-  Controller,
 } from '@nestjs/common';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiOperation,
+  ApiParam,
+  ApiQuery,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 
 import type { Request, Response } from 'express';
 
@@ -167,6 +174,15 @@ export class UsersController {
     description:
       'Returns the refresh token as a HTTP-Only Cookie and the access token in the Response JSON Body',
   })
+  @ApiResponse({
+    status: HttpStatus.FORBIDDEN,
+    description:
+      'You cannot access this resource if you are not allowed to access it',
+  })
+  @ApiResponse({
+    status: HttpStatus.UNAUTHORIZED,
+    description: 'You have to give Valid Credentials to access this resource',
+  })
   async refreshTokens(
     @Req() req: Request,
     @Res({ passthrough: true }) response: Response,
@@ -208,6 +224,15 @@ export class UsersController {
   @ApiResponse({
     status: HttpStatus.OK,
     description: 'Returns the updated user',
+  })
+  @ApiResponse({
+    status: HttpStatus.FORBIDDEN,
+    description:
+      'You cannot access this resource if you are not allowed to access it',
+  })
+  @ApiResponse({
+    status: HttpStatus.UNAUTHORIZED,
+    description: 'You have to give Valid Credentials to access this resource',
   })
   @UseGuards(AccessTokenGuard, RefreshTokenGuard)
   async changePassword(
@@ -252,9 +277,45 @@ export class UsersController {
     status: HttpStatus.OK,
     description: 'Returns the updated user',
   })
+  @ApiResponse({
+    status: HttpStatus.FORBIDDEN,
+    description:
+      'You cannot access this resource if you are not allowed to access it',
+  })
+  @ApiResponse({
+    status: HttpStatus.UNAUTHORIZED,
+    description: 'You have to give Valid Credentials to access this resource',
+  })
   updateUser(@Body() update: UpdateUserDto, @Req() req: Request) {
     const user = req.user as User;
     return this.userService.update(user.id, update);
+  }
+
+  @Put('update-profile/:id')
+  @HttpCode(HttpStatus.OK)
+  @UseGuards(AccessTokenGuard)
+  @ApiOperation({ summary: "update a user's profile" })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Returns the updated user',
+  })
+  @ApiResponse({
+    status: HttpStatus.FORBIDDEN,
+    description:
+      'You cannot access this resource if you are not allowed to access it',
+  })
+  @ApiResponse({
+    status: HttpStatus.UNAUTHORIZED,
+    description: 'You have to give Valid Credentials to access this resource',
+  })
+  @ApiParam({
+    name: 'id',
+    type: String,
+    required: true,
+    description: 'The Id of the user you want to update!',
+  })
+  updateUserBySomeoneElse(@Body() update: UpdateUserDto, @Param('id') id: string) {
+    return this.userService.update(id, update);
   }
 
   @Get('/profile')
@@ -265,6 +326,15 @@ export class UsersController {
     status: HttpStatus.OK,
     description: "a user's profile",
   })
+  @ApiResponse({
+    status: HttpStatus.FORBIDDEN,
+    description:
+      'You cannot access this resource if you are not allowed to access it',
+  })
+  @ApiResponse({
+    status: HttpStatus.UNAUTHORIZED,
+    description: 'You have to give Valid Credentials to access this resource',
+  })
   getProfile(@Req() req: Request) {
     return this.userService.findOne((req.user as User).id);
   }
@@ -273,9 +343,23 @@ export class UsersController {
   @HttpCode(HttpStatus.OK)
   @UseGuards(AccessTokenGuard)
   @ApiOperation({ summary: 'Get all users with pagination and search' })
+  @ApiQuery({
+    type: PaginationQueryDto,
+    required: false,
+    description: 'Query Params needed for Pagination',
+  })
   @ApiResponse({
     status: HttpStatus.OK,
     description: 'Returns paginated list of users',
+  })
+  @ApiResponse({
+    status: HttpStatus.FORBIDDEN,
+    description:
+      'You cannot access this resource if you are not allowed to access it',
+  })
+  @ApiResponse({
+    status: HttpStatus.UNAUTHORIZED,
+    description: 'You have to give Valid Credentials to access this resource',
   })
   async getAllUsers(@Query() query: PaginationQueryDto) {
     const defaultSearchFields: Array<keyof User> = [
@@ -291,5 +375,32 @@ export class UsersController {
       query.search,
       query.searchFields || defaultSearchFields,
     );
+  }
+
+  @Get('/profile/:id')
+  @HttpCode(HttpStatus.OK)
+  @UseGuards(AccessTokenGuard)
+  @ApiOperation({ summary: "Gets a user's profile" })
+  @ApiParam({
+    name: 'id',
+    type: String,
+    required: true,
+    description: 'The Id of the user you want to retrieve!',
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: "a user's profile",
+  })
+  @ApiResponse({
+    status: HttpStatus.FORBIDDEN,
+    description:
+      'You cannot access this resource if you are not allowed to access it',
+  })
+  @ApiResponse({
+    status: HttpStatus.UNAUTHORIZED,
+    description: 'You have to give Valid Credentials to access this resource',
+  })
+  getUserProfile(@Param('id') id: string) {
+    return this.userService.findOne(id);
   }
 }
