@@ -1,28 +1,92 @@
-<div class="hero min-h-screen rounded-xl"
-style="background-image: url(/hero.jpg); background-size: cover">
-  <div class="hero-overlay bg-opacity-20"></div>
-  <div class="hero-content justify-start text-neutral-content
-  w-full px-6 sm:px-8 lg:px-10">
-    <div class="text-left">
-      <h1 class="mb-5 text-3xl sm:text-5xl text-white font-bold">
-        El Marchi
-      </h1>
-      <p class="mb-5 text-lg sm:text-2xl text-white">
-        Check out our collection of products
-      </p>
-      <button class="btn btn-primary btn-lg" routerLink="/products">
-        Shop collection
-      </button>
+<!-- Hero Section -->
+<section class="hero">
+  <div class="hero-overlay"></div>
+  <div class="hero-content">
+    <div class="hero-text">
+      <h1 class="animate-fade-in">El Marchi</h1>
+      <p>Discover premium tech products curated just for you</p>
+      <div class="button-group">
+        <a routerLink="/shop" class="btn btn-primary">
+          Shop Collection
+          <i class="lucide-shopping-bag"></i>
+        </a>
+        <a routerLink="/about" class="btn btn-outline">
+          Learn More
+          <i class="lucide-arrow-right"></i>
+        </a>
+      </div>
     </div>
   </div>
-</div>
-<div class="w-full my-10 md:my-20">
-  <h2 class="text-2xl sm:text-3xl font-bold text-center my-8 sm:my-12">
-    Featured products
-  </h2>
-  @defer (on immediate) {
-    <featured></featured>
-  } @placeholder {
-    <div>Loading... </div>
-  }
-</div>
+</section>
+
+<!-- Features Section -->
+<section class="features">
+  <div class="container">
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-content">
+          <i class="lucide-truck"></i>
+          <div>
+            <h3>Free Shipping</h3>
+            <p>On all orders over 100 TND</p>
+          </div>
+        </div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-content">
+          <i class="lucide-shield"></i>
+          <div>
+            <h3>Secure Payment</h3>
+            <p>100% secure transactions</p>
+          </div>
+        </div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-content">
+          <i class="lucide-clock"></i>
+          <div>
+            <h3>Fast Delivery</h3>
+            <p>Get your products quickly</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Categories Section -->
+<section class="categories">
+  <div class="container">
+    <h2>Shop by Category</h2>
+    <div class="categories-grid">
+      <div class="category-card" *ngFor="let category of categories">
+        <div class="category-content">
+          <div class="category-image" [style.backgroundImage]="'url(' + category.image + ')'"></div>
+          <div class="category-overlay"></div>
+          <div class="category-text">
+            <h3>{{ category.name }}</h3>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Testimonials Section -->
+<section class="testimonials">
+  <div class="container">
+    <h2>What Our Customers Say</h2>
+    <div class="testimonials-grid">
+      <div class="testimonial-card" *ngFor="let testimonial of testimonials">
+        <div class="testimonial-content">
+          <div class="stars">
+            <i class="lucide-star" *ngFor="let star of [].constructor(5); let i = index"
+               [class.filled]="i < testimonial.rating"></i>
+          </div>
+          <p>{{ testimonial.text }}</p>
+          <div class="author">{{ testimonial.author }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

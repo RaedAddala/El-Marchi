@@ -1,13 +1,47 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink } from '@angular/router';
-import { FeaturedComponent } from './featured/featured.component';
+import { FormsModule } from '@angular/forms';
 
 @Component({
-  selector: 'ecom-home',
-  standalone: true,
-  imports: [CommonModule, RouterLink, FeaturedComponent],
+  selector: 'app-home',
   templateUrl: './home.component.html',
-  styleUrl: './home.component.scss',
+  styleUrls: ['./home.component.css'],
+  standalone: true,
+  imports: [CommonModule, FormsModule]
 })
-export class HomeComponent {}
+export class HomeComponent {
+  email: string = '';
+  
+  categories = [
+    {
+      name: 'Smartphones',
+      image: '../../../../public/smartphone.jpg'
+    },
+    {
+      name: 'Tablets',
+      image: '../../../../public/ipad.jpg'
+    },
+    {
+      name: 'Accessories',
+      image: '../../../../public/accessories.jpg'
+    }
+  ];
+
+  testimonials = [
+    {
+      text: 'Amazing products and even better customer service! Will definitely shop here again.',
+      author: 'Amine Affi',
+      rating: 5
+    },
+    {
+      text: 'The quality of their products is outstanding. Fast shipping too!',
+      author: 'Raed Addala',
+      rating: 5
+    },
+    {
+      text: 'Great experience from start to finish. Highly recommend!',
+      author: 'Ala Achach',
+      rating: 4
+    }
+  ];
+}
