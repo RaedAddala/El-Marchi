@@ -314,7 +314,10 @@ export class UsersController {
     required: true,
     description: 'The Id of the user you want to update!',
   })
-  updateUserBySomeoneElse(@Body() update: UpdateUserDto, @Param('id') id: string) {
+  updateUserBySomeoneElse(
+    @Body() update: UpdateUserDto,
+    @Param('id') id: string,
+  ) {
     return this.userService.update(id, update);
   }
 

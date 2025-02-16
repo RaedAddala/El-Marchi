@@ -8,9 +8,10 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { Action } from '../../casl/casl-ability.factory';
+
 import { Role } from './role.entity';
 import { User } from './user.entity';
+import { Action } from '../../common/guards/casl.enum';
 
 @Entity('permissions')
 export class Permission {

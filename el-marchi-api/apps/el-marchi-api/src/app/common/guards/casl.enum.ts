@@ -1,11 +1,5 @@
-import {
-  createMongoAbility,
-  InferSubjects,
-  MongoAbility,
-  MongoQuery,
-  RawRuleOf,
-} from '@casl/ability';
-import { entitiesList } from '../common/entities/entities';
+import { InferSubjects } from "@casl/ability";
+import { entitiesList } from "../entities/entities";
 
 export enum Action {
   Manage = 'manage',
@@ -32,6 +26,3 @@ export enum Roles {
 
 export type EntityTypes = (typeof entitiesList)[number];
 export type Subjects = InferSubjects<EntityTypes> | 'all';
-export type AppAbility = MongoAbility<[Action, Subjects], MongoQuery>;
-
-export class CaslAbilityFactory {}

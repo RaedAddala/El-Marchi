@@ -5,7 +5,6 @@ import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { fromZodError } from 'zod-validation-error';
 
 import { UsersModule } from './authentication_authorization/users.module';
-import { CaslModule } from './casl/casl.module';
 import { CategoriesModule } from './categories/categories.module';
 import { EnvConfig, envSchema } from './common/config/env.schema';
 import { entitiesList } from './common/entities/entities';
@@ -17,6 +16,7 @@ import { CustomersModule } from './customers/customers.module';
 import { DiscountsModule } from './discounts/discounts.module';
 import { InvoicesModule } from './invoices/invoices.module';
 import { OrdersModule } from './orders/orders.module';
+import { OrganizationsModule } from './organizations/organizations.module';
 import { PaymentsModule } from './payments/payments.module';
 import { ProductsModule } from './products/products.module';
 import { RatesModule } from './rates/rates.module';
@@ -89,7 +89,7 @@ import { TradersModule } from './traders/traders.module';
     CustomersModule,
     TradersModule,
     CouponsModule,
-    CaslModule,
+    OrganizationsModule,
   ],
   controllers: [],
   providers: [CryptoService, JwtconfigService, RedisService],
