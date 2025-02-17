@@ -51,7 +51,7 @@ export interface Product extends BaseProduct {
 export interface ProductFilter {
   filtersize?: string;
   filtercategory?: string | null;
-  filtersort: string[];
+  filtersort: string;
 }
 
 export interface CategoryWithSubcategories extends ProductCategory {

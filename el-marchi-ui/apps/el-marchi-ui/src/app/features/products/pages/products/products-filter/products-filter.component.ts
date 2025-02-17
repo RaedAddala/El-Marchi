@@ -61,7 +61,7 @@ export class ProductsFilterComponent {
   private onFilterChange(filter: Partial<ProductFilterForm>) {
     const filterProduct: ProductFilter = {
       filtersize: '',
-      filtersort: [`createdDate,${filter.sort}`],
+      filtersort: [`${filter.sort}`],
     };
 
     let sizes: [string, boolean][] = [];

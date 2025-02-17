@@ -53,7 +53,7 @@ export class UserProductService {
     }
 
     for (const sort of productFilter.filtersort) {
-      params = params.append('filtersort', sort);
+      params = params.append('filtersort', sort.trim());
     }
     console.log('params', params);
     return this.http.get<Page<Product>>(`${this.baseUrl}/filter`, { params });

@@ -122,6 +122,9 @@ export class ProductService {
       .createQueryBuilder('product')
       .leftJoinAndSelect('product.subCategory', 'subCategory')
       .leftJoinAndSelect('subCategory.category', 'category');
+    console.log("#################################");
+    console.log('filter ', filter.filtersort);
+    console.log("is filter desc ",filter.filtersort === 'desc');
 
     if (filter.filtercategory) {
       query.andWhere('category.id = :categoryId', {
@@ -133,6 +136,10 @@ export class ProductService {
       const sizes = filter.filtersize.split(',');
       query.andWhere('product.size IN (:...sizes)', { sizes });
     }
+    if(filter.filtersort === 'desc') {
+      query.orderBy('product.price', 'DESC');
+    }
+    else query.orderBy('product.price', 'ASC');
 
     const [results, total] = await query
       .take(pagination.size)
