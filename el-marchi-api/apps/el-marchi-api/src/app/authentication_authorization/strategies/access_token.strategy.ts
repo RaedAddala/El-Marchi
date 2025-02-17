@@ -1,11 +1,10 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
-import { Request } from 'express';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 
-import { COOKIE_NAME } from '../../common/cookies/cookie.utils';
+import { inspect } from 'util';
 import { JwtconfigService } from '../../common/jwtconfig/jwtconfig.service';
-import { JwtTokenPayload, SecretData } from '../../common/types/jwt.payload';
+import { AccessJwtTokenPayload } from '../../common/types/jwt.payload';
 import { User } from '../entities/user.entity';
 import { UsersService } from '../users.service';
 
@@ -19,26 +18,16 @@ export class AccessTokenStrategy extends PassportStrategy(
     private readonly usersService: UsersService,
   ) {
     super({
-      jwtFromRequest: ExtractJwt.fromExtractors([
-        (request: Request) => {
-          try {
-            const data: SecretData = request?.signedCookies[COOKIE_NAME];
-            if (!data) {
-              return null;
-            }
-            return data.jwtAccessToken;
-          } catch {
-            return null;
-          }
-        },
-      ]),
+      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       secretOrKey: jwtConfig.getJwtConfig().access.publicKey,
       ignoreExpiration: false,
     });
   }
 
-  async validate(payload: JwtTokenPayload): Promise<User> {
-    if (payload === null) {
+  async validate(payload: AccessJwtTokenPayload): Promise<User> {
+    Logger.log(inspect(payload));
+
+    if (!payload) {
       throw new UnauthorizedException();
     }
     const user = await this.usersService.findOne(payload.sub);

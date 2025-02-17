@@ -1,12 +1,16 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
-import { Request } from 'express';
+import type { Request } from 'express';
 import { ExtractJwt, Strategy } from 'passport-jwt';
-import { COOKIE_NAME } from '../../common/cookies/cookie.utils';
+import { inspect } from 'util';
+import {
+  AuthCookieUtils,
+  COOKIE_NAME,
+} from '../../common/cookies/cookie.utils';
 import { JwtconfigService } from '../../common/jwtconfig/jwtconfig.service';
 import type {
-  JwtTokenPayload,
-  SecretData,
+  JsonWebTokenCookieData,
+  RefreshJwtTokenPayload,
 } from '../../common/types/jwt.payload';
 import { User } from '../entities/user.entity';
 import { UsersService } from '../users.service';
@@ -23,11 +27,16 @@ export class RefreshTokenStrategy extends PassportStrategy(
     super({
       jwtFromRequest: ExtractJwt.fromExtractors([
         (request: Request) => {
-          const data: SecretData = request?.signedCookies[COOKIE_NAME];
-          if (!data) {
+          try {
+            const data: JsonWebTokenCookieData | undefined =
+              request?.signedCookies[COOKIE_NAME];
+            if (!data) {
+              return null;
+            }
+            return data.refreshToken;
+          } catch {
             return null;
           }
-          return data.jwtRefreshToken;
         },
       ]),
       secretOrKey: jwtConfig.getJwtConfig().refresh.publicKey,
@@ -36,23 +45,38 @@ export class RefreshTokenStrategy extends PassportStrategy(
     });
   }
 
-  async validate(req: Request, payload: JwtTokenPayload): Promise<User> {
-    if (!payload) {
-      throw new BadRequestException('no token payload');
-    }
-    const data: SecretData = req?.signedCookies[COOKIE_NAME];
+  async validate(req: Request, payload: RefreshJwtTokenPayload): Promise<User> {
+    Logger.log(inspect(payload));
 
-    if (!data.jwtRefreshToken) {
-      throw new BadRequestException('invalid refresh token');
+    if (!payload) {
+      throw new UnauthorizedException();
     }
-    const customer = await this.usersService.validateJwtRefreshToken(
+    const data: JsonWebTokenCookieData | undefined =
+      req?.signedCookies[COOKIE_NAME];
+
+    if (!data?.refreshToken) {
+      throw new UnauthorizedException();
+    }
+
+    const user = await this.usersService.validateJwtRefreshToken(
       payload.sub,
-      data.jwtRefreshToken,
+      data.refreshToken,
       data.refreshTokenId,
     );
-    if (!customer) {
-      throw new BadRequestException('token expired');
+
+    // if the the refresh token value is changed then it is necessary to revoke it
+    if (!user) {
+      await this.usersService.revokeJwtRefreshToken(
+        payload.sub,
+        data.refreshTokenId,
+      );
+
+      if (req.res) {
+        AuthCookieUtils.clearAuthTokenCookie(req.res);
+      }
+
+      throw new UnauthorizedException();
     }
-    return customer;
+    return user;
   }
 }

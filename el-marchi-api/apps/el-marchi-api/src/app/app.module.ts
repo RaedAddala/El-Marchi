@@ -3,14 +3,27 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { fromZodError } from 'zod-validation-error';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
+
+import { UsersModule } from './authentication_authorization/users.module';
+import { CategoriesModule } from './categories/categories.module';
 import { EnvConfig, envSchema } from './common/config/env.schema';
 import { entitiesList } from './common/entities/entities';
-import { jwtFactory } from './common/jwt/jwt.def';
-import { UsersModule } from './users/users.module';
-import {CategoriesModule} from "./categories/categories.module";
+import { JwtconfigService } from './common/jwtconfig/jwtconfig.service';
+import { RedisService } from './common/redis/redis.service';
+import { CouponsModule } from './coupons/coupons.module';
+import { CryptoService } from './crypto/crypto.service';
+import { CustomersModule } from './customers/customers.module';
+import { DiscountsModule } from './discounts/discounts.module';
+import { InvoicesModule } from './invoices/invoices.module';
+import { OrdersModule } from './orders/orders.module';
+import { OrganizationsModule } from './organizations/organizations.module';
+import { PaymentsModule } from './payments/payments.module';
 import { ProductModule } from './products/products.module';
+import { RatesModule } from './rates/rates.module';
+import { SellingPointsModule } from './sellingPoints/selling-points.module';
+import { StockHistoryModule } from './stockHistory/stock-history.module';
+import { SubCategoriesModule } from './subCategories/sub-categories.module';
+import { TradersModule } from './traders/traders.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 
@@ -56,18 +69,35 @@ import { join } from 'path';
       },
     }),
     ServeStaticModule.forRoot({
-      rootPath: join(__dirname,'..', '..', '..', 'uploads'), // Path to your uploads directory
+      rootPath: join(__dirname, '..', '..', '..', 'uploads'), // Path to your uploads directory
       serveRoot: '/uploads', // Route to serve static files
     }),
-    JwtModule.registerAsync({
-      inject: [ConfigService],
-      useFactory: jwtFactory,
+    JwtModule.register({
+      global: true,
+      verifyOptions: {
+        algorithms: ['ES256'],
+      },
+      signOptions: {
+        algorithm: 'ES256',
+      },
     }),
     UsersModule,
-    CategoriesModule,
     ProductModule,
+    OrdersModule,
+    CategoriesModule,
+    SubCategoriesModule,
+    StockHistoryModule,
+    RatesModule,
+    PaymentsModule,
+    DiscountsModule,
+    SellingPointsModule,
+    InvoicesModule,
+    CustomersModule,
+    TradersModule,
+    CouponsModule,
+    OrganizationsModule,
   ],
-  controllers: [AppController],
-  providers: [AppService],
+  controllers: [],
+  providers: [CryptoService, JwtconfigService, RedisService],
 })
-export class AppModule {}
+export class AppModule { }
