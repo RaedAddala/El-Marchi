@@ -7,9 +7,11 @@ import { User } from './entities/user.entity';
 import { AccessTokenStrategy, RefreshTokenStrategy } from './strategies';
 import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
+import { Permission } from './entities/permission.entity';
+import { Role } from './entities/role.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User])],
+  imports: [TypeOrmModule.forFeature([User, Permission, Role])],
   providers: [
     UsersService,
     CryptoService,
@@ -20,4 +22,4 @@ import { UsersService } from './users.service';
   ],
   controllers: [UsersController],
 })
-export class UsersModule {}
+export class UsersModule { }

@@ -1,6 +1,6 @@
-import {HttpParams} from "@angular/common/http";
+import { HttpParams } from '@angular/common/http';
 
-export interface  Pagination {
+export interface Pagination {
   page: number;
   size: number;
   sort: string[];
@@ -9,7 +9,7 @@ export interface  Pagination {
 export interface Pageable {
   pageNumber: number;
   pageSize: number;
-  sort: Sort ;
+  sort: Sort;
   offset: number;
   paged: boolean;
   unpaged: boolean;

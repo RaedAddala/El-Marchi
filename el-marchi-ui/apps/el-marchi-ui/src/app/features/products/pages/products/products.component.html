@@ -1,0 +1,33 @@
+<div class="grid grid-cols-1 lg:grid-cols-[300px_1fr] gap-8">
+  <div class="card bg-base-100 shadow-soft">
+    <div class="card-body">
+      <app-products-filter
+        [sort]="sort() ?? ''"
+        [size]="size() ?? ''"
+        (productFilter)="onFilterChange($event)"
+      ></app-products-filter>
+    </div>
+  </div>
+
+  <!-- Products grid -->
+  @if (filteredProducts$ | async; as result) {
+    @if (result.content.length > 0) {
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-6">
+        @for (product of result.content; track product.id) {
+          <app-product-card [product]="product"></app-product-card>
+        }
+      </div>
+    } @else {
+      <div class="card bg-base-100 shadow-soft">
+        <div class="card-body items-center text-center">
+          <h2 class="card-title text-2xl mb-2">No results found</h2>
+          <p class="text-secondary-500">Try adjusting your filters</p>
+        </div>
+      </div>
+    }
+  } @else {
+    <div class="flex w-full justify-center p-12">
+      <span class="loading loading-spinner loading-lg text-primary"></span>
+    </div>
+  }
+</div>

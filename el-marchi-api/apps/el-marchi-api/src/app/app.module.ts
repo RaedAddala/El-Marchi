@@ -18,12 +18,13 @@ import { InvoicesModule } from './invoices/invoices.module';
 import { OrdersModule } from './orders/orders.module';
 import { OrganizationsModule } from './organizations/organizations.module';
 import { PaymentsModule } from './payments/payments.module';
-import { ProductsModule } from './products/products.module';
+import { ProductModule } from './products/products.module';
 import { RatesModule } from './rates/rates.module';
 import { SellingPointsModule } from './sellingPoints/selling-points.module';
 import { StockHistoryModule } from './stockHistory/stock-history.module';
-import { SubCategoriesModule } from './subCategories/sub-categories.module';
 import { TradersModule } from './traders/traders.module';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 
 @Module({
   imports: [
@@ -66,6 +67,10 @@ import { TradersModule } from './traders/traders.module';
         };
       },
     }),
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', '..', '..', 'uploads'), // Path to your uploads directory
+      serveRoot: '/uploads', // Route to serve static files
+    }),
     JwtModule.register({
       global: true,
       verifyOptions: {
@@ -76,10 +81,9 @@ import { TradersModule } from './traders/traders.module';
       },
     }),
     UsersModule,
-    ProductsModule,
+    ProductModule,
     OrdersModule,
     CategoriesModule,
-    SubCategoriesModule,
     StockHistoryModule,
     RatesModule,
     PaymentsModule,

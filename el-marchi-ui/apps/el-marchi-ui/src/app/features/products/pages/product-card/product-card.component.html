@@ -1,0 +1,43 @@
+<a
+  class="group relative block transition-all duration-300 hover:-translate-y-1"
+  [routerLink]="['/products', product().id]"
+>
+  <div
+    class="card bg-base-100 shadow-soft hover:shadow-elevated h-full overflow-hidden rounded-lg"
+  >
+    <figure class="aspect-square relative overflow-hidden bg-gray-100">
+      <img
+        [src]="
+          '/assets/products/' +
+          product().pictures[0].publicId
+        "
+        [alt]="product().name"
+        class="h-full w-full object-cover object-center group-hover:scale-105 transition-transform duration-300"
+        loading="lazy"
+      />
+    </figure>
+    <div class="card-body p-4">
+      <p class="text-sm text-gray-500">{{ product().brand }}</p>
+      <h2 class="text-lg font-semibold text-gray-900 mb-1">
+        <div class="truncate">{{ product().name }} - {{ product().size }}</div>
+      </h2>
+      <div class="flex items-baseline gap-2">
+        <span class="text-lg font-bold text-primary-600">{{
+          product().price | currency
+        }}</span>
+        <span class="text-sm text-gray-400 line-through">{{
+          product().price + 200 | currency
+        }}</span>
+      </div>
+      @if (product().featured) {
+      <div class="absolute top-2 right-2">
+        <span
+          class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary-100 text-primary-800"
+        >
+          Best seller
+        </span>
+      </div>
+      }
+    </div>
+  </div>
+</a>

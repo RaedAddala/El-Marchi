@@ -21,6 +21,11 @@
           {
             "glob": "**/*",
             "input": "apps/el-marchi-ui/public"
+          },
+          {
+            "glob": "**/*",
+            "input": "apps/el-marchi-ui/src/assets",
+            "output": "assets"
           }
         ],
         "styles": ["apps/el-marchi-ui/src/styles.css"],

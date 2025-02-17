@@ -1,4 +1,4 @@
-import type {Routes} from '@angular/router';
+import type { Routes } from '@angular/router';
 //import {roleCheckGuard} from "@features/admin/guards/role-check.guard";
 
 export const ADMIN_ROUTES: Routes = [
@@ -32,9 +32,9 @@ export const ADMIN_ROUTES: Routes = [
   {
     path: 'categories/list',
     loadComponent: () =>
-      import('./pages/category/admin-categories/admin-categories.component').then(
-        m => m.AdminCategoriesComponent,
-      ),
+      import(
+        './pages/category/admin-categories/admin-categories.component'
+      ).then(m => m.AdminCategoriesComponent),
     /*canActivate: [roleCheckGuard],
     data: {
       authorities: ['ROLE_ADMIN'],
@@ -46,6 +46,18 @@ export const ADMIN_ROUTES: Routes = [
       import('./pages/category/create-category/create-category.component').then(
         m => m.CreateCategoryComponent,
       ),
+    /*canActivate: [roleCheckGuard],
+    data: {
+      authorities: ['ROLE_ADMIN'],
+    }*/
+  },
+  //subcategoriescreate
+  {
+    path: 'subcategories/:id/create',
+    loadComponent: () =>
+      import(
+        './pages/category/create-subcategory/create-subcategory.component'
+      ).then(m => m.CreateSubCategoryComponent),
     /*canActivate: [roleCheckGuard],
     data: {
       authorities: ['ROLE_ADMIN'],

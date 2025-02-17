@@ -1,0 +1,108 @@
+@if (product) {
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+  <div class="lg:grid lg:grid-cols-2 lg:gap-x-8 lg:items-start">
+    <div class="flex flex-col">
+      <div class="rounded-lg overflow-hidden bg-gray-100">
+        <img
+          [src]="'http://localhost:3000/uploads/products/' + product.pictures[0].publicId"
+          [alt]="product.name"
+          class="w-full h-full object-center object-cover"
+        />
+      </div>
+    </div>
+
+    <!-- Product info -->
+    <div class="mt-10 px-4 sm:px-0 sm:mt-16 lg:mt-0">
+      <div class="flex justify-between items-center">
+        <h1 class="text-3xl font-bold tracking-tight text-gray-900">
+          {{ product.name }} - {{ product.size }}
+        </h1>
+        @if (product.featured) {
+        <div
+          class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-primary-100 text-primary-800"
+        >
+          Best seller
+        </div>
+        }
+      </div>
+
+      <!-- Stock status -->
+      @if (product.nbInStock > 0) {
+      <div class="mt-3 text-sm font-medium text-green-600">In stock</div>
+      } @else {
+      <div class="mt-3 text-sm font-medium text-red-600">Out of stock</div>
+      }
+
+      <!-- Price -->
+      <div class="mt-4 flex items-center">
+        <p class="text-3xl font-bold text-gray-900">
+          {{ product.price | currency }}
+        </p>
+        <p class="ml-2 text-lg text-gray-500 line-through">
+          {{ product.price + 200 | currency }}
+        </p>
+      </div>
+
+      <!-- Product details -->
+      <div class="mt-6 space-y-4">
+        <div class="flex items-center">
+          <span class="text-sm text-gray-500">Brand:</span>
+          <span class="ml-2 text-sm font-medium">{{ product.brand }}</span>
+        </div>
+
+        <div class="flex items-center">
+          <span class="text-sm text-gray-500">Color:</span>
+          <div
+            class="ml-2 w-6 h-6 rounded-full border shadow-sm"
+            [style.backgroundColor]="product.color"
+          ></div>
+        </div>
+
+        <div class="flex items-center">
+          <span class="text-sm text-gray-500">Size:</span>
+          <span class="ml-2 text-sm font-medium">{{ product.size }}</span>
+        </div>
+      </div>
+
+      <!-- Description -->
+      <div class="mt-8">
+        <h2 class="text-sm font-medium text-gray-900">Description</h2>
+        <div class="mt-3 prose prose-sm text-gray-500">
+          {{ product.description }}
+        </div>
+      </div>
+
+      <!-- Add to cart button -->
+      <div class="mt-8">
+        <button
+          class="btn btn-primary w-full lg:w-64 gap-2"
+          [disabled]="product.nbInStock <= 0"
+          (click)="addToCart(product)"
+        >
+          <fa-icon [icon]="['fas', iconAddToCart]"></fa-icon>
+          {{ labelAddToCart }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  @if (relatedProducts && relatedProducts.length) {
+  <div class="mt-16 lg:mt-24">
+    <h2 class="text-2xl font-bold tracking-tight text-gray-900 mb-8">
+      Related products
+    </h2>
+    <div
+      class="grid grid-cols-1 gap-y-10 gap-x-6 sm:grid-cols-2 lg:grid-cols-4 xl:gap-x-8"
+    >
+      @for (product of relatedProducts; track product.id) {
+      <app-product-card [product]="product"></app-product-card>
+      }
+    </div>
+  </div>
+  }
+</div>
+} @else if (isLoading) {
+<div class="flex justify-center items-center min-h-[50vh]">
+  <span class="loading loading-spinner loading-lg text-primary"></span>
+</div>
+}

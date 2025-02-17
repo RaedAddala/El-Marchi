@@ -2,12 +2,8 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "outDir": "../../dist/out-tsc",
-    "module": "esnext",
     "moduleResolution": "node",
-    "target": "es2022",
     "types": ["jest", "node"],
-    "esModuleInterop": true,
-    "verbatimModuleSyntax": false
   },
   "files": [
     "src/test-setup.ts"

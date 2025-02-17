@@ -19,7 +19,7 @@ export const roleCheckGuard: CanActivateFn = (next: ActivatedRouteSnapshot) => {
 
   // Check if the user has the required authorities
   return authService.user$.pipe(
-    map((user) => {
+    map(user => {
       if (!user) {
         router.navigate(['/login']); // Redirect to login page
         return false; // Deny access
@@ -41,6 +41,6 @@ export const roleCheckGuard: CanActivateFn = (next: ActivatedRouteSnapshot) => {
     catchError(() => {
       router.navigate(['/login']); // Redirect to login page on error
       return of(false); // Deny access
-    })
+    }),
   );
 };

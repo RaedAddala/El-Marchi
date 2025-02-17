@@ -8,16 +8,19 @@ import {
 } from '@angular/forms';
 import { Router } from '@angular/router';
 import { NgxControlError } from 'ngxtension/control-error';
-import { AdminProductService } from "@features/admin/admin-product.service";
-import { ToastService } from "@shared/toast/toast.service";
-import { CreateCategoryFormContent, ProductCategory } from "@features/admin/models/product.model";
+import { AdminProductService } from '@features/admin/admin-product.service';
+import { ToastService } from '@shared/toast/toast.service';
+import {
+  CreateCategoryFormContent,
+  ProductCategory,
+} from '@shared/models/product.model';
 
 @Component({
-  selector: 'create-category',
+  selector: 'app-create-category',
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, NgxControlError],
   templateUrl: './create-category.component.html',
-  styleUrl: './create-category.component.scss',
+  styleUrl: './create-category.component.css',
 })
 export class CreateCategoryComponent {
   formBuilder = inject(FormBuilder);

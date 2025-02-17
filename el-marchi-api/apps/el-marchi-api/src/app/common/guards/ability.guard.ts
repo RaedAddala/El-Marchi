@@ -24,9 +24,10 @@ import { User } from '../../authentication_authorization/entities/user.entity';
 import { Permission } from '../../authentication_authorization/entities/permission.entity';
 import { Trader } from '../../traders/entities/trader.entity';
 import { Customer } from '../../customers/entities/customer.entity';
-import { Product } from '../../products/entities/product.entity';
+
 import { Role } from '../../authentication_authorization/entities/role.entity';
 import { Organization } from '../../organizations/entities/organization.entity';
+import { Product } from '../../products/entities/products.entitiy';
 type AppAbility = MongoAbility<[Action, Subjects], MongoQuery>;
 
 @Injectable()

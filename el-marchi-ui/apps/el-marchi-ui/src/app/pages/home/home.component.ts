@@ -11,7 +11,7 @@ import { FormsModule } from '@angular/forms';
 })
 export class HomeComponent {
   email: string = '';
-  
+
   categories = [
     {
       name: 'Smartphones',
