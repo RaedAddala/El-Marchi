@@ -7,7 +7,7 @@ import { FormsModule } from '@angular/forms';
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.css'],
   standalone: true,
-  imports: [CommonModule, FormsModule]
+  imports: [CommonModule, FormsModule],
 })
 export class HomeComponent {
   email: string = '';
@@ -15,33 +15,33 @@ export class HomeComponent {
   categories = [
     {
       name: 'Smartphones',
-      image: '../../../../public/smartphone.jpg'
+      image: 'smartphone.jpg',
     },
     {
       name: 'Tablets',
-      image: '../../../../public/ipad.jpg'
+      image: 'ipad.jpg',
     },
     {
       name: 'Accessories',
-      image: '../../../../public/accessories.jpg'
-    }
+      image: 'accessories.jpg',
+    },
   ];
 
   testimonials = [
     {
       text: 'Amazing products and even better customer service! Will definitely shop here again.',
       author: 'Amine Affi',
-      rating: 5
+      rating: 5,
     },
     {
       text: 'The quality of their products is outstanding. Fast shipping too!',
       author: 'Raed Addala',
-      rating: 5
+      rating: 5,
     },
     {
       text: 'Great experience from start to finish. Highly recommend!',
       author: 'Ala Achach',
-      rating: 4
-    }
+      rating: 4,
+    },
   ];
 }

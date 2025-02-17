@@ -47,9 +47,7 @@ export class UserProductService {
     productPublicId: string,
   ): Observable<Page<Product>> {
     // Filter related products (for example, exclude the current product)
-    const relatedProducts = dummyProducts.filter(
-      p => p.id !== productPublicId,
-    );
+    const relatedProducts = dummyProducts.filter(p => p.id !== productPublicId);
     const dummyPage: Page<Product> = {
       content: relatedProducts,
       pageable: {

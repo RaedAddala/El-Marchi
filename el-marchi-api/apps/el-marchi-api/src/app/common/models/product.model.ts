@@ -1,4 +1,3 @@
-
 export type ProductSizes =
   | 'XS'
   | 'S'
@@ -49,17 +48,13 @@ export interface Product extends BaseProduct {
   publicId: string;
 }
 
-
-
-
-
 export interface ProductFilter {
   filtersize?: string;
   filtercategory?: string | null;
   filtersort: string[];
 }
 
-export  interface CategoryWithSubcategories extends ProductCategory {
+export interface CategoryWithSubcategories extends ProductCategory {
   subcategories?: ProductCategory[];
 }
 export interface Cart {

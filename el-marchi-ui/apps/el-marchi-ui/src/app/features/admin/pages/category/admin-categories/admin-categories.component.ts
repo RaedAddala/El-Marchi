@@ -4,10 +4,11 @@ import { RouterLink } from '@angular/router';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import { AdminProductService } from '@features/admin/admin-product.service';
 import { ToastService } from '@shared/toast/toast.service';
-import {CategoryWithSubcategories, ProductCategory} from '@shared/models/product.model';
+import {
+  CategoryWithSubcategories,
+  ProductCategory,
+} from '@shared/models/product.model';
 import { Page } from '@shared/models/request.model';
-
-
 
 @Component({
   selector: 'app-admin-categories',
@@ -23,7 +24,14 @@ export class AdminCategoriesComponent implements OnInit {
   categories: CategoryWithSubcategories[] = [];
   pageData: Page<ProductCategory> = {
     content: [],
-    pageable: { pageNumber: 0, pageSize: 10, sort: { sorted: false, unsorted: true, empty: true }, offset: 0, paged: true, unpaged: false },
+    pageable: {
+      pageNumber: 0,
+      pageSize: 10,
+      sort: { sorted: false, unsorted: true, empty: true },
+      offset: 0,
+      paged: true,
+      unpaged: false,
+    },
     totalElements: 0,
     totalPages: 0,
     last: true,
@@ -32,7 +40,7 @@ export class AdminCategoriesComponent implements OnInit {
     numberOfElements: 0,
     first: true,
     empty: true,
-    sort: { sorted: false, unsorted: true, empty: true }
+    sort: { sorted: false, unsorted: true, empty: true },
   };
 
   loading = false;
@@ -48,23 +56,21 @@ export class AdminCategoriesComponent implements OnInit {
     this.error = false;
 
     this.productAdminService.findAllCategories(page, size).subscribe({
-      next: (page) => {
+      next: page => {
         this.pageData = page;
         this.categories = page.content.map(category => ({
           ...category,
-          subcategories: undefined
+          subcategories: undefined,
         }));
         this.loading = false;
 
         this.loadSubcategoriesForAll();
-
-
       },
       error: () => {
         this.error = true;
         this.loading = false;
         this.toastService.show('Error! Failed to load categories.', 'ERROR');
-      }
+      },
     });
   }
 
@@ -74,31 +80,32 @@ export class AdminCategoriesComponent implements OnInit {
     this.loadingMore = true;
     const nextPage = this.pageData.number + 1;
 
-    this.productAdminService.findAllCategories(nextPage, this.pageData.size).subscribe({
-      next: (page) => {
-        this.pageData = page;
-        const newCategories = page.content.map(category => ({
-          ...category,
-          subcategories: undefined
-        }));
-        this.categories = [...this.categories, ...newCategories];
-        this.loadingMore = false;
-        this.loadSubcategoriesForAll();
-      },
-      error: () => {
-        this.loadingMore = false;
-        this.toastService.show('Error loading more categories', 'ERROR');
-      }
-    });
+    this.productAdminService
+      .findAllCategories(nextPage, this.pageData.size)
+      .subscribe({
+        next: page => {
+          this.pageData = page;
+          const newCategories = page.content.map(category => ({
+            ...category,
+            subcategories: undefined,
+          }));
+          this.categories = [...this.categories, ...newCategories];
+          this.loadingMore = false;
+          this.loadSubcategoriesForAll();
+        },
+        error: () => {
+          this.loadingMore = false;
+          this.toastService.show('Error loading more categories', 'ERROR');
+        },
+      });
   }
 
   loadSubcategoriesForAll() {
-
     this.categories.forEach(category => {
-      console.log("category");
+      console.log('category');
       console.log(category);
       if (category.publicId) {
-        console.log("category.publicId");
+        console.log('category.publicId');
         console.log(category.publicId);
         this.loadSubcategoriesForCategory(category);
       }
@@ -107,21 +114,23 @@ export class AdminCategoriesComponent implements OnInit {
 
   loadSubcategoriesForCategory(category: CategoryWithSubcategories) {
     if (!category.publicId) return;
-    console.log("category.publicId");
+    console.log('category.publicId');
     console.log(category.publicId);
-    this.productAdminService.findSubcategoriesByCategoryId(category.publicId).subscribe({
-      next: (subcategories) => {
-        console.log("subcategories");
-        console.log(subcategories);
-        category.subcategories = subcategories;
-      },
-      error: () => {
-        this.toastService.show(
-          `Failed to load subcategories for ${category.name || 'category'}`,
-          'ERROR'
-        );
-      }
-    });
+    this.productAdminService
+      .findSubcategoriesByCategoryId(category.publicId)
+      .subscribe({
+        next: subcategories => {
+          console.log('subcategories');
+          console.log(subcategories);
+          category.subcategories = subcategories;
+        },
+        error: () => {
+          this.toastService.show(
+            `Failed to load subcategories for ${category.name || 'category'}`,
+            'ERROR',
+          );
+        },
+      });
   }
 
   deleteCategory(publicId: string) {
@@ -132,7 +141,7 @@ export class AdminCategoriesComponent implements OnInit {
       },
       error: () => {
         this.toastService.show('Failed to delete category', 'ERROR');
-      }
+      },
     });
   }
 }

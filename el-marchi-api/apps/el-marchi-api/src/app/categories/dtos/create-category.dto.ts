@@ -1,5 +1,5 @@
-import {z} from "zod";
-import {createZodDto} from "@anatine/zod-nestjs";
+import { createZodDto } from '@anatine/zod-nestjs';
+import { z } from 'zod';
 
 const CreateCategorySchema = z.object({
   name: z

@@ -14,7 +14,7 @@ import { Pagination } from '@shared/models/request.model';
 import { ProductFilter } from '@shared/models/product.model';
 import { ProductCardComponent } from '../product-card/product-card.component';
 import { BehaviorSubject, switchMap, catchError, of } from 'rxjs';
-import {map} from "rxjs/operators";
+import { map } from 'rxjs/operators';
 
 @Component({
   selector: 'app-products',

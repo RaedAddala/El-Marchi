@@ -1,60 +1,63 @@
 <!-- Categories Table -->
 <table class="table table-lg">
   <thead>
-  <tr>
-    <th>No.</th>
-    <th>Public Id</th>
-    <th>Name</th>
-    <th>Subcategories</th>
-    <th>Actions</th>
-  </tr>
+    <tr>
+      <th>No.</th>
+      <th>Public Id</th>
+      <th>Name</th>
+      <th>Subcategories</th>
+      <th>Actions</th>
+    </tr>
   </thead>
   <tbody>
     @for (category of categories; track category.publicId) {
-      <tr>
-        <td>{{ pageData.number * pageData.size + $index + 1 }}</td>
-        <td>{{ category.publicId }}</td>
-        <td>{{ category.name }}</td>
-        <td>
-          <!-- Dropdown for Subcategories -->
-          <div class="dropdown dropdown-end">
-            <div tabindex="0" role="button" class="btn btn-sm btn-outline">
-              View Subcategories
-            </div>
-            <ul
-              tabindex="0"
-              class="dropdown-content z-[1000] menu p-2 shadow bg-base-100 rounded-box w-52"
-            >
-              @if (category.subcategories) {
-                @for (subCategory of category.subcategories; track subCategory.publicId) {
-                  <li><a>{{ subCategory.name }}</a></li>
-                }
-              } @else {
-                <li><a>Loading subcategories...</a></li>
-              }
-              @if (category.subcategories?.length === 0) {
-                <li><a>No subcategories</a></li>
-              }
-              <li>
-                <a routerLink="/admin/subcategories/{{ category.publicId }}/create" class="text-primary">
-                  <fa-icon [icon]="['fas', 'plus']"></fa-icon>
-                  Add Subcategory
-                </a>
-              </li>
-            </ul>
+    <tr>
+      <td>{{ pageData.number * pageData.size + $index + 1 }}</td>
+      <td>{{ category.publicId }}</td>
+      <td>{{ category.name }}</td>
+      <td>
+        <!-- Dropdown for Subcategories -->
+        <div class="dropdown dropdown-end">
+          <div tabindex="0" role="button" class="btn btn-sm btn-outline">
+            View Subcategories
           </div>
-        </td>
-        <td>
-          <button
-            (click)="deleteCategory(category.publicId!)"
-            class="btn btn-sm btn-error"
-            [disabled]="!category.publicId"
+          <ul
+            tabindex="0"
+            class="dropdown-content z-[1000] menu p-2 shadow bg-base-100 rounded-box w-52"
           >
-            <fa-icon [icon]="['fas', 'trash']"></fa-icon>
-            Delete
-          </button>
-        </td>
-      </tr>
+            @if (category.subcategories) { @for (subCategory of
+            category.subcategories; track subCategory.publicId) {
+            <li>
+              <a>{{ subCategory.name }}</a>
+            </li>
+            } } @else {
+            <li><a>Loading subcategories...</a></li>
+            } @if (category.subcategories?.length === 0) {
+            <li><a>No subcategories</a></li>
+            }
+            <li>
+              <a
+                routerLink="/admin/subcategories/{{ category.publicId }}/create"
+                class="text-primary"
+              >
+                <fa-icon [icon]="['fas', 'plus']"></fa-icon>
+                Add Subcategory
+              </a>
+            </li>
+          </ul>
+        </div>
+      </td>
+      <td>
+        <button
+          (click)="deleteCategory(category.publicId!)"
+          class="btn btn-sm btn-error"
+          [disabled]="!category.publicId"
+        >
+          <fa-icon [icon]="['fas', 'trash']"></fa-icon>
+          Delete
+        </button>
+      </td>
+    </tr>
     }
   </tbody>
 </table>

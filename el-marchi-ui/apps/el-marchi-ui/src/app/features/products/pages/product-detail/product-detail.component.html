@@ -4,7 +4,7 @@
     <div class="flex flex-col">
       <div class="rounded-lg overflow-hidden bg-gray-100">
         <img
-          [src]="'http://localhost:3000/uploads/products/' + product.pictures[0].publicId"
+          [src]="apiUrl + '/products/' + product.pictures[0].publicId"
           [alt]="product.name"
           class="w-full h-full object-center object-cover"
         />

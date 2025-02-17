@@ -4,6 +4,8 @@ import { JwtModule } from '@nestjs/jwt';
 import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { fromZodError } from 'zod-validation-error';
 
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 import { UsersModule } from './authentication_authorization/users.module';
 import { CategoriesModule } from './categories/categories.module';
 import { EnvConfig, envSchema } from './common/config/env.schema';
@@ -23,8 +25,6 @@ import { RatesModule } from './rates/rates.module';
 import { SellingPointsModule } from './sellingPoints/selling-points.module';
 import { StockHistoryModule } from './stockHistory/stock-history.module';
 import { TradersModule } from './traders/traders.module';
-import { ServeStaticModule } from '@nestjs/serve-static';
-import { join } from 'path';
 
 @Module({
   imports: [
@@ -68,8 +68,8 @@ import { join } from 'path';
       },
     }),
     ServeStaticModule.forRoot({
-      rootPath: join(__dirname, '..', '..', '..', 'uploads'), // Path to your uploads directory
-      serveRoot: '/uploads', // Route to serve static files
+      rootPath: join(__dirname, '..', '..', '..', 'uploads'),
+      serveRoot: '/uploads',
     }),
     JwtModule.register({
       global: true,
@@ -98,4 +98,4 @@ import { join } from 'path';
   controllers: [],
   providers: [CryptoService, JwtconfigService, RedisService],
 })
-export class AppModule { }
+export class AppModule {}

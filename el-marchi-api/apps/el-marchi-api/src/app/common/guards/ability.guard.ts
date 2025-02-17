@@ -1,29 +1,31 @@
-import * as Mustache from 'mustache';
 import {
-  Injectable,
   CanActivate,
   ExecutionContext,
   ForbiddenException,
+  Injectable,
   NotFoundException,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
+import * as Mustache from 'mustache';
 import { DataSource } from 'typeorm';
 
-
 import {
-  MongoAbility,
-  createMongoAbility,
-  ForbiddenError,
   subject as caslSubject,
+  createMongoAbility,
   ExtractSubjectType,
+  ForbiddenError,
+  MongoAbility,
+  MongoQuery,
 } from '@casl/ability';
-import { MongoQuery } from '@casl/ability';
-import { Action, Subjects } from './casl.enum';
-import { REQUIRED_PERMISSIONS_METADATA_KEY, RequiredPermission } from '../decorators/permissions.decorators';
-import { User } from '../../authentication_authorization/entities/user.entity';
 import { Permission } from '../../authentication_authorization/entities/permission.entity';
-import { Trader } from '../../traders/entities/trader.entity';
+import { User } from '../../authentication_authorization/entities/user.entity';
 import { Customer } from '../../customers/entities/customer.entity';
+import { Trader } from '../../traders/entities/trader.entity';
+import {
+  REQUIRED_PERMISSIONS_METADATA_KEY,
+  RequiredPermission,
+} from '../decorators/permissions.decorators';
+import { Action, Subjects } from './casl.enum';
 
 import { Role } from '../../authentication_authorization/entities/role.entity';
 import { Organization } from '../../organizations/entities/organization.entity';
@@ -32,16 +34,14 @@ type AppAbility = MongoAbility<[Action, Subjects], MongoQuery>;
 
 @Injectable()
 export class PermissionsGuard implements CanActivate {
-  constructor(
-    private reflector: Reflector,
-    private dataSource: DataSource,
-  ) { }
+  constructor(private reflector: Reflector, private dataSource: DataSource) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    const requiredPermissions = this.reflector.get<RequiredPermission[]>(
-      REQUIRED_PERMISSIONS_METADATA_KEY,
-      context.getHandler(),
-    ) || [];
+    const requiredPermissions =
+      this.reflector.get<RequiredPermission[]>(
+        REQUIRED_PERMISSIONS_METADATA_KEY,
+        context.getHandler(),
+      ) || [];
 
     const request = context.switchToHttp().getRequest();
     const user: User = request.user as User;
@@ -51,7 +51,9 @@ export class PermissionsGuard implements CanActivate {
     // Aggregate all permissions
     const allPermissions = [
       ...(user.permissions ? user.permissions : []),
-      ...(user.roles?.flatMap(role => role.permissions ? role.permissions : []) || []),
+      ...(user.roles?.flatMap(role =>
+        role.permissions ? role.permissions : [],
+      ) || []),
     ];
 
     // Parse conditions in permissions
@@ -74,7 +76,10 @@ export class PermissionsGuard implements CanActivate {
 
         // Fetch subject instance if ID exists in params
         if (subjectId) {
-          subjectInstance = await this.getSubjectById(subjectId, required.subject as string);
+          subjectInstance = await this.getSubjectById(
+            subjectId,
+            required.subject as string,
+          );
         }
 
         const subjectToCheck = subjectInstance

@@ -3,12 +3,12 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { JwtconfigService } from '../common/jwtconfig/jwtconfig.service';
 import { RedisService } from '../common/redis/redis.service';
 import { CryptoService } from '../crypto/crypto.service';
+import { Permission } from './entities/permission.entity';
+import { Role } from './entities/role.entity';
 import { User } from './entities/user.entity';
 import { AccessTokenStrategy, RefreshTokenStrategy } from './strategies';
 import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
-import { Permission } from './entities/permission.entity';
-import { Role } from './entities/role.entity';
 
 @Module({
   imports: [TypeOrmModule.forFeature([User, Permission, Role])],
@@ -22,4 +22,4 @@ import { Role } from './entities/role.entity';
   ],
   controllers: [UsersController],
 })
-export class UsersModule { }
+export class UsersModule {}

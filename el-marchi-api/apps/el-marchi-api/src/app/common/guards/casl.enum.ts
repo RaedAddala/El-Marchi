@@ -1,5 +1,5 @@
-import { InferSubjects } from "@casl/ability";
-import { entitiesList } from "../entities/entities";
+import { InferSubjects } from '@casl/ability';
+import { entitiesList } from '../entities/entities';
 
 export enum Action {
   Manage = 'manage',

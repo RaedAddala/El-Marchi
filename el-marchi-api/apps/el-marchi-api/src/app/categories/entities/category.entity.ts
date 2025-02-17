@@ -1,6 +1,6 @@
-import {Entity, Column, OneToMany} from "typeorm";
-import {SubCategory} from "./subCategory.entity";
-import {BaseEntity} from "../../common/database/base.entity";
+import { Column, Entity, OneToMany } from 'typeorm';
+import { BaseEntity } from '../../common/database/base.entity';
+import { SubCategory } from './subCategory.entity';
 
 @Entity()
 export class Category extends BaseEntity {
@@ -12,6 +12,6 @@ export class Category extends BaseEntity {
   })
   name!: string;
 
-  @OneToMany(() => SubCategory, (subCategory) => subCategory.category)
+  @OneToMany(() => SubCategory, subCategory => subCategory.category)
   subCategories!: SubCategory[];
 }

@@ -43,28 +43,29 @@ export class CreateSubCategoryComponent {
 
   create(): void {
     if (this.createForm.invalid) {
-      return;  // Stops if the form is invalid.
+      return; // Stops if the form is invalid.
     }
 
     const subCategoryToCreate = {
-      name: this.createForm.getRawValue().name,  // Extracting name from form value.
+      name: this.createForm.getRawValue().name, // Extracting name from form value.
     };
 
     this.loading = true;
 
-    this.productService.createSubCategory(this.categoryId, subCategoryToCreate).subscribe({
-      next: () => {
-        this.onCreationSuccess();  // Handle successful creation
-      },
-      error: () => {
-        this.onCreationError(); // Handle error in creation
-      },
-      complete: () => {
-        this.onCreationSettled();  // Final actions once the request completes
-      },
-    });
+    this.productService
+      .createSubCategory(this.categoryId, subCategoryToCreate)
+      .subscribe({
+        next: () => {
+          this.onCreationSuccess(); // Handle successful creation
+        },
+        error: () => {
+          this.onCreationError(); // Handle error in creation
+        },
+        complete: () => {
+          this.onCreationSettled(); // Final actions once the request completes
+        },
+      });
   }
-
 
   private onCreationSettled(): void {
     this.loading = false;

@@ -61,7 +61,10 @@
     <div class="categories-grid">
       <div class="category-card" *ngFor="let category of categories">
         <div class="category-content">
-          <div class="category-image" [style.backgroundImage]="'url(' + category.image + ')'"></div>
+          <div
+            class="category-image"
+            [style.backgroundImage]="'url(' + category.image + ')'"
+          ></div>
           <div class="category-overlay"></div>
           <div class="category-text">
             <h3>{{ category.name }}</h3>
@@ -80,8 +83,11 @@
       <div class="testimonial-card" *ngFor="let testimonial of testimonials">
         <div class="testimonial-content">
           <div class="stars">
-            <i class="lucide-star" *ngFor="let star of [].constructor(5); let i = index"
-               [class.filled]="i < testimonial.rating"></i>
+            <i
+              class="lucide-star"
+              *ngFor="let star of [].constructor(5); let i = index"
+              [class.filled]="i < testimonial.rating"
+            ></i>
           </div>
           <p>{{ testimonial.text }}</p>
           <div class="author">{{ testimonial.author }}</div>

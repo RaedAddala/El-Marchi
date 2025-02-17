@@ -67,9 +67,7 @@ export class AdminProductService {
 
   // Mock method to delete a product
   deleteProduct(publicId: string): Observable<string> {
-    const index = dummyProducts.findIndex(
-      product => product.id === publicId,
-    );
+    const index = dummyProducts.findIndex(product => product.id === publicId);
     if (index !== -1) {
       dummyProducts.splice(index, 1); // Simulate deleting the product
       return of(`Product with publicId ${publicId} deleted successfully.`);
@@ -107,7 +105,10 @@ export class AdminProductService {
     return of(page);
   }
 
-  createSubCategory(categoryId: string, subCategoryToCreate: { name: string }): Observable<ProductCategory> {
+  createSubCategory(
+    categoryId: string,
+    subCategoryToCreate: { name: string },
+  ): Observable<ProductCategory> {
     return of({
       publicId: '1',
       name: subCategoryToCreate.name,
@@ -116,8 +117,5 @@ export class AdminProductService {
         name: 'Category',
       },
     });
-
   }
-
-
 }

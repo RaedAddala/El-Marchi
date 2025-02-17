@@ -86,6 +86,11 @@ export const envSchema = z.object({
         '9bd03fc21c94777db49900c8121218ece0cf4b679cf80c3888eb7857429e4987',
     },
   ),
+
+  ANGULAR_URL: extendApi(z.string().default('http://localhost:4200'), {
+    description: 'The URL of the Frontend',
+    example: 'http://localhost:4200',
+  }),
 });
 
 export type EnvConfig = z.infer<typeof envSchema>;

@@ -27,13 +27,13 @@ async function bootstrap() {
   app.useGlobalPipes(new ZodValidationPipe());
 
   app.enableCors({
-    origin: '*',
-    methods: ['GET', 'POST', 'PUT', 'DELETE'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
-    exposedHeaders: ['Content-Range', 'X-Content-Range'],
+    origin: ["http://localhost:4200", "http://127.0.0.1:4200"],
+    // methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    // allowedHeaders: ['Content-Type', 'Authorization'],
+    // exposedHeaders: ['Content-Range', 'X-Content-Range'],
     credentials: true,
-    maxAge: 3600,
-    preflightContinue: false,
+    // maxAge: 3600,
+    preflightContinue: true,
   });
 
   app.use(compression());
@@ -63,8 +63,8 @@ async function bootstrap() {
 
   Logger.log(
     `🚀 Application is running in ${configService.get('NODE_ENV')} mode on:\n` +
-      `- http://${hostname}:${port}/${globalPrefix}\n` +
-      `- ${await app.getUrl()}`,
+    `- http://${hostname}:${port}/${globalPrefix}\n` +
+    `- ${await app.getUrl()}`,
   );
 }
 

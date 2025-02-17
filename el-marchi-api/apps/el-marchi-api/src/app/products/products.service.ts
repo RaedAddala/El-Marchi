@@ -4,16 +4,21 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { unlinkSync } from 'fs';
+import * as console from 'node:console';
+import { join } from 'path';
 import { Repository } from 'typeorm';
+import { SubCategory } from '../categories/entities/subCategory.entity';
+import {
+  Cart,
+  CartItem,
+  ProductFilter,
+  ProductPicture,
+} from '../common/models/product.model';
+import { Page, Pagination } from '../common/models/request.model';
 import { CreateProductDto } from './dtos/create-product.dto';
 import { UpdateProductDto } from './dtos/update-product.dto';
-import { SubCategory } from '../categories/entities/subCategory.entity';
 import { Product } from './entities/products.entitiy';
-import { Page, Pagination } from '../common/models/request.model';
-import {Cart, CartItem, ProductFilter, ProductPicture} from '../common/models/product.model';
-import {join} from "path";
-import {unlinkSync} from "fs";
-import * as console from "node:console";
 
 @Injectable()
 export class ProductService {
@@ -24,8 +29,11 @@ export class ProductService {
     private readonly subCategoryRepository: Repository<SubCategory>,
   ) {}
 
-  async createProduct(createProductDto: CreateProductDto, images: Express.Multer.File[]): Promise<Product> {
-    const imagePaths = images.map((image) => ({
+  async createProduct(
+    createProductDto: CreateProductDto,
+    images: Express.Multer.File[],
+  ): Promise<Product> {
+    const imagePaths = images.map(image => ({
       publicId: image.filename,
       mimeType: image.mimetype,
     }));
@@ -47,14 +55,20 @@ export class ProductService {
     return this.productRepository.save(product);
   }
 
-  async updateProduct(id: string, updateProductDto: UpdateProductDto): Promise<Product> {
+  async updateProduct(
+    id: string,
+    updateProductDto: UpdateProductDto,
+  ): Promise<Product> {
     const product = await this.productRepository.findOne({ where: { id } });
 
     if (!product) {
       throw new NotFoundException('Product not found');
     }
 
-    const updatedProduct = this.productRepository.merge(product, updateProductDto);
+    const updatedProduct = this.productRepository.merge(
+      product,
+      updateProductDto,
+    );
     return this.productRepository.save(updatedProduct);
   }
 
@@ -100,14 +114,19 @@ export class ProductService {
     return product;
   }
 
-  async filterProducts(filter: ProductFilter, pagination: Pagination): Promise<Page<Product>> {
+  async filterProducts(
+    filter: ProductFilter,
+    pagination: Pagination,
+  ): Promise<Page<Product>> {
     const query = this.productRepository
       .createQueryBuilder('product')
       .leftJoinAndSelect('product.subCategory', 'subCategory')
       .leftJoinAndSelect('subCategory.category', 'category');
 
     if (filter.filtercategory) {
-      query.andWhere('category.id = :categoryId', { categoryId: filter.filtercategory });
+      query.andWhere('category.id = :categoryId', {
+        categoryId: filter.filtercategory,
+      });
     }
 
     if (filter.filtersize) {
@@ -119,15 +138,6 @@ export class ProductService {
       .take(pagination.size)
       .skip(pagination.page * pagination.size)
       .getManyAndCount();
-
-    console.log('####################################################');
-    console.log('filter', filter);
-    console.log('pagination', pagination);
-    console.log('query', query);
-    console.log('total', total);
-    console.log('results', results);
-    console.log('####################################################');
-
 
     return this.createPageResponse(results, total, pagination);
   }
@@ -159,7 +169,10 @@ export class ProductService {
     };
   }
 
-  async updateProductImages(id: string, images: Express.Multer.File[]): Promise<Product> {
+  async updateProductImages(
+    id: string,
+    images: Express.Multer.File[],
+  ): Promise<Product> {
     const product = await this.productRepository.findOne({ where: { id } });
 
     if (!product) {
@@ -167,8 +180,14 @@ export class ProductService {
     }
 
     // Delete old images from the file system
-    product.pictures.forEach((picture) => {
-      const filePath = join(__dirname, '..', 'uploads', 'products', picture.publicId);
+    product.pictures.forEach(picture => {
+      const filePath = join(
+        __dirname,
+        '..',
+        'uploads',
+        'products',
+        picture.publicId,
+      );
       try {
         unlinkSync(filePath); // Delete file
       } catch (err) {
@@ -177,7 +196,7 @@ export class ProductService {
     });
 
     // Process new images
-    const imagePaths = images.map((image) => ({
+    const imagePaths = images.map(image => ({
       publicId: image.filename,
       mimeType: image.mimetype,
     }));
@@ -187,13 +206,8 @@ export class ProductService {
     return this.productRepository.save(product);
   }
 
-
-
   async getCartDetails(publicIds: string): Promise<Cart> {
-
-    console.log('publicIds', publicIds);
-    console.log("#######################################################");
-    if(!publicIds || publicIds === '') return { products: [] };
+    if (!publicIds || publicIds === '') return { products: [] };
     const cart: string[] = publicIds.split(',');
     const cartItems: CartItem[] = [];
 
@@ -204,9 +218,10 @@ export class ProductService {
         name: product.name,
         price: product.price,
         brand: product.brand,
-        picture: product.pictures && product.pictures.length > 0
-          ? (product.pictures[0] as ProductPicture)
-          : ({ publicId: '', mimeType: '' }as ProductPicture),
+        picture:
+          product.pictures && product.pictures.length > 0
+            ? (product.pictures[0] as ProductPicture)
+            : ({ publicId: '', mimeType: '' } as ProductPicture),
         quantity: product.nbInStock,
       });
     }

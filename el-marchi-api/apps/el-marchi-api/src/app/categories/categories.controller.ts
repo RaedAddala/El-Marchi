@@ -1,45 +1,41 @@
 import {
-  Controller,
-  Get,
-  Post,
   Body,
-  Param,
-  NotFoundException,
+  Controller,
   Delete,
+  Get,
+  NotFoundException,
+  Param,
+  Post,
   Query,
 } from '@nestjs/common';
+import { CategoryWithSubcategories } from '../common/models/product.model';
+import { Pageable } from '../common/models/request.model';
 import { CategoriesService } from './categories.service';
 import { CreateCategoryDto } from './dtos/create-category.dto';
-//import { CreateSubCategoryDto } from './dtos/create-sub-category.dto';
-import { Pageable } from '../common/models/request.model';
-import { CategoryWithSubcategories } from '../common/models/product.model';
-import * as console from "node:console";
+import { CreateSubCategoryDto } from './dtos/create-sub-category.dto';
 
 @Controller('categories')
 export class CategoriesController {
   constructor(private readonly categoriesService: CategoriesService) {}
 
-  // Create a new category
   @Post()
-  createCategory(@Body() createCategoryDto: CreateCategoryDto): Promise<CategoryWithSubcategories> {
+  createCategory(
+    @Body() createCategoryDto: CreateCategoryDto,
+  ): Promise<CategoryWithSubcategories> {
     return this.categoriesService.createCategory(createCategoryDto);
   }
 
   // Create a new subcategory under a specific category
   @Post(':id/subcategories')
   createSubCategory(
-    @Param('id') categoryId: string,  // Extract categoryId from the URL parameter.
-    @Body() createSubCategoryDto: any//CreateSubCategoryDto,  // DTO containing subcategory details.
+    @Param('id') categoryId: string,
+    @Body() createSubCategoryDto: CreateSubCategoryDto,
   ) {
-    console.log('###############################################################');
-    console.log('createSubCategoryDto', createSubCategoryDto);
-    console.log('###############################################################');
-    // Ensure the categoryId is correctly added to the DTO before passing to service.
-    createSubCategoryDto.categoryId = categoryId;
-
-    return this.categoriesService.createSubCategory(createSubCategoryDto);  // Call the service to handle creation.
+    return this.categoriesService.createSubCategory(
+      categoryId,
+      createSubCategoryDto.name,
+    );
   }
-
 
   // Delete a category by ID
   @Delete('')
@@ -54,7 +50,9 @@ export class CategoriesController {
   // Delete a subcategory by subcategory ID
   @Delete(':id/subcategories/:subId')
   async deleteSubCategory(@Param('subId') subCategoryId: string) {
-    const result = await this.categoriesService.deleteSubCategory(subCategoryId);
+    const result = await this.categoriesService.deleteSubCategory(
+      subCategoryId,
+    );
     if (result.affected === 0) {
       throw new NotFoundException(
         `SubCategory with ID ${subCategoryId} not found`,
@@ -103,6 +101,6 @@ export class CategoriesController {
     if (!category) {
       throw new NotFoundException(`Category with ID ${id} not found`);
     }
-    return category.subCategories; // Return all subcategories of the category
+    return category.subCategories;
   }
 }

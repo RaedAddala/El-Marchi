@@ -15,7 +15,7 @@ export interface ProductCategory {
   publicId?: string;
   name?: string;
 }
-export  interface CategoryWithSubcategories extends ProductCategory {
+export interface CategoryWithSubcategories extends ProductCategory {
   subcategories?: ProductCategory[];
 }
 

@@ -1,13 +1,14 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import {Page, Pageable} from "../common/models/request.model";
 import { InjectRepository } from '@nestjs/typeorm';
-import {Repository} from 'typeorm';
+import { Repository } from 'typeorm';
+import {
+  CategoryWithSubcategories,
+  ProductCategory,
+} from '../common/models/product.model';
+import { Page, Pageable } from '../common/models/request.model';
+import { CreateCategoryDto } from './dtos/create-category.dto';
 import { Category } from './entities/category.entity';
 import { SubCategory } from './entities/subCategory.entity';
-import { CreateCategoryDto } from './dtos/create-category.dto';
-import { CreateSubCategoryDto } from './dtos/create-sub-category.dto';
-import {CategoryWithSubcategories, ProductCategory} from "../common/models/product.model";
-
 
 @Injectable()
 export class CategoriesService {
@@ -18,11 +19,13 @@ export class CategoriesService {
     private readonly subCategoryRepository: Repository<SubCategory>,
   ) {}
 
-  async createCategory(createCategoryDto: CreateCategoryDto): Promise<CategoryWithSubcategories> {
+  async createCategory(
+    createCategoryDto: CreateCategoryDto,
+  ): Promise<CategoryWithSubcategories> {
     const category = this.categoryRepository.create(createCategoryDto);
     await this.categoryRepository.save(category);
 
-    const subCategory:SubCategory = this.subCategoryRepository.create({
+    const subCategory: SubCategory = this.subCategoryRepository.create({
       name: 'Others',
       category,
     });
@@ -36,39 +39,43 @@ export class CategoriesService {
     return cat;
   }
 
-  async createSubCategory(createSubCategoryDto: CreateSubCategoryDto): Promise<SubCategory> {
+  async createSubCategory(
+    categoryId: string,
+    name: string,
+  ): Promise<SubCategory> {
     // Find the category by its ID from the request DTO.
     const category = await this.categoryRepository.findOne({
-      where: { id: createSubCategoryDto.categoryId },
+      where: { id: categoryId },
     });
 
-    // If category does not exist, throw a NotFoundException.
     if (!category) {
-      throw new NotFoundException(`Category with ID ${createSubCategoryDto.categoryId} not found`);
+      throw new NotFoundException(`Category with ID ${categoryId} not found`);
     }
 
-    // Create and save the subcategory within the given category.
     const subCategory = this.subCategoryRepository.create({
-      name: createSubCategoryDto.name,
+      name: name,
       category,
     });
 
-    // Save the subcategory to the database and return the created subcategory.
     return this.subCategoryRepository.save(subCategory);
   }
-
 
   async findAllCategories(pageable: Pageable): Promise<Page<ProductCategory>> {
     const [categories, total] = await this.categoryRepository.findAndCount({
       relations: ['subCategories'],
       skip: pageable.pageNumber * pageable.pageSize,
       take: pageable.pageSize,
-      order: (pageable.sort.sorted ? { [pageable.sort.unsorted ? 'ASC' : 'DESC']: pageable.sort.sorted } : {}),
+      order: pageable.sort.sorted
+        ? { [pageable.sort.unsorted ? 'ASC' : 'DESC']: pageable.sort.sorted }
+        : {},
     });
     const productCategories = categories.map(category => ({
       publicId: category.id,
       name: category.name,
-      subcategories: category.subCategories.map(subCategory => ({ publicId: subCategory.id, name: subCategory.name })),
+      subcategories: category.subCategories.map(subCategory => ({
+        publicId: subCategory.id,
+        name: subCategory.name,
+      })),
     }));
     return {
       content: productCategories,
@@ -86,7 +93,10 @@ export class CategoriesService {
   }
 
   async findCategoryById(id: string): Promise<Category> {
-    const category = await this.categoryRepository.findOne({ where: { id }, relations: ['subCategories'] });
+    const category = await this.categoryRepository.findOne({
+      where: { id },
+      relations: ['subCategories'],
+    });
 
     if (!category) {
       throw new NotFoundException(`Category with ID ${id} not found`);
@@ -102,7 +112,4 @@ export class CategoriesService {
   async deleteSubCategory(subCategoryId: string) {
     return this.subCategoryRepository.delete(subCategoryId);
   }
-
-
-
 }

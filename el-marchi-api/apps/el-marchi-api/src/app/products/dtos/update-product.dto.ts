@@ -1,5 +1,5 @@
-import { z } from 'zod';
 import { createZodDto } from '@anatine/zod-nestjs';
+import { z } from 'zod';
 
 const UpdateProductSchema = z.object({
   name: z.string().min(1).max(255).optional(),
@@ -10,19 +10,17 @@ const UpdateProductSchema = z.object({
   size: z.string().min(1).max(50).optional(),
   subCategoryId: z.string().uuid().optional(), // Link to SubCategory
   featured: z.boolean().optional(),
-  pictures: z.array(z.object({
-    publicId: z.string().min(1),
-    mimeType: z.string().min(1),
-  })).optional(),
   nbInStock: z.number().int().min(0).optional(),
-  // Optional fields
+
   material: z.string().optional(),
   sku: z.string().optional(),
   careInstructions: z.string().optional(),
-  rating: z.object({
-    average: z.number().min(0).max(5),
-    count: z.number().min(0),
-  }).optional(),
+  rating: z
+    .object({
+      average: z.number().min(0).max(5),
+      count: z.number().min(0),
+    })
+    .optional(),
   tags: z.array(z.string()).optional(),
   isOnSale: z.boolean().optional(),
   salePrice: z.number().positive().optional(),

@@ -7,10 +7,7 @@
   >
     <figure class="aspect-square relative overflow-hidden bg-gray-100">
       <img
-        [src]="
-          '/assets/products/' +
-          product().pictures[0].publicId
-        "
+        [src]="apiUrl + '/products/' + product().pictures[0].publicId"
         [alt]="product().name"
         class="h-full w-full object-cover object-center group-hover:scale-105 transition-transform duration-300"
         loading="lazy"

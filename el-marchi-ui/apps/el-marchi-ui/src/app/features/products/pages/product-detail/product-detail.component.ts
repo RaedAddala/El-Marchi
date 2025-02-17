@@ -10,7 +10,7 @@ import { UserProductService } from '@features/products/user-product.service';
 import { ProductCardComponent } from '@features/products/pages/product-card/product-card.component';
 import { Pagination } from '@shared/models/request.model';
 import { Product } from '@shared/models/product.model';
-
+import { environment } from '../../../../../../environments/environment.development';
 @Component({
   selector: 'app-product-detail',
   standalone: true,
@@ -42,6 +42,7 @@ export class ProductDetailComponent implements OnInit {
   isLoading = false;
   isLoadingRelated = false;
 
+  apiUrl = environment.apiUrlUploads;
   constructor() {
     this.handlePublicIdChange();
   }
@@ -58,7 +59,6 @@ export class ProductDetailComponent implements OnInit {
 
     this.isLoading = true;
     this.productService.findOneByPublicId(currentPublicId).subscribe({
-
       next: product => {
         this.product = product;
         this.isLoading = false;
@@ -106,13 +106,10 @@ export class ProductDetailComponent implements OnInit {
   }
 
   addToCart(productToAdd: Product) {
-
     console.log('we are in product detail component');
     this.cartService.addToCart(productToAdd.id, 'add');
     this.labelAddToCart = 'Added to cart';
     this.iconAddToCart = 'check';
-
-
 
     interval(3000)
       .pipe(take(1))

@@ -1,9 +1,13 @@
 import { inject, Injectable } from '@angular/core';
-import {HttpClient, HttpParams} from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { environment } from '../../../../environments/environment.development';
-import {catchError, Observable, throwError} from 'rxjs';
-import {Page, Pagination} from '@shared/models/request.model'; // Ensure that the Page type is correctly defined
-import {BaseProduct, Product, ProductCategory} from '../../shared/models/product.model'; // Ensure ProductCategory model is correct
+import { catchError, Observable, throwError } from 'rxjs';
+import { Page, Pagination } from '@shared/models/request.model'; // Ensure that the Page type is correctly defined
+import {
+  BaseProduct,
+  Product,
+  ProductCategory,
+} from '../../shared/models/product.model'; // Ensure ProductCategory model is correct
 
 @Injectable({
   providedIn: 'root',
@@ -22,41 +26,54 @@ export class AdminProductService {
   // Delete a category by ID (use params)
   deleteCategory(publicId: string): Observable<void> {
     const params = new HttpParams().set('publicId', publicId);
-    return this.http.delete<void>(`${environment.apiUrl}/categories`, { params });
+    return this.http.delete<void>(`${environment.apiUrl}/categories`, {
+      params,
+    });
   }
 
   // Fetch all categories with pagination
-  findAllCategories(page: number, size: number): Observable<Page<ProductCategory>> {
+  findAllCategories(
+    page: number,
+    size: number,
+  ): Observable<Page<ProductCategory>> {
     const params = new HttpParams()
       .set('page', page.toString())
       .set('size', size.toString());
 
     return this.http.get<Page<ProductCategory>>(
-      `${environment.apiUrl}/categories`, { params }
+      `${environment.apiUrl}/categories`,
+      { params },
     );
   }
 
   // Fetch subcategories by category ID
-  findSubcategoriesByCategoryId(publicId: string): Observable<ProductCategory[]> {
+  findSubcategoriesByCategoryId(
+    publicId: string,
+  ): Observable<ProductCategory[]> {
     return this.http.get<ProductCategory[]>(
       `${environment.apiUrl}/categories/${publicId}/subcategories`,
     );
   }
 
   // Create a new subcategory under a specific category
-  createSubCategory(categoryId: string, subCategory: { name: string }): Observable<ProductCategory> {
+  createSubCategory(
+    categoryId: string,
+    subCategory: { name: string },
+  ): Observable<ProductCategory> {
     //verify that the categoryId is correctly added to the subCategory object before passing to the service
-    return this.http.post<ProductCategory>(
-      `${environment.apiUrl}/categories/${categoryId}/subcategories`,
+    return this.http
+      .post<ProductCategory>(
+        `${environment.apiUrl}/categories/${categoryId}/subcategories`,
 
-      subCategory//subCategory here is the body ? answer is yes it is
-    ).pipe(
-      catchError((error) => {
-        // Handle specific error types, or show a general error message.
-        console.error('Error creating subcategory:', error);
-        return throwError(error);  // You can handle it better by providing more user-friendly feedback here.
-      })
-    );
+        subCategory, //subCategory here is the body ? answer is yes it is
+      )
+      .pipe(
+        catchError(error => {
+          // Handle specific error types, or show a general error message.
+          console.error('Error creating subcategory:', error);
+          return throwError(error); // You can handle it better by providing more user-friendly feedback here.
+        }),
+      );
   }
 
   createProduct(product: BaseProduct, images: File[]): Observable<Product> {
@@ -74,7 +91,7 @@ export class AdminProductService {
     formData.append('nbInStock', product.nbInStock.toString());
 
     // Append each image file
-    images.forEach((image) => {
+    images.forEach(image => {
       formData.append('images', image, image.name); // Use 'images' as the field name
     });
 
@@ -83,7 +100,9 @@ export class AdminProductService {
   }
 
   deleteProduct(publicId: string): Observable<string> {
-    return this.http.delete<string>(`${environment.apiUrl}/products/${publicId}`);
+    return this.http.delete<string>(
+      `${environment.apiUrl}/products/${publicId}`,
+    );
   }
 
   findAllProducts(pageRequest: Pagination): Observable<Page<Product>> {
@@ -91,7 +110,8 @@ export class AdminProductService {
       page: pageRequest.page.toString(),
       size: pageRequest.size.toString(),
     };
-    return this.http.get<Page<Product>>(`${environment.apiUrl}/products`, { params });
+    return this.http.get<Page<Product>>(`${environment.apiUrl}/products`, {
+      params,
+    });
   }
-
 }

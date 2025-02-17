@@ -2,6 +2,7 @@ import { Component, input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { Product } from '@shared/models/product.model';
+import { environment } from '../../../../../../environments/environment.development';
 
 @Component({
   selector: 'app-product-card',
@@ -12,4 +13,6 @@ import { Product } from '@shared/models/product.model';
 })
 export class ProductCardComponent {
   product = input.required<Product>();
+  apiUrl = environment.apiUrlUploads;
+
 }

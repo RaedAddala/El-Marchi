@@ -5,11 +5,14 @@ const CreateSubCategorySchema = z.object({
   name: z
     .string()
     .min(1, { message: 'Subcategory name must have at least 1 character' })
-    .max(100, { message: 'Subcategory name must be at most 100 characters long' }),
-  categoryId: z.string().uuid({ message: 'Invalid category ID' }),
+    .max(100, {
+      message: 'Subcategory name must be at most 100 characters long',
+    }),
 });
 
-export class CreateSubCategoryDto extends createZodDto(CreateSubCategorySchema) {}
+export class CreateSubCategoryDto extends createZodDto(
+  CreateSubCategorySchema,
+) {}
 
 export type CreateSubCategoryType = z.infer<typeof CreateSubCategorySchema>;
 export { CreateSubCategorySchema };

@@ -1,6 +1,6 @@
-import { Entity, Column, ManyToOne, JoinColumn } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
+import { SubCategory } from '../../categories/entities/subCategory.entity';
 import { BaseEntity } from '../../common/database/base.entity';
-import {SubCategory} from "../../categories/entities/subCategory.entity";
 @Entity()
 export class Product extends BaseEntity {
   @Column({ type: 'varchar', length: 255 })
@@ -30,7 +30,7 @@ export class Product extends BaseEntity {
   @Column({ type: 'int' })
   nbInStock!: number;
 
-  @ManyToOne(() => SubCategory, (subCategory) => subCategory.products, {
+  @ManyToOne(() => SubCategory, subCategory => subCategory.products, {
     onDelete: 'CASCADE',
   })
   @JoinColumn({ name: 'sub_category_id' })

@@ -1,9 +1,13 @@
 import { Injectable } from '@angular/core';
-import { HttpClient,  } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { Page, Pagination, createPaginationOption } from '@shared/models/request.model';
+import {
+  Page,
+  Pagination,
+  createPaginationOption,
+} from '@shared/models/request.model';
 import { Product, ProductFilter } from '@shared/models/product.model';
-import {environment} from "../../../../environments/environment.development";
+import { environment } from '../../../../environments/environment.development';
 
 @Injectable({
   providedIn: 'root',
@@ -21,27 +25,30 @@ export class UserProductService {
 
   // Find a product by publicId
   findOneByPublicId(publicId: string): Observable<Product> {
-    console.log("searching for product with publicId: ", publicId);
+    console.log('searching for product with publicId: ', publicId);
     return this.http.get<Product>(`${this.baseUrl}/${publicId}`);
   }
 
   // Find related products based on pagination and product public ID
   findRelatedProduct(
     pageRequest: Pagination,
-    productPublicId: string
+    productPublicId: string,
   ): Observable<Page<Product>> {
     const params = createPaginationOption(pageRequest);
-    return this.http.get<Page<Product>>(`${this.baseUrl}/${productPublicId}/related`, { params });
+    return this.http.get<Page<Product>>(
+      `${this.baseUrl}/${productPublicId}/related`,
+      { params },
+    );
   }
 
   // Filter products based on pagination and filter criteria
   filter(
     pageRequest: Pagination,
-    productFilter: ProductFilter
+    productFilter: ProductFilter,
   ): Observable<Page<Product>> {
     let params = createPaginationOption(pageRequest);
     console.log('productFilter', productFilter);
-    if (productFilter.filtersize &&productFilter.filtersize.length>0){
+    if (productFilter.filtersize && productFilter.filtersize.length > 0) {
       params = params.set('filtersize', productFilter.filtersize);
     }
 

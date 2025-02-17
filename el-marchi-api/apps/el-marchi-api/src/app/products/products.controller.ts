@@ -1,25 +1,28 @@
 import {
+  BadRequestException,
   Body,
   Controller,
-  Delete, Get,
+  Delete,
+  Get,
   NotFoundException,
   Param,
-  Post, Put,
+  Post,
+  Put,
   Query,
   UploadedFiles,
+  UseInterceptors,
 } from '@nestjs/common';
 import { FilesInterceptor } from '@nestjs/platform-express';
-import { diskStorage } from 'multer';
 import { Request } from 'express';
+import { unlinkSync } from 'fs';
+import { diskStorage } from 'multer';
 import { extname, join } from 'path';
-import { BadRequestException, UseInterceptors } from '@nestjs/common';
-import { ProductService } from './products.service';
+import { Cart, ProductFilter } from '../common/models/product.model';
+import { Page, Pagination } from '../common/models/request.model';
 import { CreateProductDto } from './dtos/create-product.dto';
 import { UpdateProductDto } from './dtos/update-product.dto';
 import { Product } from './entities/products.entitiy';
-import { unlinkSync } from 'fs';
-import {Page, Pagination} from "../common/models/request.model";
-import {Cart, ProductFilter} from "../common/models/product.model";
+import { ProductService } from './products.service';
 
 @Controller('products')
 export class ProductController {
@@ -30,16 +33,28 @@ export class ProductController {
     FilesInterceptor('images', 5, {
       storage: diskStorage({
         destination: './uploads/products',
-        filename: (_req: Request, file: Express.Multer.File, callback: (error: Error | null, filename: string) => void) => {
-          const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+        filename: (
+          _req: Request,
+          file: Express.Multer.File,
+          callback: (error: Error | null, filename: string) => void,
+        ) => {
+          const uniqueSuffix =
+            Date.now() + '-' + Math.round(Math.random() * 1e9);
           const ext = extname(file.originalname);
           const filename = `${uniqueSuffix}${ext}`;
           callback(null, filename);
         },
       }),
-      fileFilter: (_req: Request, file: Express.Multer.File, callback: (error: Error | null, acceptFile: boolean) => void) => {
+      fileFilter: (
+        _req: Request,
+        file: Express.Multer.File,
+        callback: (error: Error | null, acceptFile: boolean) => void,
+      ) => {
         if (!file.originalname.match(/\.(jpg|jpeg|png|webp)$/)) {
-          return callback(new BadRequestException('Only image files are allowed!'), false);
+          return callback(
+            new BadRequestException('Only image files are allowed!'),
+            false,
+          );
         }
         callback(null, true);
       },
@@ -69,16 +84,28 @@ export class ProductController {
     FilesInterceptor('images', 5, {
       storage: diskStorage({
         destination: './uploads/products',
-        filename: (_req: Request, file: Express.Multer.File, callback: (error: Error | null, filename: string) => void) => {
-          const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+        filename: (
+          _req: Request,
+          file: Express.Multer.File,
+          callback: (error: Error | null, filename: string) => void,
+        ) => {
+          const uniqueSuffix =
+            Date.now() + '-' + Math.round(Math.random() * 1e9);
           const ext = extname(file.originalname);
           const filename = `${uniqueSuffix}${ext}`;
           callback(null, filename);
         },
       }),
-      fileFilter: (_req: Request, file: Express.Multer.File, callback: (error: Error | null, acceptFile: boolean) => void) => {
+      fileFilter: (
+        _req: Request,
+        file: Express.Multer.File,
+        callback: (error: Error | null, acceptFile: boolean) => void,
+      ) => {
         if (!file.originalname.match(/\.(jpg|jpeg|png|webp)$/)) {
-          return callback(new BadRequestException('Only image files are allowed!'), false);
+          return callback(
+            new BadRequestException('Only image files are allowed!'),
+            false,
+          );
         }
         callback(null, true);
       },
@@ -104,8 +131,14 @@ export class ProductController {
     }
 
     // Delete associated images
-    product.pictures.forEach((picture) => {
-      const filePath = join(__dirname, '..', 'uploads', 'products', picture.publicId);
+    product.pictures.forEach(picture => {
+      const filePath = join(
+        __dirname,
+        '..',
+        'uploads',
+        'products',
+        picture.publicId,
+      );
       try {
         unlinkSync(filePath); // Delete file
       } catch (err) {
@@ -117,15 +150,16 @@ export class ProductController {
   }
 
   @Get()
-  async findAll(@Query() pagination: Pagination):Promise<Page<Product>> {
+  async findAll(@Query() pagination: Pagination): Promise<Page<Product>> {
     return this.productService.findAll(pagination);
   }
 
   @Get('featured')
-  async findAllFeatured(@Query() pagination: Pagination): Promise<Page<Product>> {
+  async findAllFeatured(
+    @Query() pagination: Pagination,
+  ): Promise<Page<Product>> {
     const products = await this.productService.findAllFeatured(pagination);
     return products;
-
   }
 
   @Get('filter')
@@ -141,7 +175,6 @@ export class ProductController {
   }
   @Get(':id')
   async findOne(@Param('id') id: string): Promise<Product> {
-    console.log('id', id);
     const product = await this.productService.findOne(id);
     if (!product) {
       throw new NotFoundException('Product not found');

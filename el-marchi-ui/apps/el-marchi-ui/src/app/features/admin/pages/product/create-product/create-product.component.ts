@@ -14,12 +14,13 @@ import { ToastService } from '@shared/toast/toast.service';
 import {
   BaseProduct,
   CategoryWithSubcategories,
-  ProductPicture, ProductSizes,
+  ProductPicture,
+  ProductSizes,
   sizes,
 } from '@shared/models/product.model';
 import { v4 as uuidv4 } from 'uuid';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
-import {debounceTime, distinctUntilChanged} from "rxjs";
+import { debounceTime, distinctUntilChanged } from 'rxjs';
 
 @Component({
   selector: 'app-create-product',
@@ -49,7 +50,11 @@ export class CreateProductComponent implements OnInit {
   // Define the subcategory control explicitly
   name = new FormControl<string>('', {
     nonNullable: true,
-    validators: [Validators.required, Validators.minLength(3), Validators.maxLength(100)],
+    validators: [
+      Validators.required,
+      Validators.minLength(3),
+      Validators.maxLength(100),
+    ],
   });
 
   brand = new FormControl<string>('', {
@@ -64,7 +69,11 @@ export class CreateProductComponent implements OnInit {
 
   description = new FormControl<string>('', {
     nonNullable: true,
-    validators: [Validators.required, Validators.minLength(10), Validators.maxLength(500)],
+    validators: [
+      Validators.required,
+      Validators.minLength(10),
+      Validators.maxLength(500),
+    ],
   });
 
   price = new FormControl<number>(0, {
@@ -99,7 +108,10 @@ export class CreateProductComponent implements OnInit {
 
   pictures = new FormControl<ProductPicture[]>([], {
     nonNullable: true,
-    validators: [Validators.required, control => control.value.length > 0 ? null : { picturesRequired: true }],
+    validators: [
+      Validators.required,
+      control => (control.value.length > 0 ? null : { picturesRequired: true }),
+    ],
   });
 
   // Define the form group
@@ -120,25 +132,27 @@ export class CreateProductComponent implements OnInit {
   ngOnInit() {
     this.loadCategories();
     //trgir chnage and console log the invalid form fields make  apipe that just take chage after 1 second and last value
-    this.createForm.valueChanges.pipe(debounceTime(1000), distinctUntilChanged()).subscribe((value) => {
-      console.log('Form value changes', value);
-      //pritn fields that are invalid
-      Object.keys(this.createForm.controls).forEach((field) => {
-        const control = this.createForm.get(field);
-        if (control?.invalid) {
-          console.log('Invalid field:', field);
-        }
+    this.createForm.valueChanges
+      .pipe(debounceTime(1000), distinctUntilChanged())
+      .subscribe(value => {
+        console.log('Form value changes', value);
+        //pritn fields that are invalid
+        Object.keys(this.createForm.controls).forEach(field => {
+          const control = this.createForm.get(field);
+          if (control?.invalid) {
+            console.log('Invalid field:', field);
+          }
+        });
       });
-    });
   }
 
   loadCategories() {
     this.productService.findAllCategories(0, 100).subscribe({
-      next: (data) => {
+      next: data => {
         this.categories = data.content;
         this.loadSubcategoriesForAll();
       },
-      error: (err) => {
+      error: err => {
         console.error('Failed to load categories', err);
         this.toastService.show('Failed to load categories', 'ERROR');
       },
@@ -156,20 +170,24 @@ export class CreateProductComponent implements OnInit {
       return;
     }
 
-    const selectedCategory = this.categories.find(cat => cat.publicId === selectedCategoryId);
+    const selectedCategory = this.categories.find(
+      cat => cat.publicId === selectedCategoryId,
+    );
     if (selectedCategory) {
-      this.productService.findSubcategoriesByCategoryId(selectedCategoryId).subscribe({
-        next: (subcategories) => {
-          this.availableSubcategories = subcategories;
-          this.subcategory.enable(); // Enable the subcategory control
-        },
-        error: (error) => {
-          console.error('Failed to load subcategories', error);
-          this.toastService.show('Failed to load subcategories', 'ERROR');
-          this.availableSubcategories = [];
-          this.subcategory.disable(); // Disable the subcategory control on error
-        },
-      });
+      this.productService
+        .findSubcategoriesByCategoryId(selectedCategoryId)
+        .subscribe({
+          next: subcategories => {
+            this.availableSubcategories = subcategories;
+            this.subcategory.enable(); // Enable the subcategory control
+          },
+          error: error => {
+            console.error('Failed to load subcategories', error);
+            this.toastService.show('Failed to load subcategories', 'ERROR');
+            this.availableSubcategories = [];
+            this.subcategory.disable(); // Disable the subcategory control on error
+          },
+        });
     }
   }
 
@@ -199,18 +217,20 @@ export class CreateProductComponent implements OnInit {
     };
 
     this.loading = true;
-    this.productService.createProduct(productToCreate, this.productFiles).subscribe({
-      next: () => {
-        this.router.navigate(['/admin/products/list']);
-        this.toastService.show('Product created', 'SUCCESS');
-      },
-      error: () => {
-        this.toastService.show('Issue when creating product', 'ERROR');
-      },
-      complete: () => {
-        this.loading = false;
-      },
-    });
+    this.productService
+      .createProduct(productToCreate, this.productFiles)
+      .subscribe({
+        next: () => {
+          this.router.navigate(['/admin/products/list']);
+          this.toastService.show('Product created', 'SUCCESS');
+        },
+        error: () => {
+          this.toastService.show('Issue when creating product', 'ERROR');
+        },
+        complete: () => {
+          this.loading = false;
+        },
+      });
   }
 
   loadSubcategoriesForAll() {
@@ -223,14 +243,19 @@ export class CreateProductComponent implements OnInit {
 
   loadSubcategoriesForCategory(category: CategoryWithSubcategories) {
     if (!category.publicId) return;
-    this.productService.findSubcategoriesByCategoryId(category.publicId).subscribe({
-      next: (subcategories) => {
-        category.subcategories = subcategories;
-      },
-      error: () => {
-        this.toastService.show(`Failed to load subcategories for ${category.name || 'category'}`, 'ERROR');
-      },
-    });
+    this.productService
+      .findSubcategoriesByCategoryId(category.publicId)
+      .subscribe({
+        next: subcategories => {
+          category.subcategories = subcategories;
+        },
+        error: () => {
+          this.toastService.show(
+            `Failed to load subcategories for ${category.name || 'category'}`,
+            'ERROR',
+          );
+        },
+      });
   }
 
   async onUploadNewPicture(target: EventTarget | null) {
@@ -261,8 +286,6 @@ export class CreateProductComponent implements OnInit {
     //ypdate the form control
     this.pictures.setValue(this.productPictures);
   }
-
-
 
   private extractFileFromTarget(target: EventTarget | null): FileList | null {
     const htmlInputTarget = target as HTMLInputElement;

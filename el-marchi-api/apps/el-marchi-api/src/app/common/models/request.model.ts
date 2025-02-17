@@ -1,4 +1,3 @@
-
 export interface Pagination {
   page: number;
   size: number;
@@ -33,5 +32,3 @@ export interface Page<T> {
   empty: boolean;
   sort: Sort;
 }
-
-
