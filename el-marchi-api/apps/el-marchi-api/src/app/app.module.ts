@@ -3,8 +3,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { fromZodError } from 'zod-validation-error';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
+
 import { UsersModule } from './authentication_authorization/users.module';
 import { CategoriesModule } from './categories/categories.module';
 import { EnvConfig, envSchema } from './common/config/env.schema';
@@ -17,12 +16,10 @@ import { CustomersModule } from './customers/customers.module';
 import { DiscountsModule } from './discounts/discounts.module';
 import { InvoicesModule } from './invoices/invoices.module';
 import { OrdersModule } from './orders/orders.module';
-import { OrderitemsModule } from './ordersitems/orderitems.module';
+import { OrganizationsModule } from './organizations/organizations.module';
 import { PaymentsModule } from './payments/payments.module';
-import { PermissionsModule } from './permissions/permissions.module';
 import { ProductsModule } from './products/products.module';
 import { RatesModule } from './rates/rates.module';
-import { RolesModule } from './roles/roles.module';
 import { SellingPointsModule } from './sellingPoints/selling-points.module';
 import { StockHistoryModule } from './stockHistory/stock-history.module';
 import { SubCategoriesModule } from './subCategories/sub-categories.module';
@@ -83,10 +80,7 @@ import { TradersModule } from './traders/traders.module';
     OrdersModule,
     CategoriesModule,
     SubCategoriesModule,
-    RolesModule,
-    PermissionsModule,
     StockHistoryModule,
-    OrderitemsModule,
     RatesModule,
     PaymentsModule,
     DiscountsModule,
@@ -95,8 +89,9 @@ import { TradersModule } from './traders/traders.module';
     CustomersModule,
     TradersModule,
     CouponsModule,
+    OrganizationsModule,
   ],
-  controllers: [AppController],
-  providers: [AppService, CryptoService, JwtconfigService, RedisService],
+  controllers: [],
+  providers: [CryptoService, JwtconfigService, RedisService],
 })
-export class AppModule {}
+export class AppModule { }

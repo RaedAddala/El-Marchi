@@ -1,7 +1,7 @@
 import { Logger } from '@nestjs/common';
 import { Response } from 'express';
 import { inspect } from 'util';
-import { SecretData } from '../types/jwt.payload';
+import { JsonWebTokenCookieData } from '../types/jwt.payload';
 
 export const COOKIE_NAME = 'auth_tokens';
 export class AuthCookieUtils {
@@ -9,7 +9,7 @@ export class AuthCookieUtils {
 
   static setAuthTokenCookie(
     response: Response,
-    token: SecretData,
+    token: JsonWebTokenCookieData,
     maxAge: number,
   ): void {
     try {

@@ -30,6 +30,7 @@
   "dependencies": {
     "@anatine/zod-nestjs": "^2.0.10",
     "@anatine/zod-openapi": "^2.2.7",
+    "@casl/ability": "^6.7.3",
     "@nestjs/common": "^11.0.9",
     "@nestjs/config": "^4.0.0",
     "@nestjs/core": "^11.0.9",
@@ -43,6 +44,7 @@
     "compression": "^1.8.0",
     "cookie-parser": "^1.4.7",
     "helmet": "^8.0.0",
+    "mustache": "^4.2.0",
     "openapi3-ts": "^4.4.0",
     "passport": "^0.7.0",
     "passport-jwt": "^4.0.1",
@@ -71,6 +73,7 @@
     "@types/cookie-parser": "^1.4.8",
     "@types/express": "^5.0.0",
     "@types/jest": "^29.5.14",
+    "@types/mustache": "^4.2.5",
     "@types/node": "^22.13.1",
     "@types/passport-jwt": "^4.0.1",
     "@types/pg": "^8.11.11",

@@ -1,7 +1,19 @@
-import { Column, Entity, Index, OneToOne } from 'typeorm';
+import {
+  Column,
+  Entity,
+  Index,
+  JoinColumn,
+  JoinTable,
+  ManyToMany,
+  ManyToOne,
+  OneToOne,
+} from 'typeorm';
 import { BaseEntity } from '../../common/database/base.entity';
 import { Customer } from '../../customers/entities/customer.entity';
+import { Organization } from '../../organizations/entities/organization.entity';
 import { Trader } from '../../traders/entities/trader.entity';
+import { Permission } from './permission.entity';
+import { Role } from './role.entity';
 
 @Entity('users')
 export class User extends BaseEntity {
@@ -59,4 +71,24 @@ export class User extends BaseEntity {
 
   @OneToOne(() => Trader, trader => trader.user, { nullable: true })
   trader?: Trader;
+
+  @ManyToMany(() => Role, role => role.users, { eager: true })
+  @JoinTable({
+    name: 'user_roles',
+    joinColumn: { name: 'user_id' },
+    inverseJoinColumn: { name: 'role_id' },
+  })
+  roles?: Role[];
+
+  @ManyToMany(() => Permission, permission => permission.users, { eager: true })
+  @JoinTable({
+    name: 'user_permissions',
+    joinColumn: { name: 'user_id' },
+    inverseJoinColumn: { name: 'permission_id' },
+  })
+  permissions?: Permission[];
+
+  @ManyToOne(() => Organization, org => org.employees, { nullable: true })
+  @JoinColumn({ name: 'organization_id' })
+  organization?: Organization;
 }
