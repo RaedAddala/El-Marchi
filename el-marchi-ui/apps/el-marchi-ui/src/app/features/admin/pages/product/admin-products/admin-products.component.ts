@@ -56,14 +56,13 @@ export class AdminProductsComponent implements OnInit {
 
   deleteProduct(publicId: string) {
     this.productService.deleteProduct(publicId).subscribe({
-      next: () => this.onDeletionSuccess(),
+      next: () => {
+        // Manually remove the deleted product from the array
+        this.products = this.products.filter(product => product.id !== publicId);
+        this.toastService.show('Product deleted', 'SUCCESS');
+      },
       error: () => this.onDeletionError(),
     });
-  }
-
-  private onDeletionSuccess() {
-    this.loadProducts(); // Refresh the product list
-    this.toastService.show('Product deleted', 'SUCCESS');
   }
 
   private onDeletionError() {

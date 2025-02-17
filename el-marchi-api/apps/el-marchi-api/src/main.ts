@@ -28,12 +28,12 @@ async function bootstrap() {
 
   app.enableCors({
     origin: ["http://localhost:4200", "http://127.0.0.1:4200"],
-    // methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    methods: ['Options', 'GET', 'POST', 'PUT', 'DELETE'],
     // allowedHeaders: ['Content-Type', 'Authorization'],
     // exposedHeaders: ['Content-Range', 'X-Content-Range'],
     credentials: true,
-    // maxAge: 3600,
-    preflightContinue: true,
+    maxAge: 3600,
+    preflightContinue: false,
   });
 
   app.use(compression());

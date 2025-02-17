@@ -1,5 +1,5 @@
 import { Component, inject, PLATFORM_ID } from '@angular/core';
-import { CommonModule, isPlatformBrowser } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { OrderService } from '../../shared/service/order.service';
 import { Pagination } from '../../shared/models/request.model';
 import { injectQuery } from '@tanstack/angular-query-experimental';
@@ -45,7 +45,5 @@ export class UserOrdersComponent {
     return items.reduce((acc, item) => acc + item.price * item.quantity, 0);
   }
 
-  checkIfPlatformBrowser() {
-    return isPlatformBrowser(this.platformId);
-  }
+
 }
