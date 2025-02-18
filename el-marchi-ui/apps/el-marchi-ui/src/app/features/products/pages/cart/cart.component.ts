@@ -1,5 +1,5 @@
-import { Component, inject, OnInit, PLATFORM_ID } from '@angular/core';
-import { CommonModule, isPlatformBrowser } from '@angular/common';
+import { Component, inject, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { CartService } from '../../cart.service';
 import { AuthService } from '../../../auth/auth.service';
 import { CartItem, CartItemAdd, StripeSession } from '../../cart.model';
@@ -17,7 +17,6 @@ export class CartComponent implements OnInit {
   private cartService = inject(CartService);
   private authService = inject(AuthService);
   private toastService = inject(ToastService);
-  private platformId = inject(PLATFORM_ID);
 
   cart: Array<CartItem> = [];
   labelCheckout = 'Login to checkout';
@@ -31,7 +30,6 @@ export class CartComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadCart();
-    this.subscribeToCartUpdates(); // Subscribe to cart updates
   }
 
   // Load cart data from the server
@@ -39,8 +37,9 @@ export class CartComponent implements OnInit {
     this.isLoadingCart = true;
     this.cartService.getCartDetail().subscribe({
       next: cart => {
-        this.cart = cart.products;
-        this.isLoadingCart = false;
+          this.cart = cart.products;
+          this.isLoadingCart = false;
+
       },
       error: () => {
         this.toastService.show('Failed to load cart data', 'ERROR');
@@ -49,12 +48,7 @@ export class CartComponent implements OnInit {
     });
   }
 
-  // Subscribe to cart updates from the service
-  private subscribeToCartUpdates() {
-    this.cartService.addedToCart.subscribe(() => {
-      this.loadCart(); // Reload cart data when the cart is updated
-    });
-  }
+
 
   // Check if the user is logged in
   private checkUserLoggedIn() {
@@ -72,6 +66,13 @@ export class CartComponent implements OnInit {
   // Add quantity to a cart item
   addQuantityToCart(publicId: string) {
     this.cartService.addToCart(publicId, 'add');
+    this.cart = this.cart.map(item => {
+      if (item.publicId === publicId) {
+        item.quantity++;
+      }
+      return item;
+    }
+    );
   }
 
   // Remove quantity from a cart item
@@ -79,6 +80,12 @@ export class CartComponent implements OnInit {
     if (quantity > 1) {
       this.cartService.addToCart(publicId, 'remove');
     }
+    this.cart = this.cart.map(item => {
+      if (item.publicId === publicId) {
+        item.quantity--;
+      }
+      return item;
+    });
   }
 
   // Remove an item from the cart
@@ -93,11 +100,7 @@ export class CartComponent implements OnInit {
 
   // Check if the cart is empty
   checkIfEmptyCart(): boolean {
-    if (isPlatformBrowser(this.platformId)) {
-      return this.cart.length === 0;
-    } else {
-      return false;
-    }
+    return this.cart.length === 0;
   }
 
   // Handle checkout
