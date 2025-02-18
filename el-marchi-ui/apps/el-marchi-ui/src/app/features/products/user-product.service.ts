@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import {Observable, of, tap} from 'rxjs';
 import {
   Page,
   Pagination,
@@ -57,5 +57,20 @@ export class UserProductService {
     }
     console.log('params', params);
     return this.http.get<Page<Product>>(`${this.baseUrl}/filter`, { params });
+  }
+  private imageCache = new Map<string, Blob>();
+  getImage(publicId: string): Observable<Blob> {
+    if (this.imageCache.has(publicId)) {
+      console.log('Returning cached image');
+      return of(this.imageCache.get(publicId)!);
+    }
+
+    return this.http.get(`${this.baseUrl}/images/${publicId}`, { responseType: 'blob' }).pipe(
+      tap((blob) => {
+        console.log('Blob size:', blob.size); // Debugging
+        console.log('Blob type:', blob.type); // Debugging
+        this.imageCache.set(publicId, blob);
+      })
+    );
   }
 }

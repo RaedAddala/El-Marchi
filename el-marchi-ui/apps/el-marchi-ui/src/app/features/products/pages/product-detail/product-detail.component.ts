@@ -1,8 +1,8 @@
-import { Component, inject, OnInit } from '@angular/core';
+import {Component, inject, OnInit, WritableSignal, signal, effect} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { injectParams } from 'ngxtension/inject-params';
 import { Router } from '@angular/router';
-import { interval, take } from 'rxjs';
+import {interval, take} from 'rxjs';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import { CartService } from '../../cart.service';
 import { ToastService } from '@shared/toast/toast.service';
@@ -11,6 +11,7 @@ import { ProductCardComponent } from '@features/products/pages/product-card/prod
 import { Pagination } from '@shared/models/request.model';
 import { Product } from '@shared/models/product.model';
 import { environment } from '../../../../../../environments/environment.development';
+import {DomSanitizer, SafeUrl} from "@angular/platform-browser";
 @Component({
   selector: 'app-product-detail',
   standalone: true,
@@ -37,7 +38,7 @@ export class ProductDetailComponent implements OnInit {
   labelAddToCart = 'Add to cart';
   iconAddToCart = 'shopping-cart';
 
-  product: Product | null = null;
+  product: WritableSignal<Product | null> = signal(null);
   relatedProducts: Product[] = [];
   isLoading = false;
   isLoadingRelated = false;
@@ -45,12 +46,19 @@ export class ProductDetailComponent implements OnInit {
   apiUrl = environment.apiUrlUploads;
   constructor() {
     this.handlePublicIdChange();
+    effect(() => {
+      const product = this.product();
+      if (product) {
+        this.loadImage(product.pictures[0].publicId);
+      }
+    });
   }
 
   ngOnInit(): void {
     console.log('ProductDetailComponent initialized');
     this.loadProduct();
     this.loadRelatedProducts();
+
   }
 
   private loadProduct() {
@@ -60,7 +68,7 @@ export class ProductDetailComponent implements OnInit {
     this.isLoading = true;
     this.productService.findOneByPublicId(currentPublicId).subscribe({
       next: product => {
-        this.product = product;
+        this.product.set(product);
         this.isLoading = false;
         console.log('Product loaded:', product);
       },
@@ -117,5 +125,21 @@ export class ProductDetailComponent implements OnInit {
         this.labelAddToCart = 'Add to cart';
         this.iconAddToCart = 'shopping-cart';
       });
+  }
+
+  imageUrl: SafeUrl | undefined;
+  santaizer = inject(DomSanitizer);
+  loadImage(publicId: string): void {
+    this.productService.getImage(publicId).subscribe((blob) => {
+      console.log('Blob size:', blob.size); // Check the size of the Blob
+      if (blob.size === 0) {
+        console.error('Blob is empty');
+        return;
+      }
+
+      const objectURL = URL.createObjectURL(blob);
+      console.log('Blob URL:', objectURL); // Log the Blob URL
+      this.imageUrl = this.santaizer.bypassSecurityTrustUrl(objectURL);
+    });
   }
 }

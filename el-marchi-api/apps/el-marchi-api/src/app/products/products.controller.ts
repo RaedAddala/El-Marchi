@@ -8,13 +8,14 @@ import {
   Param,
   Post,
   Put,
-  Query,
+  Query, Res,
   UploadedFiles,
   UseInterceptors,
 } from '@nestjs/common';
+import { Response } from 'express';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { Request } from 'express';
-import { unlinkSync } from 'fs';
+import  { unlinkSync } from 'fs';
 import { diskStorage } from 'multer';
 import { extname, join } from 'path';
 import { Cart, ProductFilter } from '../common/models/product.model';
@@ -122,6 +123,8 @@ export class ProductController {
     return this.productService.updateProductImages(id, images);
   }
 
+
+
   @Delete(':id')
   async deleteProduct(@Param('id') id: string): Promise<void> {
     const product = await this.productService.findOne(id);
@@ -172,6 +175,19 @@ export class ProductController {
   @Get('get-cart-details')
   async getCartDetails(@Query('productIds') publicIds: string): Promise<Cart> {
     return this.productService.getCartDetails(publicIds);
+  }
+  @Get('images/:publicId')
+  async getProductImage(@Param('publicId') publicId: string, @Res() res: Response) {
+    const filePath = join(__dirname, '..', '..', '..', 'uploads', 'products', publicId);
+
+    // Check if the file exists
+    const fs = require('fs');
+    if (!fs.existsSync(filePath)) {
+      throw new NotFoundException('Image not found');
+    }
+
+    // Send the file using Express's res.sendFile
+    return res.sendFile(filePath);
   }
   @Get(':id')
   async findOne(@Param('id') id: string): Promise<Product> {

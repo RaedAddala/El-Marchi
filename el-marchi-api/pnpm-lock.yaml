@@ -37,7 +37,7 @@ importers:
         version: 11.0.10(@nestjs/common@11.0.10(class-validator@0.14.1)(reflect-metadata@0.1.14)(rxjs@7.8.1))(@nestjs/core@11.0.10)
       '@nestjs/serve-static':
         specifier: ^5.0.2
-        version: 5.0.2(@nestjs/common@11.0.10(class-validator@0.14.1)(reflect-metadata@0.1.14)(rxjs@7.8.1))(@nestjs/core@11.0.10)(express@5.0.1)
+        version: 5.0.2(@nestjs/common@11.0.10(class-validator@0.14.1)(reflect-metadata@0.1.14)(rxjs@7.8.1))(@nestjs/core@11.0.10)(express@4.21.2)
       '@nestjs/swagger':
         specifier: ^11.0.3
         version: 11.0.3(@nestjs/common@11.0.10(class-validator@0.14.1)(reflect-metadata@0.1.14)(rxjs@7.8.1))(@nestjs/core@11.0.10)(class-validator@0.14.1)(reflect-metadata@0.1.14)
@@ -56,6 +56,9 @@ importers:
       cookie-parser:
         specifier: ^1.4.7
         version: 1.4.7
+      express:
+        specifier: ^4.21.2
+        version: 4.21.2
       helmet:
         specifier: ^8.0.0
         version: 8.0.0
@@ -8121,13 +8124,13 @@ snapshots:
     transitivePeerDependencies:
       - chokidar
 
-  '@nestjs/serve-static@5.0.2(@nestjs/common@11.0.10(class-validator@0.14.1)(reflect-metadata@0.1.14)(rxjs@7.8.1))(@nestjs/core@11.0.10)(express@5.0.1)':
+  '@nestjs/serve-static@5.0.2(@nestjs/common@11.0.10(class-validator@0.14.1)(reflect-metadata@0.1.14)(rxjs@7.8.1))(@nestjs/core@11.0.10)(express@4.21.2)':
     dependencies:
       '@nestjs/common': 11.0.10(class-validator@0.14.1)(reflect-metadata@0.1.14)(rxjs@7.8.1)
       '@nestjs/core': 11.0.10(@nestjs/common@11.0.10(class-validator@0.14.1)(reflect-metadata@0.1.14)(rxjs@7.8.1))(@nestjs/platform-express@11.0.10)(reflect-metadata@0.1.14)(rxjs@7.8.1)
       path-to-regexp: 8.2.0
     optionalDependencies:
-      express: 5.0.1
+      express: 4.21.2
 
   '@nestjs/swagger@11.0.3(@nestjs/common@11.0.10(class-validator@0.14.1)(reflect-metadata@0.1.14)(rxjs@7.8.1))(@nestjs/core@11.0.10)(class-validator@0.14.1)(reflect-metadata@0.1.14)':
     dependencies:
