@@ -9,13 +9,13 @@ import {
 
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { AuthService } from '@features/auth/auth.service';
+import { AuthService } from '@shared/service/auth.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthGuard implements CanActivate {
-  constructor(private authService: AuthService, private router: Router) {}
+  constructor(private authService: AuthService, private router: Router) { }
 
   canActivate(
     _route: ActivatedRouteSnapshot,

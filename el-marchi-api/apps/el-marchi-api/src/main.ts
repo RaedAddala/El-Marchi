@@ -21,20 +21,10 @@ async function bootstrap() {
   // generate the keys that will be used in the auth system later!
   generateKeys();
 
-  const app: NestExpressApplication = await NestFactory.create(AppModule);
+  const app: NestExpressApplication = await NestFactory.create(AppModule, { cors: true });
   const configService = app.get(ConfigService<EnvConfig, true>);
 
   app.useGlobalPipes(new ZodValidationPipe());
-
-  app.enableCors({
-    origin: ["http://localhost:4200", "http://127.0.0.1:4200"],
-    methods: ['Options', 'GET', 'POST', 'PUT', 'DELETE'],
-    // allowedHeaders: ['Content-Type', 'Authorization'],
-    // exposedHeaders: ['Content-Range', 'X-Content-Range'],
-    credentials: true,
-    maxAge: 3600,
-    preflightContinue: false,
-  });
 
   app.use(compression());
   app.use(helmet());
