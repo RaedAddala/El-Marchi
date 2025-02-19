@@ -4,8 +4,6 @@ import { JwtModule } from '@nestjs/jwt';
 import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { fromZodError } from 'zod-validation-error';
 
-import { ServeStaticModule } from '@nestjs/serve-static';
-import { join } from 'path';
 import { UsersModule } from './authentication_authorization/users.module';
 import { CategoriesModule } from './categories/categories.module';
 import { EnvConfig, envSchema } from './common/config/env.schema';
@@ -67,10 +65,6 @@ import { TradersModule } from './traders/traders.module';
         };
       },
     }),
-    ServeStaticModule.forRoot({
-      rootPath: join(__dirname, '..', '..', '..', 'uploads'),
-      serveRoot: '/uploads',
-    }),
     JwtModule.register({
       global: true,
       verifyOptions: {
@@ -98,4 +92,4 @@ import { TradersModule } from './traders/traders.module';
   controllers: [],
   providers: [CryptoService, JwtconfigService, RedisService],
 })
-export class AppModule {}
+export class AppModule { }

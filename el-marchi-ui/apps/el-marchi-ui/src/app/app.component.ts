@@ -6,8 +6,8 @@ import {
   FontAwesomeModule,
 } from '@fortawesome/angular-fontawesome';
 import { fontAwesomeIcons } from './shared/font-awesome-icons';
-import { NavbarComponent } from './layout/navbar/navbar.component';
-import { FooterComponent } from './layout/footer/footer.component';
+import { NavbarComponent } from './layout-pages/home-layout/navbar/navbar.component';
+import { FooterComponent } from './layout-pages/home-layout/footer/footer.component';
 import { ToastService } from '@shared/toast/toast.service';
 import { NgClass } from '@angular/common';
 
